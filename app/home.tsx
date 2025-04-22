@@ -17,24 +17,23 @@ import {
   View,
   Text,
   Image,
+  Animated,
   StyleSheet,
   Dimensions,
-  TouchableOpacity,
-  Animated,
   PanResponder,
 } from "react-native";
 
 const { width } = Dimensions.get("window");
 const MIN_ANGLE_OFFSET = -1.2;
-const MAX_ANGLE_OFFSET = 1.3;
+const MAX_ANGLE_OFFSET = 1.65;
 
 const menuItems: {
   name: string;
   icon: "home" | "library-books" | "emoji-events" | "search";
   link: string;
 }[] = [
-  { name: "AI Accueil", icon: "home", link: "chatAiAcceuil" },
-  { name: "J’apprends", icon: "library-books", link: "learning" },
+  { name: "AI Devoir", icon: "home", link: "chatAiAcceuil" },
+  { name: "J'apprends", icon: "library-books", link: "learning" },
   { name: "Challenge", icon: "emoji-events", link: "defi" },
   { name: "AI Recherche", icon: "search", link: "chatAiRecherche" },
 ];
@@ -44,11 +43,14 @@ export default function Home() {
   const refRBSheet = useRef<{ open: () => void } | null>(null);
   const { dark, colors } = useTheme();
 
+  // State to track active menu item
+  const [activeMenuItem, setActiveMenuItem] = useState(0);
+
   const radius = 180;
-  const [angleOffset, setAngleOffset] = useState(0);
+  const [angleOffset, setAngleOffset] = useState(1.65);
   const angleScale = scaleLinear()
     .domain([0, menuItems.length - 1])
-    .range([-Math.PI / 2.5, Math.PI / 2.5]);
+    .range([-Math.PI / 1.9, Math.PI / 2.5]);
 
   const getArcPosition = (index: number) => {
     const angle = angleScale(index) + angleOffset;
@@ -128,7 +130,7 @@ export default function Home() {
     <View style={styles.menuContainer} {...panResponder.panHandlers}>
       {menuItems.map((item, index) => {
         const { x, y } = getArcPosition(index);
-        const angle = angleScale(index) + angleOffset;
+        const isActive = index === activeMenuItem;
 
         return (
           <Animated.View
@@ -137,21 +139,28 @@ export default function Home() {
               position: "absolute",
               left: width / 2 + x - 78,
               top: y,
-              transform: [{ rotate: `${angle * (180 / Math.PI)}deg` }],
+              transform: [
+                {
+                  rotate: `${angleScale(index) * (180 / Math.PI) + angleOffset * (180 / Math.PI)}deg`,
+                },
+              ],
             }}
           >
-            <TouchableOpacity onPress={() => navigate(item.link)}>
-              <CurvedMenuItem
-                icon={
-                  <MaterialIcons
-                    name={item.icon}
-                    size={30}
-                    color={COLORS.white}
-                  />
-                }
-                label={item.name}
-              />
-            </TouchableOpacity>
+            <CurvedMenuItem
+              icon={
+                <MaterialIcons
+                  name={item.icon}
+                  size={30}
+                  color={COLORS.white}
+                />
+              }
+              label={item.name}
+              isActive={isActive}
+              onPress={() => {
+                setActiveMenuItem(index);
+                navigate(item.link);
+              }}
+            />
           </Animated.View>
         );
       })}
@@ -216,47 +225,4 @@ const styles = StyleSheet.create({
   },
   greeting: { fontSize: 24, fontWeight: "bold", textAlign: "center" },
   menuContainer: { position: "relative", width: "100%", height: 400 },
-  menuItem: {
-    width: 107,
-    height: 125,
-    backgroundColor: "white",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingBottom: 4,
-
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    borderBottomLeftRadius: 60,
-    borderBottomRightRadius: 60,
-
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-  },
-  menuItemTouchable: {
-    width: "100%",
-    height: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  iconWrapper: {
-    width: 60,
-    height: 60,
-    borderRadius: 45,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.primary,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-  },
-
-  menuText: {
-    marginTop: 5,
-    fontSize: 14,
-    fontWeight: "bold",
-    color: COLORS.black,
-  },
 });

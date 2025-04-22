@@ -28,7 +28,7 @@ import {
 import { useTheme } from "../theme/ThemeProvider";
 import MessageBubble from "../components/MessageBubble";
 
-const ChatScreen: React.FC = () => {
+export default function ChatAiRecherche() {
   const navigation = useNavigation<NavigationProp<any>>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
@@ -269,9 +269,9 @@ const ChatScreen: React.FC = () => {
           </View>
 
           <ScrollView>
-            {chatHistory.map((chat) => (
+            {chatHistory.map((chat, index) => (
               <TouchableOpacity
-                key={chat.id}
+                key={chat.id || `chat-${index}`}
                 style={styles.chatHistoryItem}
                 onPress={() => loadChatHistory(chat)}
               >
@@ -372,7 +372,9 @@ const ChatScreen: React.FC = () => {
           <FlatList
             data={messages}
             renderItem={({ item }) => <MessageBubble message={item} />}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) =>
+              item.id || `message-${Date.now()}-${Math.random()}`
+            }
             contentContainerStyle={styles.messagesContainer}
           />
 
@@ -490,7 +492,7 @@ const ChatScreen: React.FC = () => {
       </View>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -702,5 +704,3 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-
-export default ChatScreen;

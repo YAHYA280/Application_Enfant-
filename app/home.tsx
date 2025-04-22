@@ -1,8 +1,10 @@
-import React, { useRef } from "react";
+import { scaleLinear } from "d3-scale";
 import { useNavigation } from "expo-router";
 import { COLORS, images } from "@/constants";
+import React, { useRef, useState } from "react";
 import { useTheme } from "@/theme/ThemeProvider";
 import { MaterialIcons } from "@expo/vector-icons";
+import CurvedMenuItem from "@/components/CurvedMenuItem";
 import NotificationBell from "@/components/NotificationBell";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -15,17 +17,16 @@ import {
   View,
   Text,
   Image,
-  FlatList,
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  Animated,
+  PanResponder,
 } from "react-native";
 
-type Nav = {
-  navigate: (value: string) => void;
-};
-
 const { width } = Dimensions.get("window");
+const MIN_ANGLE_OFFSET = -1.2;
+const MAX_ANGLE_OFFSET = 1.3;
 
 const menuItems: {
   name: string;
@@ -38,16 +39,44 @@ const menuItems: {
   { name: "AI Recherche", icon: "search", link: "chatAiRecherche" },
 ];
 
-// eslint-disable-next-line import/export
 export default function Home() {
-  const { navigate } = useNavigation<Nav>();
-  const refRBSheet = useRef<any>(null);
+  const { navigate } = useNavigation<{ navigate: (screen: string) => void }>();
+  const refRBSheet = useRef<{ open: () => void } | null>(null);
   const { dark, colors } = useTheme();
 
-  // Header with left (Menu trigger) and right (NotificationBell)
+  const radius = 180;
+  const [angleOffset, setAngleOffset] = useState(0);
+  const angleScale = scaleLinear()
+    .domain([0, menuItems.length - 1])
+    .range([-Math.PI / 2.5, Math.PI / 2.5]);
+
+  const getArcPosition = (index: number) => {
+    const angle = angleScale(index) + angleOffset;
+    const x = Math.sin(angle) * radius;
+    const y = -Math.cos(angle) * radius + 450;
+    return { x, y };
+  };
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderMove: (_, gestureState) => {
+        const delta = gestureState.dx / 4600;
+        setAngleOffset((prev) => {
+          const next = prev + delta;
+          return Math.max(MIN_ANGLE_OFFSET, Math.min(MAX_ANGLE_OFFSET, next));
+        });
+      },
+    })
+  ).current;
+
   const renderHeader = () => (
-    <View style={[styles.headerContainer, { backgroundColor: dark ? COLORS.black : COLORS.white }]}>
-      {/* Left side: Menu trigger (profile image with options) */}
+    <View
+      style={[
+        styles.headerContainer,
+        { backgroundColor: dark ? COLORS.black : COLORS.white },
+      ]}
+    >
       <View style={styles.viewLeft}>
         <Menu>
           <MenuTrigger>
@@ -59,95 +88,99 @@ export default function Home() {
                 ...styles.menuOptionsContainer,
                 backgroundColor: dark ? COLORS.dark2 : COLORS.white,
               },
-              optionText: styles.menuOptionText,
             }}
           >
             <MenuOption onSelect={() => navigate("profil")}>
               <View style={styles.menuItemHeader}>
-                <MaterialIcons name="person" size={24} color={dark ? COLORS.white : COLORS.black} />
-                <Text style={[styles.menuTextHeader, { color: dark ? COLORS.white : COLORS.black }]}>
+                <MaterialIcons
+                  name="person"
+                  size={24}
+                  color={dark ? COLORS.white : COLORS.black}
+                />
+                <Text
+                  style={[
+                    styles.menuTextHeader,
+                    { color: dark ? COLORS.white : COLORS.black },
+                  ]}
+                >
                   Mon Profil
                 </Text>
               </View>
             </MenuOption>
-            <MenuOption onSelect={() => refRBSheet.current.open()}>
+            <MenuOption onSelect={() => refRBSheet.current?.open()}>
               <View style={styles.menuItemHeader}>
                 <MaterialIcons name="logout" size={24} color="red" />
-                <Text style={[styles.menuTextHeader, { color: "red" }]}>Déconnexion</Text>
+                <Text style={[styles.menuTextHeader, { color: "red" }]}>
+                  Déconnexion
+                </Text>
               </View>
             </MenuOption>
           </MenuOptions>
-          <MenuTrigger />
         </Menu>
       </View>
-      {/* Right side: Only the NotificationBell, aligned to the far right */}
       <View style={styles.viewRight}>
         <NotificationBell style={styles.notificationBell} />
       </View>
     </View>
   );
 
-  // ... (Render other parts of your component as before)
-
   const renderMenu = () => (
-    <View style={styles.menuContainer}>
-      <FlatList
-        data={menuItems}
-        horizontal
-        keyExtractor={(_item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[styles.menuItem, { backgroundColor: dark ? COLORS.black : COLORS.white }]}
-            onPress={() => navigate(item.link)}
+    <View style={styles.menuContainer} {...panResponder.panHandlers}>
+      {menuItems.map((item, index) => {
+        const { x, y } = getArcPosition(index);
+        const angle = angleScale(index) + angleOffset;
+
+        return (
+          <Animated.View
+            key={index}
+            style={{
+              position: "absolute",
+              left: width / 2 + x - 78,
+              top: y,
+              transform: [{ rotate: `${angle * (180 / Math.PI)}deg` }],
+            }}
           >
-            <View style={[styles.iconWrapper, { borderColor: COLORS.white, borderWidth: 2 }]}>
-              <MaterialIcons name={item.icon} size={30} color={COLORS.black} />
-            </View>
-            <Text style={[styles.menuText, { color: dark ? COLORS.white : COLORS.black }]}>
-              {item.name}
-            </Text>
-          </TouchableOpacity>
-        )}
-        showsHorizontalScrollIndicator={false}
-        snapToInterval={width / 3}
-        decelerationRate="fast"
-        contentContainerStyle={styles.flatListContent}
-        snapToAlignment="center"
-        viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
-      />
+            <TouchableOpacity onPress={() => navigate(item.link)}>
+              <CurvedMenuItem
+                icon={
+                  <MaterialIcons
+                    name={item.icon}
+                    size={30}
+                    color={COLORS.white}
+                  />
+                }
+                label={item.name}
+              />
+            </TouchableOpacity>
+          </Animated.View>
+        );
+      })}
     </View>
   );
-
-  // (Assume renderProfile and other components remain unchanged)
 
   return (
     <SafeAreaView style={[styles.area, { backgroundColor: colors.background }]}>
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         {renderHeader()}
-        {/* Your other component renderings */}
         <View style={styles.greetingContainer}>
-          <Text style={[styles.greeting, { color: dark ? COLORS.white : COLORS.black }]}>
-            {"Bienvenue Peter,\nComment puis-je vous aider aujourd'hui ?"}
+          <Text
+            style={[
+              styles.greeting,
+              { color: dark ? COLORS.white : COLORS.black },
+            ]}
+          >
+            Bienvenue Peter,{"\n"}Comment puis-je vous aider aujourd&apos;hui ?
           </Text>
         </View>
         {renderMenu()}
-        {/* RBSheet and other content goes here */}
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  area: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-    marginBottom: 20,
-    padding: 16,
-  },
+  area: { flex: 1 },
+  container: { flex: 1, padding: 10 },
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -158,22 +191,10 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
   },
-  viewLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  viewRight: {
-    flex: 1,
-    alignItems: "flex-end",
-  },
-  profileImage: {
-    width: 48,
-    height: 48,
-    borderRadius: 32,
-  },
-  notificationBell: {
-    marginLeft: 12,
-  },
+  viewLeft: { flexDirection: "row", alignItems: "center" },
+  viewRight: { flex: 1, alignItems: "flex-end" },
+  profileImage: { width: 48, height: 48, borderRadius: 32 },
+  notificationBell: { marginLeft: 12 },
   menuOptionsContainer: {
     backgroundColor: "#f9f9f9",
     padding: 10,
@@ -185,74 +206,57 @@ const styles = StyleSheet.create({
     marginTop: 55,
     marginLeft: 0,
   },
-  menuOptionText: {
-    fontSize: 16,
-    color: "#333",
-    paddingVertical: 8,
-  },
-  menuItemHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-  },
-  menuTextHeader: {
-    fontSize: 16,
-    marginLeft: 10,
-    color: COLORS.black,
-  },
+  menuItemHeader: { flexDirection: "row", alignItems: "center", padding: 10 },
+  menuTextHeader: { fontSize: 16, marginLeft: 10, color: COLORS.black },
   greetingContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 200,
-    marginTop: 220,
+    marginBottom: 100,
+    marginTop: 100,
   },
-  greeting: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  menuContainer: {
-    bottom: 50,
-    width,
-    height: 215,
-    alignItems: "center",
-  },
+  greeting: { fontSize: 24, fontWeight: "bold", textAlign: "center" },
+  menuContainer: { position: "relative", width: "100%", height: 400 },
   menuItem: {
     width: 107,
     height: 125,
-    borderRadius: 20,
+    backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
+    paddingBottom: 4,
+
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    borderBottomLeftRadius: 60,
+    borderBottomRightRadius: 60,
+
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    marginHorizontal: 7,
-    backgroundColor: COLORS.white,
-    paddingBottom: 4,
+  },
+  menuItemTouchable: {
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   iconWrapper: {
     width: 60,
     height: 60,
     borderRadius: 45,
-    backgroundColor: COLORS.primary,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: COLORS.primary,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },
+
   menuText: {
     marginTop: 5,
     fontSize: 14,
     fontWeight: "bold",
     color: COLORS.black,
   },
-  flatListContent: {
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-  },
-
 });

@@ -1,6 +1,7 @@
 import type { Message } from "@/contexts/types/chat";
 
-import Tts from "react-native-tts";
+// import Tts from "react-native-tts";
+import * as Speech from "expo-speech";
 import { COLORS } from "@/constants";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -44,19 +45,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   };
 
   const handleTextToSpeech = () => {
-    Tts.setDefaultLanguage("fr-FR")
-      .then(() => {
-        Tts.speak(message.text, {
-          iosVoiceId: "com.apple.ttsbundle.Thomas-compact",
-          rate: 0.5,
-          androidParams: {
-            KEY_PARAM_PAN: 0,
-            KEY_PARAM_VOLUME: 1,
-            KEY_PARAM_STREAM: "STREAM_MUSIC",
-          },
-        });
-      })
-      .catch((err) => console.error("Erreur TTS:", err));
+    Speech.speak(message.text, {
+      language: "fr-FR",
+      pitch: 1.0,
+      rate: 0.75,
+    });
   };
 
   const handleLike = () => {

@@ -28,7 +28,7 @@ import {
 import { useTheme } from "../theme/ThemeProvider";
 import MessageBubble from "../components/MessageBubble";
 
-const ChatScreen: React.FC = () => {
+export default function ChatAiAcceuil() {
   const navigation = useNavigation<NavigationProp<any>>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
@@ -490,7 +490,7 @@ const ChatScreen: React.FC = () => {
       </View>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -702,5 +702,3 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-
-export default ChatScreen;

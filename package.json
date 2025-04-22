@@ -29,6 +29,8 @@
     "@react-navigation/stack": "^7.2.0",
     "@types/react-native-modern-datepicker": "^1.0.5",
     "brainboost-parent-mobile": "file:",
+    "d3-scale": "^4.0.2",
+    "d3-shape": "^3.2.0",
     "expo": "^52.0.28",
     "expo-av": "~15.0.2",
     "expo-blur": "~14.0.3",
@@ -45,7 +47,8 @@
     "expo-local-authentication": "~15.0.2",
     "expo-permissions": "^14.4.0",
     "expo-router": "~4.0.17",
-    "expo-splash-screen": "~0.29.21",
+    "expo-speech": "~13.0.1",
+    "expo-splash-screen": "~0.29.24",
     "expo-status-bar": "~2.0.1",
     "expo-symbols": "~0.2.1",
     "expo-system-ui": "~4.0.7",
@@ -75,11 +78,13 @@
     "react-native-virtualized-view": "^1.0.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "zod": "^3.24.2"
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-react": "^7.26.3",
+    "@types/d3-scale": "^4.0.9",
+    "@types/d3-shape": "^3.1.7",
     "@types/jest": "^29.5.12",
     "@types/react": "~18.3.12",
     "@types/react-test-renderer": "^18.3.0",

@@ -6,7 +6,7 @@ import React, { useState, useEffect } from "react";
 import { SIZES, COLORS, images } from "@/constants";
 import { Picker } from "@react-native-picker/picker";
 import { ScrollView } from "react-native-virtualized-view";
-import NotificationBell from "@/components/NotificationBell";
+import NotificationBell from "@/components/notifications/NotificationBell";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { launchImagePicker } from "@/utils/ImagePickerHelper";
 import {

@@ -1,3 +1,4 @@
+import { Image } from "react-native";
 import { scaleLinear } from "d3-scale";
 import { useNavigation } from "expo-router";
 import { COLORS, images } from "@/constants";
@@ -5,8 +6,9 @@ import React, { useRef, useState } from "react";
 import { useTheme } from "@/theme/ThemeProvider";
 import { MaterialIcons } from "@expo/vector-icons";
 import CurvedMenuItem from "@/components/CurvedMenuItem";
-import NotificationBell from "@/components/NotificationBell";
+import AnimatedAvatar from "@/components/AnimatedAvatar";
 import { SafeAreaView } from "react-native-safe-area-context";
+import NotificationBell from "@/components/notifications/NotificationBell";
 import {
   Menu,
   MenuOption,
@@ -16,7 +18,6 @@ import {
 import {
   View,
   Text,
-  Image,
   Animated,
   StyleSheet,
   Dimensions,
@@ -24,7 +25,7 @@ import {
 } from "react-native";
 
 const { width } = Dimensions.get("window");
-const MIN_ANGLE_OFFSET = -1.2;
+const MIN_ANGLE_OFFSET = -0.00000000000031;
 const MAX_ANGLE_OFFSET = 1.65;
 
 const menuItems: {
@@ -46,16 +47,16 @@ export default function Home() {
   // State to track active menu item
   const [activeMenuItem, setActiveMenuItem] = useState(0);
 
-  const radius = 180;
+  const radius = 400;
   const [angleOffset, setAngleOffset] = useState(1.65);
   const angleScale = scaleLinear()
     .domain([0, menuItems.length - 1])
-    .range([-Math.PI / 1.9, Math.PI / 2.5]);
+    .range([-Math.PI / 1.9, Math.PI / 30000]);
 
   const getArcPosition = (index: number) => {
     const angle = angleScale(index) + angleOffset;
     const x = Math.sin(angle) * radius;
-    const y = -Math.cos(angle) * radius + 450;
+    const y = -Math.cos(angle) * radius + 700;
     return { x, y };
   };
 
@@ -63,7 +64,7 @@ export default function Home() {
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
       onPanResponderMove: (_, gestureState) => {
-        const delta = gestureState.dx / 4600;
+        const delta = gestureState.dx / 3500;
         setAngleOffset((prev) => {
           const next = prev + delta;
           return Math.max(MIN_ANGLE_OFFSET, Math.min(MAX_ANGLE_OFFSET, next));
@@ -79,7 +80,13 @@ export default function Home() {
         { backgroundColor: dark ? COLORS.black : COLORS.white },
       ]}
     >
-      <View style={styles.viewLeft}>
+      {/* Logo on the left */}
+      <View style={styles.logoContainer}>
+        <Image source={images.logo} style={styles.logoImage} />
+      </View>
+
+      {/* Profile and notification on the right */}
+      <View style={styles.profileContainer}>
         <Menu>
           <MenuTrigger>
             <Image source={images.user1} style={styles.profileImage} />
@@ -119,10 +126,30 @@ export default function Home() {
             </MenuOption>
           </MenuOptions>
         </Menu>
-      </View>
-      <View style={styles.viewRight}>
         <NotificationBell style={styles.notificationBell} />
       </View>
+    </View>
+  );
+
+  const renderGreeting = () => (
+    <View style={styles.greetingContainer}>
+      <Text
+        style={[
+          styles.greetingText,
+          { color: dark ? COLORS.white : COLORS.black },
+        ]}
+      >
+        Bienvenue Peter,
+      </Text>
+
+      {/* Animated avatar */}
+      <AnimatedAvatar />
+
+      <Text
+        style={[styles.helpText, { color: dark ? COLORS.white : COLORS.black }]}
+      >
+        Comment puis-je vous aider aujourd&apos;hui ?
+      </Text>
     </View>
   );
 
@@ -171,16 +198,7 @@ export default function Home() {
     <SafeAreaView style={[styles.area, { backgroundColor: colors.background }]}>
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         {renderHeader()}
-        <View style={styles.greetingContainer}>
-          <Text
-            style={[
-              styles.greeting,
-              { color: dark ? COLORS.white : COLORS.black },
-            ]}
-          >
-            Bienvenue Peter,{"\n"}Comment puis-je vous aider aujourd&apos;hui ?
-          </Text>
-        </View>
+        {renderGreeting()}
         {renderMenu()}
       </View>
     </SafeAreaView>
@@ -188,8 +206,13 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  area: { flex: 1 },
-  container: { flex: 1, padding: 10 },
+  area: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    padding: 10,
+  },
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -200,10 +223,27 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
   },
-  viewLeft: { flexDirection: "row", alignItems: "center" },
-  viewRight: { flex: 1, alignItems: "flex-end" },
-  profileImage: { width: 48, height: 48, borderRadius: 32 },
-  notificationBell: { marginLeft: 12 },
+  logoContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  logoImage: {
+    width: 48,
+    height: 48,
+    resizeMode: "contain",
+  },
+  profileContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  notificationBell: {
+    marginLeft: 12,
+  },
   menuOptionsContainer: {
     backgroundColor: "#f9f9f9",
     padding: 10,
@@ -215,14 +255,36 @@ const styles = StyleSheet.create({
     marginTop: 55,
     marginLeft: 0,
   },
-  menuItemHeader: { flexDirection: "row", alignItems: "center", padding: 10 },
-  menuTextHeader: { fontSize: 16, marginLeft: 10, color: COLORS.black },
+  menuItemHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+  },
+  menuTextHeader: {
+    fontSize: 16,
+    marginLeft: 10,
+    color: COLORS.black,
+  },
   greetingContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 100,
-    marginTop: 100,
+    marginTop: 30,
+    marginBottom: 30,
   },
-  greeting: { fontSize: 24, fontWeight: "bold", textAlign: "center" },
-  menuContainer: { position: "relative", width: "100%", height: 400 },
+  greetingText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  helpText: {
+    fontSize: 18,
+    textAlign: "center",
+    marginTop: 10,
+  },
+  menuContainer: {
+    position: "relative",
+    width: "100%",
+    height: 400,
+  },
 });

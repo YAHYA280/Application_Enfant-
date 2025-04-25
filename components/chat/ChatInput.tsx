@@ -1,19 +1,16 @@
 import React from "react";
+import { COLORS } from "@/constants";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@/theme/ThemeProvider";
+import ConditionalComponent from "@/components/ConditionalComponent";
 import {
   View,
+  Image,
+  Keyboard,
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  Image,
-  Keyboard,
 } from "react-native";
-import { COLORS } from "@/constants";
-import { Ionicons } from "@expo/vector-icons";
-import ConditionalComponent from "@/components/ConditionalComponent";
-import { Audio } from "expo-av";
-import * as ImagePicker from "expo-image-picker";
-import * as DocumentPicker from "expo-document-picker";
-import { useTheme } from "@/theme/ThemeProvider";
 
 interface ChatInputProps {
   inputText: string;
@@ -35,6 +32,7 @@ interface ChatInputProps {
   audioPreviewUri: string | null;
   audioLength: number;
   removeAudioPreview: () => void;
+  customPlaceholder?: string; // New optional prop for custom placeholder
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
@@ -53,6 +51,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   audioPreviewUri,
   audioLength,
   removeAudioPreview,
+  customPlaceholder, // Added custom placeholder
 }) => {
   const { dark } = useTheme();
 
@@ -60,6 +59,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
     Keyboard.dismiss();
     handleSendMessage();
   };
+
+  // Default placeholder text if no custom one is provided
+  const placeholderText = customPlaceholder || "Pose ta question ici...";
 
   return (
     <View
@@ -153,7 +155,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           />
         </TouchableOpacity>
 
-        {/* Text input in the middle */}
+        {/* Text input in the middle with custom placeholder */}
         <TextInput
           style={[
             styles.input,
@@ -161,7 +163,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           ]}
           value={inputText}
           onChangeText={setInputText}
-          placeholder="Pose ta question ici..."
+          placeholder={placeholderText}
           placeholderTextColor={dark ? "#999" : COLORS.gray}
           multiline
         />

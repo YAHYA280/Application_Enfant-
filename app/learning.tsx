@@ -3,23 +3,18 @@ import type { NavigationProp } from "@react-navigation/native";
 
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { ScrollView } from "react-native-virtualized-view";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { View, FlatList, Animated, StyleSheet } from "react-native";
 import ConditionalComponent from "@/components/ConditionalComponent";
-import {
-  View,
-  Text,
-  Image,
-  FlatList,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
 
 import { Modules } from "../data";
+import { COLORS } from "../constants";
 import { useTheme } from "../theme/ThemeProvider";
-import { SIZES, icons, COLORS } from "../constants";
-import LearningLessonCard from "../components/LearningLessonCard";
+import LearningHeader from "../components/learning/LearningHeader";
+import LearningSearchBar from "../components/learning/LearningSearchBar";
+import LearningLessonCard from "../components/learning/LearningLessonCard";
+import LearningEmptyState from "../components/learning/LearningEmptyState";
+import LearningCategoryFilter from "../components/learning/LearningCategoryFilter";
 
 interface LearningProps {
   navigation: {
@@ -41,14 +36,23 @@ interface Module {
   progressPercentage: number;
 }
 
+// Category data
+const categories = [
+  { id: "1", name: "Tous" },
+  { id: "2", name: "Mathématiques" },
+  { id: "3", name: "Sciences" },
+  { id: "4", name: "Français" },
+  { id: "5", name: "Histoire" },
+];
+
 const Learning: React.FC<LearningProps> = () => {
   const navigation = useNavigation<NavigationProp<any>>();
   const { colors, dark } = useTheme();
   const [selectedCategories, setSelectedCategories] = useState<string[]>(["1"]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [scrollY] = useState(new Animated.Value(0));
 
-  // Filter lessons based on both category and search query
   const filteredLessons = Modules.filter((lesson) => {
     const matchesCategory =
       selectedCategories.includes("1") ||
@@ -59,113 +63,50 @@ const Learning: React.FC<LearningProps> = () => {
     return matchesCategory && (searchQuery === "" || matchesSearch);
   });
 
-  /**
-   * Render header
-   */
-  const renderHeader = () => {
-    if (isSearching) {
-      return (
-        <View style={styles.headerContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              setIsSearching(false);
-              setSearchQuery("");
-            }}
-          >
-            <Image
-              source={icons.back}
-              resizeMode="contain"
-              style={[
-                styles.backIcon,
-                {
-                  tintColor: dark ? COLORS.white : COLORS.greyscale900,
-                },
-              ]}
-            />
-          </TouchableOpacity>
-          <View style={styles.searchInputContainer}>
-            <TextInput
-              style={[
-                styles.searchInput,
-                {
-                  color: dark ? COLORS.white : COLORS.greyscale900,
-                  backgroundColor: dark
-                    ? COLORS.greyScale800
-                    : COLORS.grayscale100,
-                },
-              ]}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder="Rechercher des leçons..."
-              placeholderTextColor={
-                dark ? COLORS.greyscale500 : COLORS.grayscale700
-              }
-              autoFocus
-            />
-            <ConditionalComponent isValid={searchQuery.length > 0}>
-              <TouchableOpacity
-                style={styles.clearButton}
-                onPress={() => setSearchQuery("")}
-              >
-                <Image
-                  source={icons.clear}
-                  style={[
-                    styles.clearIcon,
-                    {
-                      tintColor: dark
-                        ? COLORS.greyscale500
-                        : COLORS.grayscale700,
-                    },
-                  ]}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-            </ConditionalComponent>
-          </View>
-        </View>
-      );
+  const handleCategorySelect = (categoryId: string) => {
+    if (categoryId === "1") {
+      setSelectedCategories(["1"]);
+    } else {
+      let newSelectedCategories = [...selectedCategories];
+
+      if (newSelectedCategories.includes("1")) {
+        newSelectedCategories = newSelectedCategories.filter(
+          (id) => id !== "1"
+        );
+      }
+
+      if (newSelectedCategories.includes(categoryId)) {
+        newSelectedCategories = newSelectedCategories.filter(
+          (id) => id !== categoryId
+        );
+        // If no categories are selected, select "All"
+        if (newSelectedCategories.length === 0) {
+          newSelectedCategories = ["1"];
+        }
+      } else {
+        newSelectedCategories.push(categoryId);
+      }
+
+      setSelectedCategories(newSelectedCategories);
     }
-    return (
-      <View style={styles.headerContainer}>
-        <View style={styles.headerLeft}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image
-              source={icons.back}
-              resizeMode="contain"
-              style={[
-                styles.backIcon,
-                {
-                  tintColor: dark ? COLORS.white : COLORS.greyscale900,
-                },
-              ]}
-            />
-          </TouchableOpacity>
-          <Text
-            style={[
-              styles.headerTitle,
-              {
-                color: dark ? COLORS.white : COLORS.greyscale900,
-              },
-            ]}
-          >
-            J&apos;apprends
-          </Text>
-        </View>
-        <TouchableOpacity onPress={() => setIsSearching(true)}>
-          <Image
-            source={icons.search3}
-            resizeMode="contain"
-            style={[
-              styles.searchIcon,
-              {
-                tintColor: dark ? COLORS.white : COLORS.greyscale900,
-              },
-            ]}
-          />
-        </TouchableOpacity>
-      </View>
-    );
   };
+
+  const handleSearchQueryChange = (text: string) => {
+    setSearchQuery(text);
+  };
+
+  const cancelSearch = () => {
+    setIsSearching(false);
+    setSearchQuery("");
+  };
+
+  // Calculate header opacity based on scroll position
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, 50],
+    outputRange: [1, 0.8],
+    extrapolate: "clamp",
+  });
+
   /**
    * Render lesson item
    */
@@ -183,19 +124,64 @@ const Learning: React.FC<LearningProps> = () => {
   return (
     <SafeAreaView style={[styles.area, { backgroundColor: colors.background }]}>
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        {renderHeader()}
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <FlatList
-            data={filteredLessons}
-            keyExtractor={(item) => item.id}
-            renderItem={renderLessonItem}
-            ListEmptyComponent={
-              <Text style={[styles.emptyText, { color: colors.text }]}>
-                Aucune leçon trouvée
-              </Text>
-            }
-          />
-        </ScrollView>
+        {/* Header */}
+        <Animated.View
+          style={[
+            styles.headerAnimatedContainer,
+            {
+              opacity: headerOpacity,
+              backgroundColor: dark ? COLORS.dark1 : COLORS.white,
+            },
+          ]}
+        >
+          {isSearching ? (
+            <LearningSearchBar
+              searchQuery={searchQuery}
+              onChangeText={handleSearchQueryChange}
+              onCancel={cancelSearch}
+              dark={dark}
+            />
+          ) : (
+            <LearningHeader
+              title="J'apprends"
+              onBackPress={() => navigation.goBack()}
+              onSearchPress={() => setIsSearching(true)}
+              dark={dark}
+            />
+          )}
+        </Animated.View>
+
+        {/* Category Filter */}
+        <LearningCategoryFilter
+          categories={categories}
+          selectedCategories={selectedCategories}
+          onSelectCategory={handleCategorySelect}
+          dark={dark}
+        />
+
+        {/* Main Content */}
+        <Animated.ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: true }
+          )}
+          scrollEventThrottle={16}
+        >
+          <ConditionalComponent
+            isValid={filteredLessons.length > 0}
+            defaultComponent={<LearningEmptyState dark={dark} />}
+          >
+            <FlatList
+              data={filteredLessons}
+              keyExtractor={(item) => item.id}
+              renderItem={renderLessonItem}
+              scrollEnabled={false} // Disable scrolling inside FlatList
+              contentContainerStyle={styles.listContainer}
+            />
+          </ConditionalComponent>
+        </Animated.ScrollView>
       </View>
     </SafeAreaView>
   );
@@ -209,64 +195,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white,
-    padding: 16,
   },
-  headerContainer: {
-    flexDirection: "row",
-    width: SIZES.width - 32,
-    justifyContent: "space-between",
-    marginBottom: 16,
-    alignItems: "center",
+  headerAnimatedContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(0,0,0,0.05)",
+    paddingBottom: 8,
+    zIndex: 10,
   },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  backIcon: {
-    height: 24,
-    width: 24,
-    tintColor: COLORS.black,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontFamily: "bold",
-    color: COLORS.black,
-    marginLeft: 16,
-  },
-  searchIcon: {
-    width: 24,
-    height: 24,
-    tintColor: COLORS.black,
-  },
-  searchInput: {
+  scrollView: {
     flex: 1,
-    height: 40,
-    borderRadius: 20,
     paddingHorizontal: 16,
-    paddingRight: 40,
-    marginLeft: 8,
-    fontSize: 16,
-    fontFamily: "regular",
   },
-  searchInputContainer: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: 8,
-  },
-  clearButton: {
-    position: "absolute",
-    right: 10,
-  },
-  clearIcon: {
-    width: 20,
-    height: 20,
-  },
-  emptyText: {
-    textAlign: "center",
-    marginTop: 20,
-    fontSize: 16,
-    fontFamily: "medium",
+  listContainer: {
+    paddingBottom: 24,
   },
 });
 

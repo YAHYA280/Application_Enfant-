@@ -15,7 +15,7 @@ const colors = {
   intermediate: "#fda120",
   medium: "#fbd027",
   weak: "#26c2a3",
-  completed: COLORS.greeen,
+  completed: COLORS.primary,
 };
 
 const LessonProgressBar: React.FC<LessonProgressBarProps> = ({
@@ -25,31 +25,37 @@ const LessonProgressBar: React.FC<LessonProgressBarProps> = ({
   const progress = numberOfLessonsCompleted / totalNumberOfLessons;
   const { dark } = useTheme();
 
+  // Get the appropriate color based on progress
+  const getProgressColor = () => {
+    if (progress === 1) return colors.completed;
+    if (progress >= 0.75) return colors.advanced;
+    if (progress >= 0.5) return colors.intermediate;
+    if (progress >= 0.35) return colors.medium;
+    return colors.weak;
+  };
+
   return (
     <View style={styles.container}>
-      <Progress.Bar
-        progress={progress}
-        width={SIZES.width - 280}
-        unfilledColor={dark ? COLORS.grayscale700 : "#EEEEEE"}
-        borderColor={dark ? "transparent" : "#FFF"}
-        borderWidth={dark ? 0 : 1}
-        animated
-        indeterminateAnimationDuration={2000}
-        animationType="decay"
-        color={
-          progress === 1
-            ? colors.completed
-            : progress >= 0.75
-              ? colors.advanced
-              : progress >= 0.5
-                ? colors.intermediate
-                : progress >= 0.35
-                  ? colors.medium
-                  : colors.weak
-        }
-      />
-      <Text style={styles.title}>
-        {numberOfLessonsCompleted} / {totalNumberOfLessons}
+      <View style={styles.progressContainer}>
+        <Progress.Bar
+          progress={progress}
+          width={SIZES.width - 280}
+          height={6}
+          unfilledColor={dark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.05)"}
+          borderColor="transparent"
+          borderWidth={0}
+          borderRadius={3}
+          animated
+          color={getProgressColor()}
+        />
+      </View>
+      <Text
+        style={[
+          styles.progressText,
+          { color: dark ? COLORS.grayscale400 : COLORS.grayscale700 },
+        ]}
+      >
+        {Math.round(progress * 100)}%
       </Text>
     </View>
   );
@@ -57,16 +63,17 @@ const LessonProgressBar: React.FC<LessonProgressBarProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: SIZES.width - 280,
-    marginVertical: 12,
     flexDirection: "row",
     alignItems: "center",
   },
-  title: {
+  progressContainer: {
+    marginRight: 8,
+  },
+  progressText: {
     fontSize: 12,
     fontFamily: "medium",
-    color: "white",
-    marginHorizontal: 12,
+    color: COLORS.grayscale700,
+    minWidth: 30,
   },
 });
 

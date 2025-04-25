@@ -1183,7 +1183,10 @@ const ExerciseComponent: React.FC<ExerciseProps> = ({
             </TouchableOpacity>
           </View>
         ) : (
-          <TouchableOpacity style={styles.submitButton} onPress={() => setIsChatOpen(true)}>
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={() => setIsChatOpen(true)}
+          >
             <Text style={styles.submitButtonText}>Enregistrer</Text>
           </TouchableOpacity>
         )}

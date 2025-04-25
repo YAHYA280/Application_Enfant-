@@ -4,20 +4,23 @@ import type { RouteProp, NavigationProp } from "@react-navigation/native";
 import React from "react";
 import { moduleQuestions } from "@/data";
 import { StatusBar } from "expo-status-bar";
-import { ScrollView } from "react-native-virtualized-view";
+import { Feather } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import LessonSectionCard from "@/components/LessonSectionCard";
 import { useRoute, useNavigation } from "@react-navigation/native";
+import CourseProgressCircleBar from "@/components/CourseProgressCircleBar";
 import {
   View,
   Text,
-  Image,
   Alert,
+  Animated,
   StyleSheet,
+  Dimensions,
   TouchableOpacity,
 } from "react-native";
 
+import { SIZES, COLORS } from "../constants";
 import { useTheme } from "../theme/ThemeProvider";
-import { SIZES, icons, COLORS } from "../constants";
 
 type RootStackParamList = {
   lessondetailsmore: { module: Module };
@@ -25,14 +28,37 @@ type RootStackParamList = {
     module: Module;
     exercise: Exercise;
   };
+  reviewlesson: {
+    module: Module;
+  };
 };
+
+Dimensions.get("window");
 
 const LessonDetailsMore = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<{ params: { module: Module } }>>();
   const { module } = route.params;
-
   const { colors, dark } = useTheme();
+
+  // Animation values for scroll effects
+  const scrollY = React.useRef(new Animated.Value(0)).current;
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, 100],
+    outputRange: [0, 1],
+    extrapolate: "clamp",
+  });
+
+  const imageScale = scrollY.interpolate({
+    inputRange: [-100, 0, 100],
+    outputRange: [1.2, 1, 0.8],
+    extrapolate: "clamp",
+  });
+
+  // Calculate completion percentage
+  const completionPercentage = Math.round(
+    (module.numberOfLessonsCompleted / module.totalNumberOfLessons) * 100
+  );
 
   const handleExercisePress = (exercise: Exercise) => {
     // Get questions for the specific exercise
@@ -60,147 +86,263 @@ const LessonDetailsMore = () => {
   };
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: colors.background }]}
-      showsVerticalScrollIndicator={false}
-    >
-      <StatusBar hidden />
-      <TouchableOpacity
-        onPress={() => navigation.goBack()}
-        style={styles.headerContainer}
-      >
-        <Image
-          source={icons.back}
-          resizeMode="contain"
-          style={styles.backIcon}
-        />
-      </TouchableOpacity>
-      <Image
-        source={module.image}
-        resizeMode="cover"
-        style={styles.lessonImage}
-      />
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar style={dark ? "light" : "dark"} />
 
-      {/* lesson info */}
-      <View style={styles.lessonInfoContainer}>
-        <View style={styles.titleContainer}>
-          <Text
-            style={[
-              styles.lessonName,
-              {
-                color: dark ? COLORS.white : COLORS.greyscale900,
-              },
-            ]}
+      {/* Animated Header Background */}
+      <Animated.View
+        style={[
+          styles.headerBackground,
+          {
+            opacity: headerOpacity,
+            backgroundColor: dark ? COLORS.dark1 : COLORS.white,
+          },
+        ]}
+      >
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButtonFixed}
+        >
+          <Feather
+            name="arrow-left"
+            size={24}
+            color={dark ? COLORS.white : COLORS.black}
+          />
+        </TouchableOpacity>
+        <Text
+          style={[
+            styles.headerTitle,
+            { color: dark ? COLORS.white : COLORS.black },
+          ]}
+        >
+          {module.name}
+        </Text>
+      </Animated.View>
+
+      <Animated.ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
+      >
+        {/* Hero Section with Image */}
+        <View style={styles.heroContainer}>
+          <Animated.Image
+            source={module.image}
+            style={[styles.lessonImage, { transform: [{ scale: imageScale }] }]}
+            resizeMode="cover"
+          />
+
+          <LinearGradient
+            colors={
+              dark
+                ? ["rgba(0,0,0,0)", "rgba(0,0,0,0.8)", colors.background]
+                : [
+                    "rgba(255,255,255,0)",
+                    "rgba(255,255,255,0.8)",
+                    colors.background,
+                  ]
+            }
+            style={styles.imageOverlay}
+          />
+
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
           >
-            {module.name}
-          </Text>
-        </View>
-        {/* Reviews and rating container */}
-        <View style={styles.ratingContainer}>
-          <TouchableOpacity style={styles.categoryContainer}>
-            <Text style={styles.categoryName}>{module.category}</Text>
+            <View style={styles.backButtonInner}>
+              <Feather name="arrow-left" size={24} color={COLORS.white} />
+            </View>
           </TouchableOpacity>
         </View>
 
-        {/* Description container */}
-        <View style={styles.descriptionContainer}>
-          <Text
+        {/* Content Section */}
+        <View style={styles.contentContainer}>
+          {/* Module Info Card */}
+          <View
             style={[
-              styles.descriptionText,
-              {
-                color: dark ? COLORS.secondaryWhite : COLORS.grayscale700,
-              },
+              styles.moduleInfoCard,
+              { backgroundColor: dark ? COLORS.dark2 : COLORS.white },
             ]}
           >
-            {module.description}
-          </Text>
-        </View>
+            <LinearGradient
+              colors={
+                dark
+                  ? [
+                      "rgba(255,100,64,0.25)",
+                      "rgba(30,30,30,0)",
+                      "rgba(30,30,30,0)",
+                      "rgba(255,100,64,0.25)",
+                    ]
+                  : [
+                      "rgba(255,142,105,0.3)",
+                      "rgba(255,255,255,0)",
+                      "rgba(255,255,255,0)",
+                      "rgba(255,142,105,0.3)",
+                    ]
+              }
+              locations={[0, 0.3, 0.7, 1]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.cardGradientBackground}
+            />
 
-        {/* lesson resume container */}
-        <View style={styles.lessonResumeContainer}>
-          <View style={styles.lessonViewContainer}>
-            <Image
-              source={icons.users}
-              resizeMode="contain"
-              style={styles.lessonViewIcon}
-            />
-            <Text
-              style={[
-                styles.lessonViewTitle,
-                {
-                  color: dark ? COLORS.secondaryWhite : COLORS.greyscale900,
-                },
-              ]}
-            >
-              {module.numberOfLessonsCompleted} / {module.totalNumberOfLessons}{" "}
-              Exercices
-            </Text>
-          </View>
-          <View style={styles.lessonViewContainer}>
-            <Image
-              source={icons.time}
-              resizeMode="contain"
-              style={styles.lessonViewIcon}
-            />
-            <Text
-              style={[
-                styles.lessonViewTitle,
-                {
-                  color: dark ? COLORS.secondaryWhite : COLORS.greyscale900,
-                },
-              ]}
-            >
-              {module.estimatedTime}
-            </Text>
-          </View>
-          <View style={styles.lessonViewContainer}>
-            <Image
-              source={icons.document2}
-              resizeMode="contain"
-              style={styles.lessonViewIcon}
-            />
-            <Text
-              style={[
-                styles.lessonViewTitle,
-                {
-                  color: dark ? COLORS.secondaryWhite : COLORS.greyscale900,
-                },
-              ]}
-            >
-              Documents
-            </Text>
-          </View>
-        </View>
-        <View style={styles.separateLine} />
+            <View style={styles.moduleInfoHeader}>
+              <View style={styles.titleContainer}>
+                <Text
+                  style={[
+                    styles.moduleName,
+                    { color: dark ? COLORS.white : COLORS.greyscale900 },
+                  ]}
+                >
+                  {module.name}
+                </Text>
 
-        {/* Exercises Section */}
-        <View style={styles.exercisesContainer}>
-          <Text
-            style={[
-              styles.exercisesTitle,
-              {
-                color: dark ? COLORS.white : COLORS.greyscale900,
-              },
-            ]}
-          >
-            Exercices
-          </Text>
-          {module.exercises.map((exercise) => (
-            <LessonSectionCard
-              key={exercise.id}
-              num={exercise.num}
-              title={exercise.title}
-              duration={exercise.duration}
-              isCompleted={exercise.isCompleted}
-              progress={exercise.isCompleted ? 1 : 0.5}
-              onPress={() => {
-                handleExercisePress(exercise);
-              }}
-            />
-          ))}
+                <View style={styles.categoryContainer}>
+                  <LinearGradient
+                    colors={["#ff6040", "#ff8e69"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.categoryGradient}
+                  >
+                    <Text style={styles.categoryName}>{module.category}</Text>
+                  </LinearGradient>
+                </View>
+              </View>
+
+              <View style={styles.progressContainer}>
+                <CourseProgressCircleBar
+                  numberOfCourseCompleted={module.numberOfLessonsCompleted}
+                  totalNumberOfCourses={module.totalNumberOfLessons}
+                />
+              </View>
+            </View>
+
+            <Text
+              style={[
+                styles.descriptionText,
+                { color: dark ? COLORS.secondaryWhite : COLORS.grayscale700 },
+              ]}
+            >
+              {module.description}
+            </Text>
+
+            {/* Module stats - Reorganized to show one under another */}
+            <View style={styles.statsContainer}>
+              <View style={styles.statItem}>
+                <View style={styles.statIconContainer}>
+                  <Feather name="book-open" size={18} color={COLORS.primary} />
+                </View>
+                <Text
+                  style={[
+                    styles.statText,
+                    {
+                      color: dark ? COLORS.secondaryWhite : COLORS.greyscale900,
+                    },
+                  ]}
+                >
+                  {module.numberOfLessonsCompleted} /{" "}
+                  {module.totalNumberOfLessons} Exercices
+                </Text>
+              </View>
+
+              <View style={[styles.statItem, styles.statItemMiddle]}>
+                <View style={styles.statIconContainer}>
+                  <Feather name="clock" size={18} color={COLORS.primary} />
+                </View>
+                <Text
+                  style={[
+                    styles.statText,
+                    {
+                      color: dark ? COLORS.secondaryWhite : COLORS.greyscale900,
+                    },
+                  ]}
+                >
+                  {module.estimatedTime}
+                </Text>
+              </View>
+
+              <View style={styles.statItem}>
+                <View style={styles.statIconContainer}>
+                  <Feather name="file-text" size={18} color={COLORS.primary} />
+                </View>
+                <Text
+                  style={[
+                    styles.statText,
+                    {
+                      color: dark ? COLORS.secondaryWhite : COLORS.greyscale900,
+                    },
+                  ]}
+                >
+                  Documents
+                </Text>
+              </View>
+            </View>
+
+            {/* Review Button */}
+            <TouchableOpacity
+              style={styles.reviewButton}
+              onPress={() => navigation.navigate("reviewlesson", { module })}
+            >
+              <LinearGradient
+                colors={["#ff6040", "#ff8e69"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.reviewButtonGradient}
+              >
+                <Feather
+                  name="play-circle"
+                  size={18}
+                  color={COLORS.white}
+                  style={styles.reviewButtonIcon}
+                />
+                <Text style={styles.reviewButtonText}>Voir le cours</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+
+          {/* Exercises Section */}
+          <View style={styles.exercisesSection}>
+            <View style={styles.sectionHeader}>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  { color: dark ? COLORS.white : COLORS.greyscale900 },
+                ]}
+              >
+                Exercices
+              </Text>
+
+              <View style={styles.exerciseCountContainer}>
+                <Text style={styles.exerciseCountText}>
+                  {module.numberOfLessonsCompleted}/
+                  {module.totalNumberOfLessons}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.exercisesList}>
+              {module.exercises.map((exercise) => (
+                <LessonSectionCard
+                  key={exercise.id}
+                  num={exercise.num}
+                  title={exercise.title}
+                  duration={exercise.duration}
+                  isCompleted={exercise.isCompleted}
+                  progress={exercise.isCompleted ? 1 : 0.5}
+                  onPress={() => {
+                    handleExercisePress(exercise);
+                  }}
+                />
+              ))}
+            </View>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </Animated.ScrollView>
+    </View>
   );
 };
 
@@ -209,93 +351,215 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  lessonImage: {
-    width: SIZES.width,
-    height: SIZES.width * 0.625,
+  scrollView: {
+    flex: 1,
   },
-  headerContainer: {
+  headerBackground: {
     position: "absolute",
-    top: 16,
-    left: 16,
-    zIndex: 999,
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    zIndex: 100,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 5,
   },
-  backIcon: {
-    width: 24,
-    height: 24,
-    tintColor: COLORS.white,
+  headerTitle: {
+    fontSize: 18,
+    fontFamily: "bold",
+    marginLeft: 32,
+  },
+  backButtonFixed: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  heroContainer: {
+    position: "relative",
+    height: SIZES.width * 0.75,
+    width: "100%",
+  },
+  lessonImage: {
+    width: "100%",
+    height: "100%",
+  },
+  imageOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 100,
+  },
+  backButton: {
+    position: "absolute",
+    top: 60, // Moved lower (originally 16)
+    left: 30,
+    zIndex: 10,
+  },
+  backButtonInner: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+  },
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+    marginTop: -20,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    zIndex: 10,
+  },
+  moduleInfoCard: {
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
+    overflow: "hidden",
+    position: "relative",
+  },
+  cardGradientBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  moduleInfoHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 20,
   },
   titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flex: 1,
+    marginRight: 16,
   },
-  lessonName: {
+  moduleName: {
     fontSize: 26,
     fontFamily: "bold",
-    color: COLORS.black,
-  },
-  lessonInfoContainer: {
-    padding: 16,
-  },
-  ratingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 12,
+    marginBottom: 12,
   },
   categoryContainer: {
-    paddingHorizontal: 6,
-    paddingVertical: 4,
-    borderRadius: 6,
-    backgroundColor: COLORS.transparentTertiary,
+    alignSelf: "flex-start",
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  categoryGradient: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 12,
   },
   categoryName: {
-    fontSize: 12,
-    fontFamily: "medium",
-    color: COLORS.primary,
+    fontSize: 13,
+    fontFamily: "semiBold",
+    color: COLORS.white,
   },
-  descriptionContainer: {
-    marginVertical: 16,
+  progressContainer: {
+    alignItems: "center",
   },
+
   descriptionText: {
     fontSize: 16,
     fontFamily: "regular",
     lineHeight: 24,
-    color: COLORS.grayscale700,
+    marginBottom: 24,
   },
-  lessonResumeContainer: {
+  statsContainer: {
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(0,0,0,0.05)",
+    marginBottom: 20,
+  },
+  statItem: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 8,
+    paddingVertical: 8,
   },
-  lessonViewContainer: {
-    flexDirection: "row",
+  statItemMiddle: {
+    paddingVertical: 14,
+  },
+  statIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(255, 142, 105, 0.15)",
+    justifyContent: "center",
     alignItems: "center",
+    marginRight: 12,
   },
-  lessonViewIcon: {
-    width: 16,
-    height: 16,
-    tintColor: COLORS.primary,
-  },
-  lessonViewTitle: {
+  statText: {
     fontSize: 16,
-    fontFamily: "regular",
-    color: COLORS.black,
-    marginLeft: 6,
+    fontFamily: "medium",
   },
-  separateLine: {
-    width: SIZES.width,
-    height: 0.4,
-    backgroundColor: COLORS.gray,
-    marginTop: 16,
+  reviewButton: {
+    borderRadius: 15,
+    overflow: "hidden",
+    marginTop: 5,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
-  exercisesContainer: {
-    marginTop: 16,
+  reviewButtonGradient: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 14,
   },
-  exercisesTitle: {
-    fontSize: 20,
+  reviewButtonIcon: {
+    marginRight: 8,
+  },
+  reviewButtonText: {
+    color: COLORS.white,
+    fontSize: 16,
+    fontFamily: "semiBold",
+  },
+  exercisesSection: {
+    flex: 1,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 22,
     fontFamily: "bold",
-    marginBottom: 12,
+  },
+  exerciseCountContainer: {
+    backgroundColor: "rgba(255, 142, 105, 0.15)",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+  },
+  exerciseCountText: {
+    color: COLORS.primary,
+    fontFamily: "semiBold",
+    fontSize: 14,
+  },
+  exercisesList: {
+    flex: 1,
+    gap: 12,
   },
 });
 

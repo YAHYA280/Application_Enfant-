@@ -49,12 +49,7 @@ const LessonProgressBar: React.FC<LessonProgressBarProps> = ({
           color={getProgressColor()}
         />
       </View>
-      <Text
-        style={[
-          styles.progressText,
-          { color: dark ? COLORS.grayscale400 : COLORS.grayscale700 },
-        ]}
-      >
+      <Text style={[styles.progressText, { color: COLORS.white }]}>
         {Math.round(progress * 100)}%
       </Text>
     </View>

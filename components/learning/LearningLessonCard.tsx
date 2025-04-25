@@ -24,6 +24,8 @@ interface LessonCardProps {
   category: string;
   numberOfLessonsCompleted?: number;
   totalNumberOfLessons?: number;
+  estimatedTime?: string;
+  difficulty?: "easy" | "medium" | "hard";
   onPress: () => void;
 }
 
@@ -36,15 +38,19 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
   category,
   numberOfLessonsCompleted = 0,
   totalNumberOfLessons = 0,
+  estimatedTime = "15 min",
+  difficulty = "medium",
   onPress,
 }) => {
   const { dark } = useTheme();
+
+  // Calcul du pourcentage de progression
   const progressPercentage =
     totalNumberOfLessons > 0
       ? Math.round((numberOfLessonsCompleted / totalNumberOfLessons) * 100)
       : 0;
 
-  // Animation for the card
+  // Animation pour effet de pression sur la carte
   const animatedScale = new Animated.Value(1);
 
   const onPressIn = () => {
@@ -69,86 +75,136 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
     transform: [{ scale: animatedScale }],
   };
 
+  // Couleurs de difficulté
+  const difficultyColors = {
+    easy: "#4CAF50",
+    medium: "#FF9800",
+    hard: "#F44336",
+  };
+
+  const difficultyLabels = {
+    easy: "Facile",
+    medium: "Moyen",
+    hard: "Difficile",
+  };
+
   return (
     <Animated.View style={[styles.cardWrapper, animatedStyle]}>
       <TouchableOpacity
         onPress={onPress}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
-        activeOpacity={0.98}
+        activeOpacity={0.9}
         style={[
           styles.container,
-          {
-            backgroundColor: dark ? COLORS.dark2 : COLORS.white,
-          },
+          { backgroundColor: dark ? COLORS.dark2 : COLORS.white },
         ]}
       >
-        {/* Premium border effect with orange gradient */}
+        {/* Effet de bordure premium avec gradient orange */}
         <LinearGradient
-          colors={[COLORS.primary, "#ff8e50", "#ff6040"]}
+          colors={[COLORS.primary, "#FF7538"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.gradientBorder}
         />
 
         <View style={styles.cardContent}>
-          {/* Left side - Image */}
+          {/* Partie gauche - Image */}
           <View style={styles.imageContainer}>
             <Image source={image} style={styles.lessonImage} />
 
-            {/* Category badge */}
+            {/* Badge catégorie */}
             <View style={styles.categoryBadge}>
               <Feather name="book-open" size={12} color={COLORS.white} />
               <Text style={styles.categoryName}>{category}</Text>
             </View>
+
+            {/* Badge temps estimé */}
+            <View style={styles.timeEstimateBadge}>
+              <Feather name="clock" size={10} color={COLORS.white} />
+              <Text style={styles.timeEstimateText}>{estimatedTime}</Text>
+            </View>
           </View>
 
-          {/* Right side - Content */}
+          {/* Partie droite - Contenu */}
           <View style={styles.contentContainer}>
-            {/* Title */}
-            <Text
-              style={[
-                styles.name,
-                { color: dark ? COLORS.white : COLORS.greyscale900 },
-              ]}
-              numberOfLines={2}
-            >
-              {name}
-            </Text>
+            {/* En-tête avec titre et badge de difficulté */}
+            <View style={styles.headerContainer}>
+              <Text
+                style={[
+                  styles.name,
+                  { color: dark ? COLORS.white : COLORS.greyscale900 },
+                ]}
+                numberOfLines={2}
+              >
+                {name}
+              </Text>
 
-            {/* Progress section */}
+              <View
+                style={[
+                  styles.difficultyBadge,
+                  { backgroundColor: difficultyColors[difficulty] },
+                ]}
+              >
+                <Text style={styles.difficultyText}>
+                  {difficultyLabels[difficulty]}
+                </Text>
+              </View>
+            </View>
+
+            {/* Section de progression */}
             <ConditionalComponent isValid={totalNumberOfLessons > 0}>
               <View style={styles.progressSection}>
                 <View style={styles.progressHeader}>
-                  <Text style={styles.lessonsText}>
+                  <Text
+                    style={[
+                      styles.lessonsText,
+                      {
+                        color: COLORS.white,
+                      },
+                    ]}
+                  >
                     {numberOfLessonsCompleted}/{totalNumberOfLessons} leçons
                   </Text>
-                  <View style={styles.percentageBadge}>
-                    <Text style={styles.percentageText}>
-                      {progressPercentage}%
-                    </Text>
-                  </View>
                 </View>
 
                 <LessonProgressBar
                   numberOfLessonsCompleted={numberOfLessonsCompleted}
                   totalNumberOfLessons={totalNumberOfLessons}
                 />
+
+                {/* Badge statut */}
+                <View style={styles.statusContainer}>
+                  {progressPercentage === 0 ? (
+                    <View style={styles.statusBadgeNew}>
+                      <Text style={styles.statusTextNew}>Nouveau</Text>
+                    </View>
+                  ) : progressPercentage === 100 ? (
+                    <View style={styles.statusBadgeComplete}>
+                      <Text style={styles.statusTextComplete}>Terminé</Text>
+                    </View>
+                  ) : (
+                    <View style={styles.statusBadgeInProgress}>
+                      <Text style={styles.statusTextInProgress}>En cours</Text>
+                    </View>
+                  )}
+
+                  {/* Icône bouton continuer */}
+                  <TouchableOpacity style={styles.continueIconButton}>
+                    <LinearGradient
+                      colors={["#ff604", "#ff8e69"]}
+                      style={styles.continueIconGradient}
+                    >
+                      <Feather
+                        name="chevron-right"
+                        size={16}
+                        color={COLORS.white}
+                      />
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </View>
               </View>
             </ConditionalComponent>
-
-            {/* Continue Button with Gradient */}
-            {/* <TouchableOpacity style={styles.continueButtonWrapper}>
-              <LinearGradient
-                colors={["#ffb300", "#e53935"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.continueButton}
-              >
-                <Text style={styles.continueButtonText}>Continuer</Text>
-                <Feather name="chevron-right" size={16} color={COLORS.white} />
-              </LinearGradient>
-            </TouchableOpacity> */}
           </View>
         </View>
       </TouchableOpacity>
@@ -159,7 +215,7 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
 const styles = StyleSheet.create({
   cardWrapper: {
     width: CARD_WIDTH,
-    marginVertical: 10, // Reduced vertical margin
+    marginVertical: 10,
     alignSelf: "center",
     borderRadius: 12,
   },
@@ -188,11 +244,11 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     flexDirection: "row",
-    height: 140,
+    height: 140, // Maintien de la hauteur spécifiée
   },
   imageContainer: {
     position: "relative",
-    width: "35%",
+    width: "45%",
   },
   lessonImage: {
     width: "100%",
@@ -216,20 +272,54 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontFamily: "semiBold",
   },
+  timeEstimateBadge: {
+    position: "absolute",
+    bottom: 8,
+    left: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.7)",
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 8,
+    gap: 3,
+  },
+  timeEstimateText: {
+    color: COLORS.white,
+    fontSize: 9,
+    fontFamily: "medium",
+  },
   contentContainer: {
     flex: 1,
     padding: 12,
     justifyContent: "space-between",
   },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
   name: {
-    fontSize: 17,
+    flex: 1,
+    fontSize: 18,
     fontFamily: "bold",
-    fontWeight: "700",
     marginBottom: 8,
     lineHeight: 20,
+    marginRight: 8,
+  },
+  difficultyBadge: {
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    alignSelf: "flex-start",
+  },
+  difficultyText: {
+    color: COLORS.white,
+    fontSize: 9,
+    fontFamily: "bold",
   },
   progressSection: {
-    marginBottom: 10,
+    marginTop: 4,
   },
   progressHeader: {
     flexDirection: "row",
@@ -240,37 +330,58 @@ const styles = StyleSheet.create({
   lessonsText: {
     fontSize: 12,
     fontFamily: "medium",
-    color: COLORS.white,
   },
-  percentageBadge: {
-    backgroundColor: COLORS.primary,
+
+  statusContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 8,
+  },
+  statusBadgeNew: {
+    backgroundColor: "#2196F3",
+    borderRadius: 8,
     paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
+    paddingVertical: 3,
   },
-  percentageText: {
+  statusTextNew: {
     color: COLORS.white,
     fontSize: 10,
-    fontFamily: "bold",
+    fontFamily: "medium",
   },
-  //   continueButtonWrapper: {
-  //     overflow: "hidden",
-  //     borderRadius: 8,
-  //   },
-  //   continueButton: {
-  //     flexDirection: "row",
-  //     alignItems: "center",
-  //     justifyContent: "center",
-  //     paddingVertical: 6,
-  //     paddingHorizontal: 12,
-  //     borderRadius: 8,
-  //   },
-  //   continueButtonText: {
-  //     color: COLORS.white,
-  //     fontSize: 12,
-  //     fontFamily: "semiBold",
-  //     marginRight: 4,
-  //   },
+  statusBadgeInProgress: {
+    backgroundColor: "#FF9800",
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  statusTextInProgress: {
+    color: COLORS.white,
+    fontSize: 10,
+    fontFamily: "medium",
+  },
+  statusBadgeComplete: {
+    backgroundColor: "#4CAF50",
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  statusTextComplete: {
+    color: COLORS.white,
+    fontSize: 10,
+    fontFamily: "medium",
+  },
+  continueIconButton: {
+    borderRadius: 15,
+    overflow: "hidden",
+  },
+  continueIconGradient: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
 export default LearningLessonCard;

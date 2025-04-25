@@ -3,6 +3,7 @@ import type { Module, Question, Exercise } from "@/data";
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
+import { useNavigation } from "@react-navigation/native";
 
 import SummaryModal from "./exercise/SummaryModal";
 import { typeGuards } from "./exercise/typeGuards";
@@ -35,6 +36,7 @@ const EnhancedExerciseComponent: React.FC<EnhancedExerciseComponentProps> = ({
   answers,
   setAnswers,
 }) => {
+  const navigation = useNavigation();
   const { dark } = useTheme();
   const currentQuestion = questions[currentQuestionIndex];
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
@@ -59,6 +61,10 @@ const EnhancedExerciseComponent: React.FC<EnhancedExerciseComponentProps> = ({
       // For short answer and speaking, we can't automatically determine correctness
       setIsAnswerCorrect(null);
     }
+  };
+
+  const handleRevise = () => {
+    navigation.navigate("ReviewLesson", { module });
   };
 
   // Render the appropriate question type
@@ -125,10 +131,11 @@ const EnhancedExerciseComponent: React.FC<EnhancedExerciseComponentProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Action Buttons */}
+      {/* Action Buttons - updated to include Reviser button */}
       <ActionButtons
         onOpenAiModal={() => setShowAiModal(true)}
         onOpenSummaryModal={() => setShowSummaryModal(true)}
+        onRevise={handleRevise}
       />
 
       {/* Question Content */}

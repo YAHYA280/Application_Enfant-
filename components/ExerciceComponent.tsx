@@ -1,4 +1,5 @@
 import type { Module, Question, Exercise } from "@/data";
+import type { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
@@ -14,6 +15,11 @@ import TrueOrFalseQuestion from "./exercise/TrueOrFalseQuestion";
 import FillInBlankQuestion from "./exercise/FillInBlankQuestion";
 import ShortAnswerQuestion from "./exercise/ShortAnswerQuestion";
 import MultipleChoiceQuestion from "./exercise/MultipleChoiceQuestion";
+
+// Define explicit type for navigation routes
+type AppParamList = ParamListBase & {
+  reviewlesson: { module: Module };
+};
 
 interface EnhancedExerciseComponentProps {
   exercice: Exercise;
@@ -36,7 +42,8 @@ const EnhancedExerciseComponent: React.FC<EnhancedExerciseComponentProps> = ({
   answers,
   setAnswers,
 }) => {
-  const navigation = useNavigation();
+  // Use explicit typing for the navigation object
+  const navigation = useNavigation<NavigationProp<AppParamList>>();
   const { dark } = useTheme();
   const currentQuestion = questions[currentQuestionIndex];
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
@@ -64,7 +71,8 @@ const EnhancedExerciseComponent: React.FC<EnhancedExerciseComponentProps> = ({
   };
 
   const handleRevise = () => {
-    navigation.navigate("ReviewLesson", { module });
+    // Now with proper typing, this should work
+    navigation.navigate("reviewlesson", { module });
   };
 
   // Render the appropriate question type

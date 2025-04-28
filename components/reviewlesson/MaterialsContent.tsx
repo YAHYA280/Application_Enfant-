@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,8 @@ type MaterialItem = {
   icon: any;
   description: string;
 };
+
+type CategoryType = "Tous" | "PDF" | "Images" | "Documents" | "Exercices";
 
 interface MaterialsContentProps {
   dark: boolean;
@@ -69,7 +71,7 @@ const lessonMaterials = [
   },
   {
     id: "6",
-    type: "pdf",
+    type: "exercice",
     title: "Ressources additionnelles",
     size: "1.8 MB",
     icon: icons.pdf,
@@ -78,6 +80,21 @@ const lessonMaterials = [
 ];
 
 const MaterialsContent: React.FC<MaterialsContentProps> = ({ dark }) => {
+  // Add state to track the selected category
+  const [selectedCategory, setSelectedCategory] =
+    useState<CategoryType>("Tous");
+
+  // Filter materials based on selected category
+  const filteredMaterials = lessonMaterials.filter((item) => {
+    if (selectedCategory === "Tous") return true;
+    if (selectedCategory === "PDF" && item.type === "pdf") return true;
+    if (selectedCategory === "Images" && item.type === "image") return true;
+    if (selectedCategory === "Documents" && item.type === "doc") return true;
+    if (selectedCategory === "Exercices" && item.type === "exercice")
+      return true;
+    return false;
+  });
+
   const renderMaterialItem = ({ item }: { item: MaterialItem }) => (
     <TouchableOpacity
       style={[
@@ -139,6 +156,15 @@ const MaterialsContent: React.FC<MaterialsContentProps> = ({ dark }) => {
     </TouchableOpacity>
   );
 
+  // Define all available categories
+  const categories: CategoryType[] = [
+    "Tous",
+    "PDF",
+    "Images",
+    "Documents",
+    "Exercices",
+  ];
+
   return (
     <View style={styles.materialsTabContent}>
       <View style={styles.materialsHeaderContainer}>
@@ -166,64 +192,82 @@ const MaterialsContent: React.FC<MaterialsContentProps> = ({ dark }) => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.materialsCategoriesContent}
         >
-          {["Tous", "PDF", "Images", "Documents", "Exercices"].map(
-            (category, index) => (
-              <TouchableOpacity
-                key={index}
+          {categories.map((category, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.categoryChip,
+                selectedCategory === category && styles.activeCategoryChip,
+                {
+                  backgroundColor:
+                    dark && selectedCategory !== category
+                      ? COLORS.dark2
+                      : selectedCategory !== category
+                        ? "#F5F5F5"
+                        : undefined,
+                },
+              ]}
+              onPress={() => setSelectedCategory(category)}
+            >
+              <Text
                 style={[
-                  styles.categoryChip,
-                  index === 0 && styles.activeCategoryChip,
+                  styles.categoryChipText,
+                  selectedCategory === category &&
+                    styles.activeCategoryChipText,
                   {
-                    backgroundColor:
-                      dark && index !== 0
-                        ? COLORS.dark2
-                        : index !== 0
-                          ? "#F5F5F5"
+                    color:
+                      dark && selectedCategory !== category
+                        ? COLORS.greyscale500
+                        : selectedCategory !== category
+                          ? COLORS.greyScale800
                           : undefined,
                   },
                 ]}
               >
-                <Text
-                  style={[
-                    styles.categoryChipText,
-                    index === 0 && styles.activeCategoryChipText,
-                    {
-                      color:
-                        dark && index !== 0
-                          ? COLORS.greyscale500
-                          : index !== 0
-                            ? COLORS.greyScale800
-                            : undefined,
-                    },
-                  ]}
-                >
-                  {category}
-                </Text>
-              </TouchableOpacity>
-            )
-          )}
+                {category}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </ScrollView>
       </View>
 
-      <FlatList
-        data={lessonMaterials}
-        renderItem={renderMaterialItem}
-        keyExtractor={(item) => item.id}
-        scrollEnabled={false}
-        ItemSeparatorComponent={() => (
-          <View
-            style={[
-              styles.separator,
-              {
-                backgroundColor: dark
-                  ? "rgba(255,255,255,0.05)"
-                  : "rgba(0,0,0,0.05)",
-              },
-            ]}
+      {filteredMaterials.length > 0 ? (
+        <FlatList
+          data={filteredMaterials}
+          renderItem={renderMaterialItem}
+          keyExtractor={(item) => item.id}
+          scrollEnabled={false}
+          ItemSeparatorComponent={() => (
+            <View
+              style={[
+                styles.separator,
+                {
+                  backgroundColor: dark
+                    ? "rgba(255,255,255,0.05)"
+                    : "rgba(0,0,0,0.05)",
+                },
+              ]}
+            />
+          )}
+          contentContainerStyle={styles.materialsListContent}
+        />
+      ) : (
+        <View style={styles.emptyStateContainer}>
+          <Feather
+            name="inbox"
+            size={50}
+            color={dark ? COLORS.greyscale500 : COLORS.greyscale400}
           />
-        )}
-        contentContainerStyle={styles.materialsListContent}
-      />
+          <Text
+            style={[
+              styles.emptyStateText,
+              { color: dark ? COLORS.greyscale500 : COLORS.greyScale800 },
+            ]}
+          >
+            Aucun document disponible dans cette catégorie
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -325,6 +369,17 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     marginVertical: 8,
+  },
+  emptyStateContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 40,
+  },
+  emptyStateText: {
+    marginTop: 16,
+    textAlign: "center",
+    fontSize: 16,
+    fontFamily: "medium",
   },
 });
 

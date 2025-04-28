@@ -61,7 +61,6 @@ const LessonDetailsMore = () => {
   );
 
   const handleExercisePress = (exercise: Exercise) => {
-    // Get questions for the specific exercise
     const moduleQuestionsForSubject =
       moduleQuestions[module.name as keyof typeof moduleQuestions];
 

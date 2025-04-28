@@ -1,24 +1,29 @@
 import type { Question } from "@/data";
-import type { MessageAssistantAi } from "@/constants/LearningChat";
+import type { Message } from "@/contexts/types/chat";
 
-import React, { useRef, useState } from "react";
-import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import React, { useRef, useState, useEffect } from "react";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   View,
   Text,
   Modal,
   Platform,
-  TextInput,
   StyleSheet,
-  ScrollView,
+  FlatList,
+  Keyboard,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  SafeAreaView,
 } from "react-native";
 
 import type { ShortAnswerQuestion as ShortAnswerQuestionType } from "./typeGuards";
 
-import { COLORS } from "../../constants";
+import { COLORS } from "@/constants";
 import { typeGuards } from "./typeGuards";
-import LearningMessageBubble from "../LearningMessageBubble";
+import ChatInput from "../chat/ChatInput";
+import MessageBubble from "../MessageBubble";
+import ChatBackground from "../chat/ChatBackground";
 
 interface AiAssistantModalProps {
   visible: boolean;
@@ -34,63 +39,199 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
   dark,
 }) => {
   const [isQuestionVisible, setIsQuestionVisible] = useState(true);
-  const [chatMessages, setChatMessages] = useState<MessageAssistantAi[]>([
-    {
-      id: "welcome",
-      text: "Bonjour ! Je suis votre assistant IA. Comment puis-je vous aider avec cette question ?",
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputText, setInputText] = useState("");
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const flatListRef = useRef<FlatList | null>(null);
+
+  // Recording state
+  const [isRecording, setIsRecording] = useState(false);
+
+  // Preview states
+  const [imagePreviewUri, setImagePreviewUri] = useState<string | null>(null);
+  const [documentPreview, setDocumentPreview] = useState<{
+    name: string;
+    uri: string;
+    type: "text" | "image" | "audio" | "pdf";
+  } | null>(null);
+  const [audioPreviewUri, setAudioPreviewUri] = useState<string | null>(null);
+  const [audioLength, setAudioLength] = useState<number>(0);
+
+  // Set initial welcome message
+  useEffect(() => {
+    if (isFirstLoad && messages.length === 0) {
+      setMessages([
+        {
+          id: generateUniqueId(),
+          text: "Bonjour ! Je suis votre assistant IA. Comment puis-je vous aider avec cette question ?",
+          sender: "ai",
+          timestamp: Date.now(),
+        },
+      ]);
+      setIsFirstLoad(false);
+    }
+  }, [isFirstLoad, messages]);
+
+  // Effect to scroll to the bottom when new messages arrive
+  useEffect(() => {
+    if (messages.length > 0 && flatListRef.current) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 200);
+    }
+  }, [messages]);
+
+  // Unique ID generator for messages
+  const generateUniqueId = () => {
+    const timestamp = Date.now().toString(36);
+    const random = Math.random().toString(36).substring(2, 8);
+    return `${timestamp}-${random}`;
+  };
+
+  // Handle like/dislike toggle
+  const handleToggleLike = (messageId: string) => {
+    setMessages((prev) =>
+      prev.map((msg) => {
+        if (msg.id === messageId) {
+          // Toggle between like, dislike and none
+          const newLiked =
+            msg.liked === "like"
+              ? undefined
+              : msg.liked === "dislike"
+                ? "like"
+                : "like";
+          return { ...msg, liked: newLiked };
+        }
+        return msg;
+      })
+    );
+  };
+
+  // Handle message regeneration
+  const handleRegenerate = () => {
+    // Create a new AI response
+    const newAiMessage: Message = {
+      id: generateUniqueId(),
+      text: "Voici une réponse régénérée à votre question. J'espère que celle-ci est plus claire !",
       sender: "ai",
       timestamp: Date.now(),
-      mediaType: "text",
-      status: "sent",
-      liked: "none",
-    },
-  ]);
-  const [currentMessage, setCurrentMessage] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
-  const scrollViewRef = useRef<ScrollView>(null);
-
-  // Send chat message
-  const sendChatMessage = () => {
-    if (currentMessage.trim() === "") return;
-
-    // Create user message
-    const userMessage: MessageAssistantAi = {
-      id: Date.now().toString(),
-      text: currentMessage,
-      sender: "user",
-      timestamp: Date.now(),
-      mediaType: "text",
-      status: "sent",
-      liked: "none",
     };
 
-    // Add user message to chat
-    setChatMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => [...prev, newAiMessage]);
+  };
 
-    // Clear input
-    setCurrentMessage("");
+  // Send message handler
+  const handleSendMessage = () => {
+    Keyboard.dismiss();
 
-    // Auto-response from AI (simulated)
+    if (
+      inputText.trim() === "" &&
+      !imagePreviewUri &&
+      !documentPreview &&
+      !audioPreviewUri
+    )
+      return;
+
+    // Create user message
+    const childMessage: Message = {
+      id: generateUniqueId(),
+      text: inputText,
+      sender: "child",
+      timestamp: Date.now(),
+      ...(imagePreviewUri && {
+        mediaType: "image",
+        mediaUrl: imagePreviewUri,
+      }),
+      ...(documentPreview && {
+        mediaType: documentPreview.type,
+        mediaUrl: documentPreview.uri,
+        text: documentPreview.name,
+      }),
+      ...(audioPreviewUri && {
+        mediaType: "audio",
+        mediaUrl: audioPreviewUri,
+        text: `Audio (${audioLength} sec)`,
+      }),
+    };
+
+    // Create AI response
+    const aiMessage: Message = {
+      id: generateUniqueId(),
+      text: generateAiResponse(currentQuestion, inputText),
+      sender: "ai",
+      timestamp: Date.now(),
+    };
+
+    // Add messages to chat
+    setMessages((prev) => [...prev, childMessage, aiMessage]);
+
+    // Reset all inputs and previews
+    setInputText("");
+    setImagePreviewUri(null);
+    setDocumentPreview(null);
+    setAudioPreviewUri(null);
+    setAudioLength(0);
+  };
+
+  // Mock document picker function
+  const pickDocument = () => {
+    console.log("Document picker would be implemented here");
+  };
+
+  // Mock image picker function
+  const pickImage = () => {
+    console.log("Image picker would be implemented here");
+  };
+
+  // Mock start audio recording
+  const startRecording = () => {
+    setIsRecording(true);
+    console.log("Audio recording would start here");
+  };
+
+  // Mock stop audio recording
+  const stopRecording = () => {
+    setIsRecording(false);
+    console.log("Audio recording would stop here");
+
+    // Simulate recording result
     setTimeout(() => {
-      const aiResponse: MessageAssistantAi = {
-        id: (Date.now() + 1).toString(),
-        text: generateAiResponse(currentQuestion, currentMessage),
-        sender: "ai",
-        timestamp: Date.now() + 1,
-        mediaType: "text",
-        status: "sent",
-        liked: "none",
+      // Add a mock voice message
+      const voiceMessage: Message = {
+        id: generateUniqueId(),
+        text: "[Message vocal]",
+        sender: "child",
+        timestamp: Date.now(),
+        mediaType: "audio",
+        mediaUrl: "mock-audio-url",
       };
 
-      setChatMessages((prev) => [...prev, aiResponse]);
+      // Add AI response
+      const aiResponse: Message = {
+        id: generateUniqueId(),
+        text: "J'ai bien reçu votre message vocal. Comment puis-je vous aider davantage?",
+        sender: "ai",
+        timestamp: Date.now(),
+      };
 
-      // Scroll to bottom after new message
-      if (scrollViewRef.current) {
-        setTimeout(() => {
-          scrollViewRef.current?.scrollToEnd({ animated: true });
-        }, 100);
-      }
-    }, 500);
+      setMessages((prev) => [...prev, voiceMessage, aiResponse]);
+    }, 1000);
+  };
+
+  // Mock remove image preview
+  const removeImagePreview = () => {
+    setImagePreviewUri(null);
+  };
+
+  // Mock remove document preview
+  const removeDocumentPreview = () => {
+    setDocumentPreview(null);
+  };
+
+  // Mock remove audio preview
+  const removeAudioPreview = () => {
+    setAudioPreviewUri(null);
+    setAudioLength(0);
   };
 
   // Generate an AI response based on question type and user message
@@ -147,216 +288,184 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
       transparent={false}
       onRequestClose={onClose}
     >
-      <View
-        style={[
-          styles.chatContainer,
-          { backgroundColor: dark ? COLORS.dark1 : COLORS.white },
-        ]}
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: dark ? COLORS.dark1 : COLORS.white }}
       >
-        {/* Chat Header */}
-        <View
-          style={[
-            styles.chatHeader,
-            { backgroundColor: dark ? COLORS.dark1 : COLORS.white },
-          ]}
-        >
-          <View style={styles.chatHeaderTop}>
-            <View style={styles.chatHeaderTitle}>
-              <MaterialCommunityIcons
-                name="robot"
-                size={24}
-                color={COLORS.primary}
-              />
-              <Text
-                style={[
-                  styles.chatHeaderText,
-                  { color: dark ? COLORS.white : COLORS.greyscale900 },
-                ]}
-              >
-                Assistant IA
-              </Text>
+        <View style={{ flex: 1 }}>
+          {/* Modal Header */}
+          <View
+            style={[
+              styles.chatHeader,
+              { backgroundColor: dark ? COLORS.dark1 : COLORS.white },
+              { borderBottomColor: dark ? COLORS.dark2 : COLORS.greyscale300 },
+            ]}
+          >
+            <View style={styles.chatHeaderContent}>
+              <View style={styles.chatHeaderTitle}>
+                <MaterialCommunityIcons
+                  name="robot"
+                  size={24}
+                  color={COLORS.primary}
+                />
+                <Text
+                  style={[
+                    styles.headerTitle,
+                    { color: dark ? COLORS.white : COLORS.greyscale900 },
+                  ]}
+                >
+                  Assistant IA
+                </Text>
+              </View>
+
+              <View style={styles.headerActions}>
+                <TouchableOpacity
+                  style={[
+                    styles.headerActionButton,
+                    {
+                      backgroundColor: isQuestionVisible
+                        ? COLORS.primary
+                        : dark
+                          ? COLORS.dark2
+                          : "rgba(0,0,0,0.05)",
+                    },
+                  ]}
+                  onPress={() => setIsQuestionVisible(!isQuestionVisible)}
+                >
+                  <Text
+                    style={[
+                      styles.headerActionText,
+                      {
+                        color: isQuestionVisible
+                          ? "#FFFFFF"
+                          : dark
+                            ? COLORS.white
+                            : COLORS.greyscale900,
+                      },
+                    ]}
+                  >
+                    {isQuestionVisible
+                      ? "Masquer la question"
+                      : "Voir la question"}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                  <Feather
+                    name="x"
+                    size={24}
+                    color={dark ? COLORS.white : COLORS.greyscale900}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
-            <View style={styles.chatHeaderActions}>
-              <TouchableOpacity
+            {/* Question Display */}
+            {isQuestionVisible && (
+              <View
                 style={[
-                  styles.headerActionButton,
-                  {
-                    backgroundColor: isQuestionVisible
-                      ? COLORS.primary
-                      : dark
-                        ? COLORS.dark2
-                        : "rgba(0,0,0,0.05)",
-                  },
+                  styles.questionContainer,
+                  { backgroundColor: dark ? COLORS.dark2 : "rgba(0,0,0,0.05)" },
                 ]}
-                onPress={() => setIsQuestionVisible(!isQuestionVisible)}
               >
                 <Text
                   style={[
-                    styles.headerActionText,
-                    {
-                      color: isQuestionVisible
-                        ? "#FFFFFF"
-                        : dark
-                          ? COLORS.white
-                          : COLORS.greyscale900,
-                    },
+                    styles.questionText,
+                    { color: dark ? COLORS.white : COLORS.greyscale900 },
                   ]}
                 >
-                  {isQuestionVisible
-                    ? "Masquer la question"
-                    : "Voir la question"}
+                  {currentQuestion.text}
                 </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <Feather
-                  name="x"
-                  size={24}
-                  color={dark ? COLORS.white : COLORS.greyscale900}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Question Display */}
-          {isQuestionVisible && (
-            <View
-              style={[
-                styles.questionDisplayContainer,
-                { backgroundColor: dark ? COLORS.dark2 : "rgba(0,0,0,0.05)" },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.questionDisplayText,
-                  { color: dark ? COLORS.white : COLORS.greyscale900 },
-                ]}
-              >
-                {currentQuestion.text}
-              </Text>
-            </View>
-          )}
-        </View>
-
-        {/* Chat Background with Messages */}
-        <View
-          style={[
-            styles.chatBackground,
-            {
-              backgroundColor: dark
-                ? "rgba(30,30,35,0.8)"
-                : "rgba(245,245,245,0.9)",
-            },
-          ]}
-        >
-          <ScrollView
-            ref={scrollViewRef}
-            style={styles.messagesContainer}
-            contentContainerStyle={styles.messagesContent}
-            showsVerticalScrollIndicator={false}
-          >
-            {chatMessages.map((message) => (
-              <LearningMessageBubble
-                key={message.id}
-                message={message}
-                onToggleLike={(id, action) => {
-                  setChatMessages(
-                    chatMessages.map((msg) =>
-                      msg.id === id
-                        ? {
-                            ...msg,
-                            liked: action === "like" ? "like" : "dislike",
-                          }
-                        : msg
-                    )
-                  );
-                }}
-              />
-            ))}
-          </ScrollView>
-        </View>
-
-        {/* Chat Input */}
-        <View
-          style={[
-            styles.chatInputContainer,
-            { backgroundColor: dark ? COLORS.dark2 : "#F0F0F0" },
-          ]}
-        >
-          <View style={styles.chatInputWrapper}>
-            <TextInput
-              style={[
-                styles.chatInput,
-                {
-                  backgroundColor: dark ? COLORS.dark3 : "#FFFFFF",
-                  color: dark ? COLORS.white : COLORS.greyscale900,
-                },
-              ]}
-              placeholder="Posez votre question..."
-              placeholderTextColor={
-                dark ? COLORS.greyscale500 : COLORS.greyscale400
-              }
-              value={currentMessage}
-              onChangeText={setCurrentMessage}
-              multiline
-            />
-
-            {currentMessage.trim() !== "" ? (
-              <TouchableOpacity
-                style={styles.sendButton}
-                onPress={sendChatMessage}
-              >
-                <Ionicons name="send" size={20} color="#FFFFFF" />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={[
-                  styles.micButton,
-                  isRecording ? { backgroundColor: "#F44336" } : {},
-                ]}
-                onPress={() => setIsRecording(!isRecording)}
-              >
-                <Ionicons
-                  name={isRecording ? "stop" : "mic"}
-                  size={20}
-                  color="#FFFFFF"
-                />
-              </TouchableOpacity>
+              </View>
             )}
           </View>
+
+          {/* Main Chat Area */}
+          <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 48 : 0}
+          >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View style={{ flex: 1 }}>
+                {/* Decorative Background */}
+                <ChatBackground>
+                  {/* Messages List */}
+                  <FlatList
+                    ref={flatListRef}
+                    data={messages}
+                    renderItem={({ item }) => (
+                      <MessageBubble
+                        message={item}
+                        onToggleLike={handleToggleLike}
+                        onRegenerate={handleRegenerate}
+                      />
+                    )}
+                    keyExtractor={(item) =>
+                      item.id || `message-${Date.now()}-${Math.random()}`
+                    }
+                    contentContainerStyle={[
+                      styles.messagesContainer,
+                      messages.length === 0 && { justifyContent: "center" },
+                    ]}
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                    removeClippedSubviews={false}
+                  />
+                </ChatBackground>
+              </View>
+            </TouchableWithoutFeedback>
+
+            {/* Chat Input Component */}
+            <ChatInput
+              inputText={inputText}
+              setInputText={setInputText}
+              handleSendMessage={handleSendMessage}
+              pickDocument={pickDocument}
+              pickImage={pickImage}
+              isRecording={isRecording}
+              startRecording={startRecording}
+              stopRecording={stopRecording}
+              imagePreviewUri={imagePreviewUri}
+              removeImagePreview={removeImagePreview}
+              documentPreview={documentPreview}
+              removeDocumentPreview={removeDocumentPreview}
+              audioPreviewUri={audioPreviewUri}
+              audioLength={audioLength}
+              removeAudioPreview={removeAudioPreview}
+              customPlaceholder="Posez votre question à l'assistant..."
+            />
+          </KeyboardAvoidingView>
         </View>
-      </View>
+      </SafeAreaView>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  chatContainer: {
+  container: {
     flex: 1,
+    backgroundColor: "transparent",
   },
   chatHeader: {
-    paddingTop: Platform.OS === "ios" ? 44 : 16,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(0,0,0,0.1)",
   },
-  chatHeaderTop: {
+  chatHeaderContent: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingVertical: 12,
   },
   chatHeaderTitle: {
     flexDirection: "row",
     alignItems: "center",
   },
-  chatHeaderText: {
+  headerTitle: {
     fontSize: 18,
     fontFamily: "bold",
     marginLeft: 10,
   },
-  chatHeaderActions: {
+  headerActions: {
     flexDirection: "row",
     alignItems: "center",
   },
@@ -373,64 +482,20 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: 4,
   },
-  questionDisplayContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+  questionContainer: {
+    padding: 16,
     borderTopWidth: 1,
     borderTopColor: "rgba(0,0,0,0.05)",
   },
-  questionDisplayText: {
+  questionText: {
     fontSize: 15,
     fontFamily: "medium",
     lineHeight: 22,
   },
-  chatBackground: {
-    flex: 1,
-  },
   messagesContainer: {
-    flex: 1,
-    padding: 16,
-  },
-  messagesContent: {
-    paddingBottom: 16,
-  },
-  chatInputContainer: {
-    borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.1)",
-    padding: 12,
-  },
-  chatInputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  chatInput: {
-    flex: 1,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    paddingRight: 40,
-    fontSize: 16,
-    maxHeight: 100,
-  },
-  sendButton: {
-    position: "absolute",
-    right: 0,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.primary,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  micButton: {
-    position: "absolute",
-    right: 0,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.primary,
-    justifyContent: "center",
-    alignItems: "center",
+    padding: 10,
+    flexGrow: 1,
+    justifyContent: "flex-end",
   },
 });
 

@@ -1,26 +1,23 @@
+import type { Exercice, Challenge } from "@/services/mock";
 import type { RouteProp, NavigationProp } from "@react-navigation/native";
 
-import React, { useState, useRef } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import { COLORS } from "@/constants";
+import React, { useRef, useState } from "react";
+import { useTheme } from "@/theme/ThemeProvider";
 import { LinearGradient } from "expo-linear-gradient";
+import { SafeAreaView } from "react-native-safe-area-context";
+import QuestionComponent from "@/components/QuestionComponent";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import { mockExercices, challengeExerciceMap } from "@/services/mock";
+import { ChallengeHeader, ChallengeResultItem } from "@/components/challenge";
 import {
   View,
   Text,
-  Image,
   FlatList,
-  TouchableOpacity,
-  StyleSheet,
   Animated,
+  StyleSheet,
+  TouchableOpacity,
 } from "react-native";
-
-import type { Exercice, Challenge } from "@/services/mock";
-
-import { icons, COLORS } from "@/constants";
-import { useTheme } from "@/theme/ThemeProvider";
-import ExerciseComponent from "@/components/QuestionComponent";
-import { ChallengeHeader, ChallengeResultItem } from "@/components/challenge";
-import { mockExercices, challengeExerciceMap } from "@/services/mock";
 
 type RootStackParamList = {
   exerciseview: {
@@ -282,7 +279,7 @@ const ExerciseView = () => {
             </View>
 
             {/* Question Component */}
-            <ExerciseComponent
+            <QuestionComponent
               exercice={currentExercice}
               isLastExercice={isLastExercice}
               onSubmit={handleExerciseSubmit}

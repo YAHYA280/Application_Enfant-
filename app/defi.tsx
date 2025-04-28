@@ -1,25 +1,37 @@
 import type { NavigationProp } from "@react-navigation/native";
 
-import React, { useState } from "react";
-import { StyleSheet } from 'react-native';
-import defiStyles from "@/styles/defiStyle";
+import React, { useState, useEffect } from "react";
+import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { ScrollView } from "react-native-virtualized-view";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+
 import {
   View,
   Text,
   Image,
   FlatList,
   TouchableOpacity,
+  Animated,
 } from "react-native";
 
-import type { Challenge} from "../services/mock";
+import type { Challenge } from "@/services/mock";
 
-import { icons, COLORS } from "../constants";
-import { mockChallenges } from "../services/mock";
-import { useTheme } from "../theme/ThemeProvider";
-import ChallengeLessonCard from "../components/ChallengeLessonCard";
+import { icons, COLORS, SIZES } from "@/constants";
+import { mockChallenges } from "@/services/mock";
+import { useTheme } from "@/theme/ThemeProvider";
+import {
+  ChallengeLessonCard,
+  ChallengeCategoryFilter,
+  ChallengeEmptyState,
+} from "@/components/challenge";
+
+const CATEGORIES = [
+  { id: "all", name: "Tous" },
+  { id: "FACILE", name: "Facile" },
+  { id: "MOYEN", name: "Moyen" },
+  { id: "DIFFICILE", name: "Difficile" },
+];
 
 interface DefiProps {
   navigation: {
@@ -31,79 +43,285 @@ interface DefiProps {
 const Defi: React.FC<DefiProps> = () => {
   const navigation = useNavigation<NavigationProp<any>>();
   const { colors, dark } = useTheme();
-  const [selectedCategories] = useState<string[]>(["all"]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const scrollY = React.useRef(new Animated.Value(0)).current;
+  const [filteredChallenges, setFilteredChallenges] =
+    useState<Challenge[]>(mockChallenges);
 
-  const filteredChallenges = mockChallenges.filter(
-    (challenge) =>
-      selectedCategories.includes("all") ||
-      selectedCategories.includes(challenge.difficulte)
-  );
+  // Animation for header
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, 100],
+    outputRange: [0, 1],
+    extrapolate: "clamp",
+  });
+
+  useEffect(() => {
+    const filtered = mockChallenges.filter(
+      (challenge) =>
+        selectedCategory === "all" || selectedCategory === challenge.difficulte
+    );
+    setFilteredChallenges(filtered);
+  }, [selectedCategory]);
+
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+  };
 
   const renderHeader = () => {
     return (
-      <View style={defiStyles.headerContainer}>
-        <View style={defiStyles.headerLeft}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image
-              source={icons.back}
-              resizeMode="contain"
+      <>
+        {/* Fixed header that appears on scroll */}
+        <Animated.View
+          style={[
+            styles.fixedHeader,
+            {
+              opacity: headerOpacity,
+              backgroundColor: dark ? COLORS.dark1 : colors.background,
+              borderBottomColor: dark ? COLORS.dark2 : COLORS.greyscale300,
+            },
+          ]}
+        >
+          <View style={styles.headerContainer}>
+            <View style={styles.headerLeft}>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Image
+                  source={icons.back}
+                  resizeMode="contain"
+                  style={[
+                    styles.backIcon,
+                    {
+                      tintColor: dark ? COLORS.white : COLORS.greyscale900,
+                    },
+                  ]}
+                />
+              </TouchableOpacity>
+              <Text
+                style={[
+                  styles.headerTitle,
+                  {
+                    color: dark ? COLORS.white : COLORS.greyscale900,
+                  },
+                ]}
+              >
+                Challenge
+              </Text>
+            </View>
+
+            <View style={styles.headerRight}>
+              <View style={styles.gradeContainer}>
+                <Text style={styles.gradeText}>CE2</Text>
+              </View>
+            </View>
+          </View>
+        </Animated.View>
+
+        {/* Regular header */}
+        <View style={styles.headerContainer}>
+          <View style={styles.headerLeft}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Image
+                source={icons.back}
+                resizeMode="contain"
+                style={[
+                  styles.backIcon,
+                  {
+                    tintColor: dark ? COLORS.white : COLORS.greyscale900,
+                  },
+                ]}
+              />
+            </TouchableOpacity>
+            <Text
               style={[
-                defiStyles.backIcon,
+                styles.headerTitle,
                 {
-                  tintColor: dark ? COLORS.white : COLORS.greyscale900,
+                  color: dark ? COLORS.white : COLORS.greyscale900,
                 },
               ]}
-            />
-          </TouchableOpacity>
-          <Text
-            style={[
-              defiStyles.headerTitle,
-              {
-                color: dark ? COLORS.white : COLORS.greyscale900,
-              },
-            ]}
-          >
-            Challenge
-          </Text>
-        </View>
+            >
+              Challenge
+            </Text>
+          </View>
 
-        <View style={styles.headerRight}>
-          <View style={defiStyles.gradeContainer}>
-            <Text style={defiStyles.gradeText}>CE2</Text>
+          <View style={styles.headerRight}>
+            <View style={styles.gradeContainer}>
+              <Text style={styles.gradeText}>CE2</Text>
+            </View>
           </View>
         </View>
-      </View>
+
+        {/* Header banner with gradient */}
+        <View style={styles.bannerContainer}>
+          <LinearGradient
+            colors={[COLORS.primary, "#ff8e69"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.banner}
+          >
+            <View style={styles.bannerContent}>
+              <View style={styles.bannerTextContainer}>
+                <Text style={styles.bannerTitle}>Défiez-vous !</Text>
+                <Text style={styles.bannerSubtitle}>
+                  Testez vos connaissances à travers nos challenges éducatifs.
+                </Text>
+              </View>
+              <Text style={styles.trophyEmoji}>🏆</Text>
+            </View>
+          </LinearGradient>
+        </View>
+
+        {/* Category filter */}
+        <ChallengeCategoryFilter
+          categories={CATEGORIES}
+          selectedCategory={selectedCategory}
+          onSelectCategory={handleCategorySelect}
+          dark={dark}
+        />
+      </>
     );
   };
 
-
-  const renderChallengeItem = ({ item }: { item: Challenge }) => (
-    <ChallengeLessonCard
-      challenge={item}
-      onPress={() => navigation.navigate("challengedetailsmore", { challenge: item })}
-    />
-  );
-
   return (
-    <SafeAreaView style={[defiStyles.area, { backgroundColor: colors.background }]}>
-      <View style={[defiStyles.container, { backgroundColor: colors.background }]}>
-        {renderHeader()}
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <FlatList
-            data={filteredChallenges}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderChallengeItem}
-          />
-        </ScrollView>
+    <SafeAreaView style={[styles.area, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Animated.ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollViewContent}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
+          )}
+          scrollEventThrottle={16}
+        >
+          {renderHeader()}
+
+          {filteredChallenges.length > 0 ? (
+            <View style={styles.challengesContainer}>
+              {filteredChallenges.map((challenge) => (
+                <ChallengeLessonCard
+                  key={challenge.id}
+                  challenge={challenge}
+                  onPress={() =>
+                    navigation.navigate("challengedetailsmore", { challenge })
+                  }
+                />
+              ))}
+            </View>
+          ) : (
+            <ChallengeEmptyState
+              dark={dark}
+              message="Aucun challenge trouvé"
+              subMessage="Essayez de sélectionner une autre catégorie."
+              buttonText="Voir tous les challenges"
+              onButtonPress={() => setSelectedCategory("all")}
+            />
+          )}
+        </Animated.ScrollView>
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  area: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
+  fixedHeader: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontFamily: "bold",
+    marginLeft: 12,
+  },
+  backIcon: {
+    width: 24,
+    height: 24,
+  },
   headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  gradeContainer: {
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  gradeText: {
+    color: COLORS.white,
+    fontFamily: "semiBold",
+    fontSize: 14,
+  },
+  bannerContainer: {
+    paddingHorizontal: 16,
+    marginVertical: 16,
+  },
+  banner: {
+    borderRadius: 16,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  bannerContent: {
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  bannerTextContainer: {
+    flex: 1,
+    marginRight: 16,
+  },
+  bannerTitle: {
+    fontSize: 22,
+    fontFamily: "bold",
+    color: COLORS.white,
+    marginBottom: 6,
+  },
+  bannerSubtitle: {
+    fontSize: 14,
+    fontFamily: "regular",
+    color: COLORS.white,
+    opacity: 0.9,
+    lineHeight: 20,
+  },
+  trophyEmoji: {
+    fontSize: 64, // adjust size to taste
+    marginLeft: 8,
+  },
+  challengesContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 20,
   },
 });
 

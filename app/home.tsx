@@ -87,6 +87,7 @@ export default function Home() {
 
       {/* Profile and notification on the right */}
       <View style={styles.profileContainer}>
+        <NotificationBell style={styles.notificationBell} />
         <Menu>
           <MenuTrigger>
             <Image source={images.user1} style={styles.profileImage} />
@@ -126,7 +127,6 @@ export default function Home() {
             </MenuOption>
           </MenuOptions>
         </Menu>
-        <NotificationBell style={styles.notificationBell} />
       </View>
     </View>
   );
@@ -233,6 +233,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   profileContainer: {
+    gap: 10,
     flexDirection: "row",
     alignItems: "center",
   },

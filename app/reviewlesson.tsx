@@ -101,7 +101,7 @@ const ReviewLesson = () => {
 
                 <View>
                   <Text style={styles.moduleTitle}>{module.name}</Text>
-                  <Text style={styles.lessonTitle}>Matériaux de révision</Text>
+                  <Text style={styles.lessonTitle}>Matérial de révision</Text>
                 </View>
 
                 <View style={styles.progressIndicator}>

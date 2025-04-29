@@ -1,21 +1,18 @@
+import type { Exercice } from "@/services/mock";
 import type { GestureResponderEvent } from "react-native";
 
+import { COLORS } from "@/constants";
 import React, { useRef } from "react";
+import { useTheme } from "@/theme/ThemeProvider";
+import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons, MaterialIcons, SimpleLineIcons } from "@expo/vector-icons";
 import {
   View,
   Text,
-  TouchableOpacity,
-  StyleSheet,
   Animated,
-  Image,
+  StyleSheet,
+  TouchableOpacity,
 } from "react-native";
-import { Ionicons, SimpleLineIcons, MaterialIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-
-import type { Exercice } from "@/services/mock";
-
-import { COLORS, SIZES } from "@/constants";
-import { useTheme } from "@/theme/ThemeProvider";
 
 interface ChallengeSectionCardProps {
   exercice: Exercice;

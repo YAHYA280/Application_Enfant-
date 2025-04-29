@@ -1,16 +1,16 @@
 // components/profile/BadgesSection.tsx
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-  Animated,
-} from "react-native";
 import { COLORS } from "@/constants";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import {
+  View,
+  Text,
+  FlatList,
+  Animated,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 
 interface BadgeItem {
   id: number;

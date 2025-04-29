@@ -1,9 +1,9 @@
 // components/profile/ProfileHeader.tsx
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { COLORS } from "@/constants";
-import NotificationBell from "@/components/notifications/NotificationBell";
 import { Ionicons } from "@expo/vector-icons";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import NotificationBell from "@/components/notifications/NotificationBell";
 
 interface ProfileHeaderProps {
   dark: boolean;

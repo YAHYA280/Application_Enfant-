@@ -1,11 +1,16 @@
 import type { Module } from "@/data";
 import type { RouteProp, NavigationProp } from "@react-navigation/native";
 
+import { COLORS } from "@/constants";
 import React, { useState } from "react";
+import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
+// Import composants
+import HeaderTabs from "@/components/reviewlesson/HeaderTabs";
+import VideoContent from "@/components/reviewlesson/VideoContent";
+import MaterialsContent from "@/components/reviewlesson/MaterialsContent";
 import { useRoute, useTheme, useNavigation } from "@react-navigation/native";
-import { Feather } from "@expo/vector-icons";
 import {
   View,
   Text,
@@ -13,12 +18,6 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-
-// Import composants
-import HeaderTabs from "@/components/reviewlesson/HeaderTabs";
-import VideoContent from "@/components/reviewlesson/VideoContent";
-import MaterialsContent from "@/components/reviewlesson/MaterialsContent";
-import { COLORS } from "@/constants";
 
 type RootStackParamList = {
   reviewlesson: { module: Module };

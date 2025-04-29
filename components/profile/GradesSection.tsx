@@ -1,15 +1,15 @@
+import { COLORS } from "@/constants";
 // components/profile/GradesSection.tsx
 import React, { useState, useCallback } from "react";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import {
   View,
   Text,
-  StyleSheet,
-  TouchableOpacity,
   FlatList,
+  StyleSheet,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
-import { COLORS } from "@/constants";
-import { Ionicons, Feather } from "@expo/vector-icons";
 
 interface GradeItem {
   id: number;

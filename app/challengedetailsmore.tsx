@@ -1,10 +1,18 @@
+import type { Exercice, Challenge } from "@/services/mock";
 import type { RouteProp, NavigationProp } from "@react-navigation/native";
 
 import React from "react";
 import { StatusBar } from "expo-status-bar";
+import { useTheme } from "@/theme/ThemeProvider";
+import { icons, SIZES, COLORS } from "@/constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView } from "react-native-virtualized-view";
 import { useRoute, useNavigation } from "@react-navigation/native";
+import { mockExercices, challengeExerciceMap } from "@/services/mock";
+import {
+  ChallengeSectionCard,
+  ChallengeProgressBar,
+} from "@/components/challenge";
 import {
   View,
   Text,
@@ -13,16 +21,6 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-
-import type { Exercice, Challenge } from "@/services/mock";
-
-import { icons, COLORS, SIZES } from "@/constants";
-import { useTheme } from "@/theme/ThemeProvider";
-import {
-  ChallengeSectionCard,
-  ChallengeProgressBar,
-} from "@/components/challenge";
-import { mockExercices, challengeExerciceMap } from "@/services/mock";
 
 type RootStackParamList = {
   defi: undefined;

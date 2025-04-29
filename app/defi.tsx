@@ -1,29 +1,19 @@
+import type { Challenge } from "@/services/mock";
 import type { NavigationProp } from "@react-navigation/native";
 
-import React, { useState, useEffect } from "react";
 import { StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
-
-import {
-  View,
-  Text,
-  Image,
-  FlatList,
-  TouchableOpacity,
-  Animated,
-} from "react-native";
-
-import type { Challenge } from "@/services/mock";
-
-import { icons, COLORS, SIZES } from "@/constants";
+import { icons, COLORS } from "@/constants";
 import { mockChallenges } from "@/services/mock";
 import { useTheme } from "@/theme/ThemeProvider";
+import React, { useState, useEffect } from "react";
+import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Text, Image, Animated, TouchableOpacity } from "react-native";
 import {
   ChallengeLessonCard,
-  ChallengeCategoryFilter,
   ChallengeEmptyState,
+  ChallengeCategoryFilter,
 } from "@/components/challenge";
 
 const CATEGORIES = [
@@ -55,6 +45,9 @@ const Defi: React.FC<DefiProps> = () => {
     extrapolate: "clamp",
   });
 
+  const handleBackPress = () => {
+    navigation.navigate("home");
+  };
   useEffect(() => {
     const filtered = mockChallenges.filter(
       (challenge) =>
@@ -83,7 +76,7 @@ const Defi: React.FC<DefiProps> = () => {
         >
           <View style={styles.headerContainer}>
             <View style={styles.headerLeft}>
-              <TouchableOpacity onPress={() => navigation.goBack()}>
+              <TouchableOpacity onPress={handleBackPress}>
                 <Image
                   source={icons.back}
                   resizeMode="contain"
@@ -118,7 +111,7 @@ const Defi: React.FC<DefiProps> = () => {
         {/* Regular header */}
         <View style={styles.headerContainer}>
           <View style={styles.headerLeft}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity onPress={handleBackPress}>
               <Image
                 source={icons.back}
                 resizeMode="contain"

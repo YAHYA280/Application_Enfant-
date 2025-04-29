@@ -1,19 +1,18 @@
 import React from "react";
-import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
+import { COLORS, SIZES } from "@/constants";
+import { useTheme } from "@/theme/ThemeProvider";
 import { LinearGradient } from "expo-linear-gradient";
+import { ChallengeProgressBar } from "@/components/challenge";
+import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
+import { type Challenge, challengeExerciceMap } from "@/services/mock";
 import {
   View,
   Text,
   Image,
-  TouchableOpacity,
-  StyleSheet,
   Animated,
+  StyleSheet,
+  TouchableOpacity,
 } from "react-native";
-
-import { COLORS, SIZES } from "@/constants";
-import { useTheme } from "@/theme/ThemeProvider";
-import { ChallengeProgressBar } from "@/components/challenge";
-import { type Challenge, challengeExerciceMap } from "@/services/mock";
 
 interface ChallengeLessonCardProps {
   challenge: Challenge;

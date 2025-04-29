@@ -1,20 +1,19 @@
+import { images } from "@/constants";
 // app/profil.tsx
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView } from "react-native-virtualized-view";
 import { useTheme } from "@/theme/ThemeProvider";
-import { COLORS, images } from "@/constants";
-import { launchImagePicker } from "@/utils/ImagePickerHelper";
 import { useNavigation } from "@react-navigation/native";
-
+import StatsCards from "@/components/profile/StatsCards";
+import { ScrollView } from "react-native-virtualized-view";
+import ProfileInfo from "@/components/profile/ProfileInfo";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { launchImagePicker } from "@/utils/ImagePickerHelper";
 // Import components
 import ProfileHeader from "@/components/profile/ProfileHeader";
-import ProfileInfo from "@/components/profile/ProfileInfo";
-import StatsCards from "@/components/profile/StatsCards";
-import ProgressSection from "@/components/profile/ProgressSection";
 import BadgesSection from "@/components/profile/BadgesSection";
 import GradesSection from "@/components/profile/GradesSection";
+import ProgressSection from "@/components/profile/ProgressSection";
 import SuggestionsSection from "@/components/profile/SuggestionsSection";
 
 // Mock data

@@ -7,13 +7,13 @@ import {
   View,
   Text,
   Image,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
   Animated,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
 } from "react-native";
 
-import { SIZES, COLORS } from "../../constants";
+import { COLORS } from "../../constants";
 import { useTheme } from "../../theme/ThemeProvider";
 import LessonProgressBar from "./../LessonProgressBar";
 import ConditionalComponent from "./../ConditionalComponent";

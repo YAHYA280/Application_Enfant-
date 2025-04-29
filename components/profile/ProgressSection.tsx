@@ -1,8 +1,8 @@
 // components/profile/ProgressSection.tsx
 import React from "react";
-import { View, Text, StyleSheet, Animated } from "react-native";
 import { COLORS } from "@/constants";
 import { LinearGradient } from "expo-linear-gradient";
+import { View, Text, Animated, StyleSheet } from "react-native";
 
 interface ProgressSectionProps {
   dark: boolean;

@@ -10,28 +10,33 @@ interface LessonProgressBarProps {
   totalNumberOfLessons: number;
 }
 
+// Couleurs modifiées selon les nouvelles exigences
 const colors = {
-  advanced: "#ff566e",
-  intermediate: "#fda120",
-  medium: "#fbd027",
-  weak: "#26c2a3",
-  completed: COLORS.primary,
+  good: "#4CAF50", // Vert pour > 75%
+  intermediate: "#fda120", // Orange pour intermédiaire
+  medium: "#fbd027", // Jaune pour moyen
+  poor: "#F44336", // Rouge pour < 35%
 };
 
 const LessonProgressBar: React.FC<LessonProgressBarProps> = ({
   numberOfLessonsCompleted,
   totalNumberOfLessons,
 }) => {
-  const progress = numberOfLessonsCompleted / totalNumberOfLessons;
+  const progress =
+    totalNumberOfLessons > 0
+      ? numberOfLessonsCompleted / totalNumberOfLessons
+      : 0;
   const { dark } = useTheme();
 
-  // Get the appropriate color based on progress
+  // Logique de couleur modifiée selon les nouvelles exigences
   const getProgressColor = () => {
-    if (progress === 1) return colors.completed;
-    if (progress >= 0.75) return colors.advanced;
-    if (progress >= 0.5) return colors.intermediate;
-    if (progress >= 0.35) return colors.medium;
-    return colors.weak;
+    if (progress > 0.75) return colors.good; // Vert pour > 75%
+    if (progress >= 0.35) {
+      // Entre 35% et 75%, garder les couleurs existantes
+      if (progress >= 0.5) return colors.intermediate;
+      return colors.medium;
+    }
+    return colors.poor; // Rouge pour < 35%
   };
 
   return (
@@ -67,7 +72,6 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: 12,
     fontFamily: "medium",
-    color: COLORS.grayscale700,
     minWidth: 30,
   },
 });

@@ -141,13 +141,9 @@ const ChallengeLessonCard: React.FC<ChallengeLessonCardProps> = ({
 
               <TouchableOpacity style={styles.actionIcon}>
                 {challenge.accessible ? (
-                  <Ionicons
-                    name="play-circle"
-                    size={24}
-                    color={COLORS.primary}
-                  />
+                  <Ionicons name="play-circle" size={24} color={COLORS.white} />
                 ) : (
-                  <SimpleLineIcons name="lock" size={20} color={COLORS.gray} />
+                  <SimpleLineIcons name="lock" size={20} color={COLORS.black} />
                 )}
               </TouchableOpacity>
             </View>
@@ -221,7 +217,7 @@ const styles = StyleSheet.create({
     height: 140,
   },
   imageContainer: {
-    width: "45%",
+    width: "35%",
     position: "relative",
   },
   challengeImage: {
@@ -323,7 +319,7 @@ const styles = StyleSheet.create({
   },
   tentativesText: {
     fontSize: 12,
-    color: COLORS.gray,
+    color: COLORS.white,
     fontFamily: "medium",
   },
   progressBarContainer: {
@@ -331,7 +327,7 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 11,
-    color: COLORS.gray,
+    color: COLORS.white,
     fontFamily: "medium",
     textAlign: "right",
     marginTop: 4,

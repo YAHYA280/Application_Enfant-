@@ -1,6 +1,6 @@
 import type { GestureResponderEvent } from "react-native";
 
-import React from "react";
+import React, { useRef } from "react";
 import {
   View,
   Text,
@@ -28,48 +28,73 @@ const ChallengeSectionCard: React.FC<ChallengeSectionCardProps> = ({
   isCompleted,
   onPress,
 }) => {
-  const { dark } = useTheme();
-  const animatedScale = new Animated.Value(1);
+  const { colors, dark } = useTheme();
+  const animatedScale = useRef(new Animated.Value(1)).current;
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+
+  // Background and text colors
+  const backgroundColor = dark ? COLORS.dark2 : "#FFFFFF";
+  const textColor = dark ? "#FFFFFF" : "#222222";
+  const subtitleColor = dark ? "#E0E0E0" : "#333333";
+  const metaBackgroundColor = dark
+    ? "rgba(255,255,255,0.08)"
+    : "rgba(248,248,248,1)";
 
   // Animation for card press effect
   const onPressIn = () => {
-    Animated.spring(animatedScale, {
-      toValue: 0.98,
-      useNativeDriver: true,
-      speed: 20,
-      bounciness: 4,
-    }).start();
+    // All animations use the same driver type (native)
+    Animated.parallel([
+      Animated.spring(animatedScale, {
+        toValue: 0.97,
+        useNativeDriver: true,
+        speed: 40,
+        bounciness: 4,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 0.9,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+    ]).start();
   };
 
   const onPressOut = () => {
-    Animated.spring(animatedScale, {
-      toValue: 1,
-      useNativeDriver: true,
-      speed: 20,
-      bounciness: 4,
-    }).start();
+    // All animations use the same driver type (native)
+    Animated.parallel([
+      Animated.spring(animatedScale, {
+        toValue: 1,
+        useNativeDriver: true,
+        speed: 30,
+        bounciness: 5,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+    ]).start();
   };
 
+  const animatedStyle = {
+    transform: [{ scale: animatedScale }],
+    opacity: fadeAnim,
+  };
+
+  // Dynamic colors for points based on point value
   const getPointsColor = () => {
-    if (exercice.pointQuestion >= 10) return "#F44336";
-    if (exercice.pointQuestion >= 5) return "#FF9800";
-    return "#4CAF50";
+    if (exercice.pointQuestion >= 10) return "#D32F2F";
+    if (exercice.pointQuestion >= 5) return "#F57C00";
+    return "#2E7D32";
   };
 
   return (
-    <Animated.View
-      style={[styles.cardWrapper, { transform: [{ scale: animatedScale }] }]}
-    >
+    <Animated.View style={[styles.cardWrapper, animatedStyle]}>
       <TouchableOpacity
         onPress={onPress}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
-        style={[
-          styles.container,
-          {
-            backgroundColor: dark ? COLORS.dark2 : COLORS.white,
-          },
-        ]}
+        activeOpacity={0.75}
+        style={[styles.container, { backgroundColor }]}
       >
         {/* Gradient border effect for completed exercises */}
         {isCompleted ? (
@@ -83,52 +108,38 @@ const ChallengeSectionCard: React.FC<ChallengeSectionCardProps> = ({
 
         {/* Left section with question number */}
         <View style={styles.leftSection}>
-          <View
+          <LinearGradient
+            colors={
+              isCompleted ? ["#FFF2EE", "#FFE5DE"] : ["#FFFFFF", "#F9F9F9"]
+            }
             style={[
               styles.numContainer,
               {
-                backgroundColor: isCompleted
-                  ? "rgba(255, 142, 105, 0.2)"
-                  : dark
-                    ? "rgba(255, 255, 255, 0.05)"
-                    : "rgba(0, 0, 0, 0.05)",
+                borderColor: isCompleted
+                  ? "rgba(255, 142, 105, 0.3)"
+                  : "rgba(0, 0, 0, 0.05)",
               },
             ]}
           >
-            <Text
-              style={[
-                styles.num,
-                {
-                  color: isCompleted
-                    ? COLORS.primary
-                    : dark
-                      ? COLORS.white
-                      : COLORS.dark1,
-                },
-              ]}
-            >
+            <Text style={[styles.num, { color: "#000000" }]}>
               {exercice.id.toString().slice(-2)}
             </Text>
-          </View>
+          </LinearGradient>
         </View>
 
-        {/* Middle section with content */}
-        <View style={styles.contentSection}>
-          <View style={styles.headerSection}>
+        {/* Content section with repositioned elements */}
+        <View style={styles.contentContainer}>
+          {/* Top row with title and badge */}
+          <View style={styles.topRow}>
             <Text
-              style={[
-                styles.title,
-                {
-                  color: dark ? COLORS.white : COLORS.dark1,
-                },
-              ]}
+              style={[styles.title, { color: textColor }]}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
               {exercice.titre}
             </Text>
 
-            {/* Status badge */}
+            {/* Status badge now on top right */}
             {isCompleted ? (
               <View style={styles.completedBadge}>
                 <MaterialIcons name="check-circle" size={12} color="#FFFFFF" />
@@ -142,64 +153,87 @@ const ChallengeSectionCard: React.FC<ChallengeSectionCardProps> = ({
             )}
           </View>
 
-          {/* Exercise preview - truncated content */}
-          <Text
-            style={[
-              styles.contentPreview,
-              { color: dark ? COLORS.greyscale500 : COLORS.greyscale600 },
-            ]}
-            numberOfLines={2}
-            ellipsizeMode="tail"
-          >
-            {exercice.contenu}
-          </Text>
+          {/* Middle section with description */}
+          <View style={styles.middleRow}>
+            <Text
+              style={[styles.contentPreview, { color: subtitleColor }]}
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
+              {exercice.contenu}
+            </Text>
+          </View>
 
-          {/* Footer with details */}
-          <View style={styles.detailsRow}>
-            <View style={styles.timeContainer}>
-              <Ionicons
-                name="time-outline"
-                size={12}
-                color={dark ? COLORS.greyscale500 : COLORS.gray}
-              />
-              <Text style={styles.duration}>{exercice.dureeQuestion} sec</Text>
+          {/* Bottom row with time and action button */}
+          <View style={styles.bottomRow}>
+            <View style={styles.leftBottomSection}>
+              <View
+                style={[
+                  styles.timeContainer,
+                  { backgroundColor: metaBackgroundColor },
+                ]}
+              >
+                <Ionicons name="time-outline" size={14} color="#000000" />
+                <Text style={[styles.duration, { color: "#000000" }]}>
+                  {exercice.dureeQuestion} sec
+                </Text>
+              </View>
             </View>
 
-            <View style={styles.pointsContainer}>
-              <MaterialIcons name="star" size={12} color={getPointsColor()} />
-              <Text style={[styles.pointsText, { color: getPointsColor() }]}>
-                {exercice.pointQuestion} points
-              </Text>
+            <View style={styles.rightBottomSection}>
+              {/* Points indicator in bottom right */}
+              <View
+                style={[
+                  styles.pointsContainer,
+                  {
+                    backgroundColor: "rgba(248,248,248,1)",
+                    borderLeftWidth: 3,
+                    borderLeftColor: getPointsColor(),
+                  },
+                ]}
+              >
+                <MaterialIcons name="star" size={14} color={getPointsColor()} />
+                <Text
+                  style={[
+                    styles.pointsText,
+                    { color: "#000000", fontWeight: "700" },
+                  ]}
+                >
+                  {exercice.pointQuestion} pts
+                </Text>
+              </View>
+
+              {/* Action button */}
+              {isCompleted ? (
+                <LinearGradient
+                  colors={["#ff6040", "#ff8e69"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.iconButtonGradient}
+                >
+                  <Ionicons name="play" size={16} color="#FFFFFF" />
+                </LinearGradient>
+              ) : (
+                <View
+                  style={[
+                    styles.arrowIconContainer,
+                    {
+                      backgroundColor: "#F5F5F5",
+                      borderWidth: 1,
+                      borderColor: "rgba(0,0,0,0.05)",
+                    },
+                  ]}
+                >
+                  <SimpleLineIcons
+                    name="arrow-right"
+                    size={14}
+                    color="#333333"
+                  />
+                </View>
+              )}
             </View>
           </View>
         </View>
-
-        {/* Right section with action button */}
-        <TouchableOpacity style={styles.iconButton}>
-          {isCompleted ? (
-            <LinearGradient
-              colors={["#ff6040", "#ff8e69"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.iconButtonGradient}
-            >
-              <Ionicons name="play" size={16} color="#FFFFFF" />
-            </LinearGradient>
-          ) : (
-            <View
-              style={[
-                styles.lockIconContainer,
-                { backgroundColor: dark ? COLORS.dark3 : "rgba(0,0,0,0.05)" },
-              ]}
-            >
-              <SimpleLineIcons
-                name="arrow-right"
-                size={14}
-                color={dark ? COLORS.greyscale500 : COLORS.gray}
-              />
-            </View>
-          )}
-        </TouchableOpacity>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -209,18 +243,17 @@ const styles = StyleSheet.create({
   cardWrapper: {
     marginBottom: 16,
     width: "100%",
-    borderRadius: 16,
-  },
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    borderRadius: 16,
+    borderRadius: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  container: {
+    flexDirection: "row",
+    padding: 16,
+    borderRadius: 20,
     position: "relative",
     overflow: "hidden",
     borderWidth: 1,
@@ -232,37 +265,60 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    borderRadius: 16,
+    borderRadius: 20,
     zIndex: -1,
     margin: -2,
   },
   leftSection: {
-    marginRight: 12,
+    marginRight: 16,
   },
   numContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
+    borderWidth: 1,
   },
   num: {
-    fontSize: 16,
+    fontSize: 20,
     fontFamily: "bold",
   },
-  contentSection: {
+  contentContainer: {
     flex: 1,
-    marginRight: 8,
+    justifyContent: "space-between",
   },
-  headerSection: {
+  topRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 6,
+    marginBottom: 8,
+  },
+  middleRow: {
+    marginBottom: 12,
+  },
+  bottomRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  leftBottomSection: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  rightBottomSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
   title: {
     fontSize: 16,
-    fontFamily: "semiBold",
+    fontFamily: "bold",
     flex: 1,
     marginRight: 8,
   },
@@ -271,9 +327,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#4CAF50",
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 10,
     gap: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
   },
   completedText: {
     color: "#FFFFFF",
@@ -285,9 +346,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FF9800",
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 10,
     gap: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
   },
   pendingText: {
     color: "#FFFFFF",
@@ -295,49 +361,50 @@ const styles = StyleSheet.create({
     fontFamily: "medium",
   },
   contentPreview: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "regular",
-    lineHeight: 18,
-    marginBottom: 8,
-  },
-  detailsRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    lineHeight: 20,
   },
   timeContainer: {
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
   },
   duration: {
     fontSize: 12,
-    color: COLORS.gray,
-    marginLeft: 4,
+    marginLeft: 6,
     fontFamily: "medium",
   },
   pointsContainer: {
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
   },
   pointsText: {
     fontSize: 12,
-    marginLeft: 4,
+    marginLeft: 6,
     fontFamily: "semiBold",
   },
-  iconButton: {
-    marginLeft: 8,
-  },
   iconButtonGradient: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 33,
+    height: 33,
+    borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  lockIconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+  arrowIconContainer: {
+    width: 33,
+    height: 33,
+    borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
   },

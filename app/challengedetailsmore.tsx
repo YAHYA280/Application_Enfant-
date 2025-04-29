@@ -25,6 +25,7 @@ import {
 import { mockExercices, challengeExerciceMap } from "@/services/mock";
 
 type RootStackParamList = {
+  defi: undefined;
   challengedetailsmore: { challenge: Challenge };
   questionviewsreen: {
     challenge: Challenge;
@@ -45,6 +46,10 @@ const Challengedetailsmore = () => {
   const completedExercisesCount = Math.floor(
     (challenge.pourcentageReussite / 100) * exercises.length
   );
+
+  const handleBackPress = () => {
+    navigation.navigate("defi");
+  };
 
   const handleExercisePress = (exercice: Exercice) => {
     if (exercice && challenge.accessible) {
@@ -98,10 +103,7 @@ const Challengedetailsmore = () => {
         />
 
         {/* Back button */}
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
+        <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
           <View style={styles.backButtonInner}>
             <Image
               source={icons.back}
@@ -372,11 +374,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 100, // Space for bottom button
+    paddingBottom: 100,
   },
   contentContainer: {
     flex: 1,
-    paddingTop: 10,
+    paddingTop: 50,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     marginTop: -20,

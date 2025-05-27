@@ -1,22 +1,23 @@
 import type { RouteProp, NavigationProp } from "@react-navigation/native";
 
-import React, { useRef, useEffect } from "react";
-import { LinearGradient } from "expo-linear-gradient";
+import React, { useEffect, useRef } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute, useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   View,
   Text,
-  Easing,
-  Animated,
+  Image,
   ScrollView,
-  StyleSheet,
   TouchableOpacity,
+  StyleSheet,
+  Animated,
+  Easing,
 } from "react-native";
 
 import type { Challenge } from "@/services/mock";
 
-import { COLORS } from "@/constants";
+import { icons, COLORS } from "@/constants";
 import { useTheme } from "@/theme/ThemeProvider";
 import ChallengeHeader from "@/components/challenge/ChallengeHeader";
 

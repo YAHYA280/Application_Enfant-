@@ -1,3 +1,6 @@
+import type { MessageAssistantAi } from "@/constants/LearningChat";
+
+import { COLORS } from "@/constants";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
@@ -12,10 +15,6 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-
-import type { MessageAssistantAi } from "@/constants/LearningChat";
-
-import { COLORS } from "@/constants";
 
 import AudioMessage from "./AudioMessage";
 import ConditionalComponent from "./ConditionalComponent";

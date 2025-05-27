@@ -1,12 +1,14 @@
-import { Ionicons } from "@expo/vector-icons";
-import React, { useRef, useEffect, useCallback } from "react";
-import { Text, Easing, Animated, StyleSheet } from "react-native";
-
+import React, { useEffect, useRef, useCallback } from "react";
+import { Text, StyleSheet, Animated, Easing } from "react-native";
 import { COLORS } from "@/constants";
+import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/theme/ThemeProvider";
+
+/** ---- TYPES ---------------------------------------------------------------- */
 
 type ToastActionType = "copy" | "like" | "dislike" | "speak" | "regenerate";
 
+/** Extract the Ionicons name union from the component’s props */
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
 interface ToastNotificationProps {
@@ -15,6 +17,8 @@ interface ToastNotificationProps {
   action: ToastActionType;
   onHide: () => void;
 }
+
+/** ---- ICON MAP ------------------------------------------------------------- */
 
 const ICON_MAP: Record<ToastActionType, IoniconName> = {
   copy: "copy",
@@ -25,6 +29,8 @@ const ICON_MAP: Record<ToastActionType, IoniconName> = {
 };
 
 const FALLBACK_ICON: IoniconName = "checkmark-circle";
+
+/** ---- COMPONENT ------------------------------------------------------------ */
 
 const ToastNotification: React.FC<ToastNotificationProps> = ({
   visible,
@@ -37,6 +43,7 @@ const ToastNotification: React.FC<ToastNotificationProps> = ({
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(20)).current;
 
+  /* ------------------------ hide animation ------------------------ */
   const hideToast = useCallback(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -53,10 +60,12 @@ const ToastNotification: React.FC<ToastNotificationProps> = ({
     ]).start(onHide);
   }, [fadeAnim, translateY, onHide]);
 
+  /* ----------------------- show & auto-hide ----------------------- */
   useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | undefined;
+    let timer: NodeJS.Timeout | undefined;
 
     if (visible) {
+      // show animation
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
@@ -75,11 +84,13 @@ const ToastNotification: React.FC<ToastNotificationProps> = ({
       timer = setTimeout(hideToast, 2000);
     }
 
+    // ✅ always return a cleanup function (does nothing when timer is undefined)
     return () => {
       if (timer) clearTimeout(timer);
     };
   }, [visible, fadeAnim, translateY, hideToast]);
 
+  /* ---------------------------- render ---------------------------- */
   if (!visible) return null;
 
   const iconName = ICON_MAP[action] ?? FALLBACK_ICON;
@@ -105,6 +116,8 @@ const ToastNotification: React.FC<ToastNotificationProps> = ({
     </Animated.View>
   );
 };
+
+/** ---- STYLES --------------------------------------------------------------- */
 
 const styles = StyleSheet.create({
   container: {

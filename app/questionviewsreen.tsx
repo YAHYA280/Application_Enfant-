@@ -1,9 +1,15 @@
+import type { Exercice, Challenge } from "@/services/mock";
 import type { RouteProp, NavigationProp } from "@react-navigation/native";
 
+import { COLORS } from "@/constants";
 import React, { useRef, useState } from "react";
+import { useTheme } from "@/theme/ThemeProvider";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
+import QuestionComponent from "@/components/QuestionComponent";
 import { useRoute, useNavigation } from "@react-navigation/native";
+import { mockExercices, challengeExerciceMap } from "@/services/mock";
+import { ChallengeHeader, ChallengeResultItem } from "@/components/challenge";
 import {
   View,
   Text,
@@ -12,14 +18,6 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-
-import type { Exercice, Challenge } from "@/services/mock";
-
-import { COLORS } from "@/constants";
-import { useTheme } from "@/theme/ThemeProvider";
-import QuestionComponent from "@/components/QuestionComponent";
-import { mockExercices, challengeExerciceMap } from "@/services/mock";
-import { ChallengeHeader, ChallengeResultItem } from "@/components/challenge";
 
 type RootStackParamList = {
   exerciseview: {

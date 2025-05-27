@@ -1,10 +1,9 @@
 // components/profile/StatsCards.tsx
 import React from "react";
+import { COLORS } from "@/constants";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { View, Text, Animated, StyleSheet } from "react-native";
-
-import { COLORS } from "@/constants";
 
 interface StatsCardsProps {
   dark: boolean;

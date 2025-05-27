@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-
 import { SIZES, COLORS } from "@/constants/theme";
 
 

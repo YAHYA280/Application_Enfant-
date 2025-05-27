@@ -1,4 +1,5 @@
 import React from "react";
+import { COLORS } from "@/constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { View, Text, StyleSheet } from "react-native";
 import Animated, {
@@ -10,8 +11,6 @@ import Animated, {
   FadeOut,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-
-import { COLORS } from "@/constants";
 
 type CurvedMenuItemProps = {
   icon: React.ReactNode;

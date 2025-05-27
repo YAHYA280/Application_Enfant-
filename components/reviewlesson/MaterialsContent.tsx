@@ -1,16 +1,15 @@
 import React, { useState } from "react";
-import { Feather } from "@expo/vector-icons";
 import {
   View,
   Text,
   Image,
+  TouchableOpacity,
   FlatList,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
 } from "react-native";
-
-import { icons, COLORS } from "@/constants";
+import { Feather } from "@expo/vector-icons";
+import { COLORS, icons } from "@/constants";
 
 type MaterialItem = {
   id: string;

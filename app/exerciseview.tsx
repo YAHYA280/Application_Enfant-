@@ -1,11 +1,14 @@
 import type { RouteProp, NavigationProp } from "@react-navigation/native";
 
+import { COLORS } from "@/constants";
 import React, { useState } from "react";
 import { useNavigation } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRoute, useTheme } from "@react-navigation/native";
+import ExerciseComponent from "@/components/ExerciceComponent";
+import { type Module, type Exercise, moduleQuestions } from "@/data";
 import {
   View,
   Text,
@@ -15,10 +18,6 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-
-import { COLORS } from "@/constants";
-import ExerciseComponent from "@/components/ExerciceComponent";
-import { type Module, type Exercise, moduleQuestions } from "@/data";
 
 const { width } = Dimensions.get("window");
 

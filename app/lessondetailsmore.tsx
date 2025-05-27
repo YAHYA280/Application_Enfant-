@@ -1,10 +1,14 @@
+import type { Module, Exercise } from "@/data";
 import type { RouteProp, NavigationProp } from "@react-navigation/native";
 
 import React from "react";
+import { moduleQuestions } from "@/data";
 import { StatusBar } from "expo-status-bar";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import LessonSectionCard from "@/components/LessonSectionCard";
 import { useRoute, useNavigation } from "@react-navigation/native";
+import CourseProgressCircleBar from "@/components/CourseProgressCircleBar";
 import {
   View,
   Text,
@@ -14,12 +18,6 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-
-import type { Module, Exercise } from "@/data";
-
-import { moduleQuestions } from "@/data";
-import LessonSectionCard from "@/components/LessonSectionCard";
-import CourseProgressCircleBar from "@/components/CourseProgressCircleBar";
 
 import { SIZES, COLORS } from "../constants";
 import { useTheme } from "../theme/ThemeProvider";

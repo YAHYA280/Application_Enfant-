@@ -1,12 +1,10 @@
-import type { ParamListBase, NavigationProp } from "@react-navigation/native";
+import type { Module, Question, Exercise } from "@/data";
+import type { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-
-import type { Module, Question, Exercise } from "@/data";
-
 import { useTheme } from "@/theme/ThemeProvider";
+import { useNavigation } from "@react-navigation/native";
 
 import SummaryModal from "./exercise/SummaryModal";
 import { typeGuards } from "./exercise/typeGuards";

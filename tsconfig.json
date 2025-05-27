@@ -5,9 +5,11 @@
     "jsx": "react",
     "strict": true,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     },
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowJs": true,
     "resolveJsonModule": true
   },
@@ -18,5 +20,7 @@
     "expo-env.d.ts",
     ".eslintrc.js"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

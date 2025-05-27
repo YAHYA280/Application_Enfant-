@@ -1,7 +1,6 @@
 import React from 'react';
 import { Ionicons, SimpleLineIcons } from '@expo/vector-icons';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
-
 import challengeLessonCardStyles from '@/styles/challengeLessonCardStyle';
 
 import { COLORS } from '../constants';

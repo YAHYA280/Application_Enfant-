@@ -1,14 +1,13 @@
+import { images } from "@/constants";
 // app/profil.tsx
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { ScrollView } from "react-native-virtualized-view";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-import { images } from "@/constants";
 import { useTheme } from "@/theme/ThemeProvider";
+import { useNavigation } from "@react-navigation/native";
 import StatsCards from "@/components/profile/StatsCards";
+import { ScrollView } from "react-native-virtualized-view";
 import ProfileInfo from "@/components/profile/ProfileInfo";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { launchImagePicker } from "@/utils/ImagePickerHelper";
 // Import components
 import ProfileHeader from "@/components/profile/ProfileHeader";

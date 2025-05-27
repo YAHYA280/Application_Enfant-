@@ -2,20 +2,17 @@ import React from "react";
 import { useEffect } from "react";
 import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
+import { FONTS } from "@/constants/fonts";
 import { StatusBar } from "expo-status-bar";
-import * as SplashScreen from "expo-splash-screen";
 import "react-native-reanimated";
-import "react-native-gesture-handler";
+import * as SplashScreen from "expo-splash-screen";
 import { MenuProvider } from "react-native-popup-menu";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-
-import { FONTS } from "@/constants/fonts";
-import { useColorScheme } from "@/hooks/useColorScheme";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -35,28 +32,24 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <MenuProvider>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="home" />
-            <Stack.Screen name="chatAiAcceuil" />
-            <Stack.Screen name="chatAiRecherche" />
-            <Stack.Screen name="+not-found" />
-            <Stack.Screen name="lessondetailsmore" />
-            <Stack.Screen name="exerciseview" />
-            <Stack.Screen name="reviewlesson" />
-            <Stack.Screen name="challengedetailsmore" />
-            <Stack.Screen name="questionviewsreen" />
-            <Stack.Screen name="learning" />
-            <Stack.Screen name="defi" />
-          </Stack>
-          <StatusBar style="auto" />
-        </ThemeProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="home" />
+          <Stack.Screen name="chatAiAcceuil" />
+          <Stack.Screen name="chatAiRecherche" />
+          <Stack.Screen name="+not-found" />
+          <Stack.Screen name="lessondetailsmore" />
+          <Stack.Screen name="exerciseview" />
+          <Stack.Screen name="reviewlesson" />
+          <Stack.Screen name="challengedetailsmore" />
+          <Stack.Screen name="questionviewsreen" />
+          <Stack.Screen name="learning" />
+          <Stack.Screen name="defi" />
+        </Stack>
+        <StatusBar style="auto" />
       </MenuProvider>
-    </GestureHandlerRootView>
+    </ThemeProvider>
   );
 }

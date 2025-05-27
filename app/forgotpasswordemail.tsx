@@ -1,5 +1,6 @@
 import { Image } from "expo-image";
 import Checkbox from "expo-checkbox";
+import Input from "@/components/Input";
 import { useNavigation } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState, useEffect, useReducer, useCallback } from "react";
@@ -11,8 +12,6 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-
-import Input from "@/components/Input";
 
 import Header from "../components/Header";
 import Button from "../components/Button";

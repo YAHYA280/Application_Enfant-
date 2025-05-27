@@ -1,3 +1,5 @@
+import type { Question } from "@/data";
+
 import React from "react";
 import { Feather } from "@expo/vector-icons";
 import {
@@ -8,8 +10,6 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-
-import type { Question } from "@/data";
 
 import { COLORS } from "../../constants";
 

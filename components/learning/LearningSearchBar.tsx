@@ -1,13 +1,12 @@
 import React from "react";
+import { icons, COLORS } from "@/constants";
 import {
   View,
-  Image,
   TextInput,
+  Image,
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-
-import { icons, COLORS } from "@/constants";
 import ConditionalComponent from "@/components/ConditionalComponent";
 
 interface LearningSearchBarProps {

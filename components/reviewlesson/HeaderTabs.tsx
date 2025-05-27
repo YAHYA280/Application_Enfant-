@@ -1,7 +1,6 @@
 import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-
 import { COLORS } from "@/constants";
 
 type Tab = "video" | "materials";

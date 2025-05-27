@@ -1,44 +1,32 @@
 import { Image } from "react-native";
+import { scaleLinear } from "d3-scale";
 import { useNavigation } from "expo-router";
-import React, { useRef, useState, useCallback } from "react";
+import { COLORS, images } from "@/constants";
+import React, { useRef, useState } from "react";
+import { useTheme } from "@/theme/ThemeProvider";
 import { MaterialIcons } from "@expo/vector-icons";
+import CurvedMenuItem from "@/components/CurvedMenuItem";
+import AnimatedAvatar from "@/components/AnimatedAvatar";
 import { SafeAreaView } from "react-native-safe-area-context";
+import NotificationBell from "@/components/notifications/NotificationBell";
 import {
   Menu,
   MenuOption,
   MenuOptions,
   MenuTrigger,
 } from "react-native-popup-menu";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  interpolate,
-  Extrapolate,
-} from "react-native-reanimated";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import {
+  View,
+  Text,
+  Animated,
+  StyleSheet,
+  Dimensions,
+  PanResponder,
+} from "react-native";
 
-import { COLORS, images } from "@/constants";
-import CurvedMenuItem from "@/components/CurvedMenuItem";
-import AnimatedAvatar from "@/components/AnimatedAvatar";
-import NotificationBell from "@/components/notifications/NotificationBell";
-
-const { width, height } = Dimensions.get("window");
-
-// Responsive calculations
-const getResponsiveValues = () => {
-  const isSmallScreen = width < 375;
-  const isLargeScreen = width > 414;
-  const isTablet = width > 768;
-
-  return {
-    radius: isTablet ? 500 : isSmallScreen ? 320 : isLargeScreen ? 420 : 380,
-    baseY: isTablet ? 800 : isSmallScreen ? 550 : isLargeScreen ? 650 : 600,
-    itemSize: isTablet ? 140 : 130,
-    sensitivity: isTablet ? 0.8 : isSmallScreen ? 1.2 : 1.0,
-  };
-};
+const { width } = Dimensions.get("window");
+const MIN_ANGLE_OFFSET = -0.00000000000031;
+const MAX_ANGLE_OFFSET = 1.65;
 
 const menuItems: {
   name: string;
@@ -51,167 +39,53 @@ const menuItems: {
   { name: "AI Recherche", icon: "search", link: "chatAiRecherche" },
 ];
 
-// Spring animation config for smooth, natural feel
-const springConfig = {
-  damping: 20,
-  stiffness: 120,
-  mass: 1,
-  overshootClamping: false,
-  restDisplacementThreshold: 0.01,
-  restSpeedThreshold: 0.01,
-};
-
-// Slower, smoother spring config for scrolling
-const scrollSpringConfig = {
-  damping: 25,
-  stiffness: 80,
-  mass: 1.2,
-  overshootClamping: false,
-};
-
 export default function Home() {
   const { navigate } = useNavigation<{ navigate: (screen: string) => void }>();
   const refRBSheet = useRef<{ open: () => void } | null>(null);
+  const { dark, colors } = useTheme();
+
+  // State to track active menu item
   const [activeMenuItem, setActiveMenuItem] = useState(0);
 
-  const { radius, baseY, itemSize, sensitivity } = getResponsiveValues();
+  const radius = 400;
+  const [angleOffset, setAngleOffset] = useState(1.65);
+  const angleScale = scaleLinear()
+    .domain([0, menuItems.length - 1])
+    .range([-Math.PI / 1.9, Math.PI / 30000]);
 
-  // Shared values for smooth animations
-  const angleOffset = useSharedValue(1.2);
-  const isGesturing = useSharedValue(false);
-
-  // Gesture configuration
-  const panGesture = Gesture.Pan()
-    .onStart(() => {
-      isGesturing.value = true;
-    })
-    .onUpdate((event) => {
-      // Slower, more controlled scrolling
-      const delta = (event.translationX * sensitivity) / (width * 1.8);
-      const newAngle = 1.2 + delta;
-
-      // Smooth bounds with elastic effect at edges
-      if (newAngle < -0.2) {
-        angleOffset.value = -0.2 + (newAngle + 0.2) * 0.3;
-      } else if (newAngle > 2.4) {
-        angleOffset.value = 2.4 + (newAngle - 2.4) * 0.3;
-      } else {
-        angleOffset.value = newAngle;
-      }
-    })
-    .onEnd((event) => {
-      isGesturing.value = false;
-
-      // Calculate final position with momentum
-      const velocity = (event.velocityX * sensitivity) / (width * 1.8);
-      const finalAngle = angleOffset.value + velocity * 0.3;
-
-      // Clamp to actual bounds and animate smoothly
-      const clampedAngle = Math.max(-0.2, Math.min(2.4, finalAngle));
-
-      angleOffset.value = withSpring(clampedAngle, scrollSpringConfig);
-    })
-    .minDistance(5);
-
-  // Function to focus on active menu item
-  const focusOnActiveItem = useCallback(
-    (index: number) => {
-      const targetAngle = 1.2 - index * 0.35;
-      const clampedAngle = Math.max(-0.2, Math.min(2.4, targetAngle));
-
-      angleOffset.value = withSpring(clampedAngle, springConfig);
-    },
-    [angleOffset]
-  );
-
-  // Navigation with smooth animation
-  const handleNavigation = useCallback(
-    (link: string, index: number) => {
-      setActiveMenuItem(index);
-      focusOnActiveItem(index);
-
-      // Delay navigation for smooth UX
-      setTimeout(() => navigate(link), 200);
-    },
-    [navigate, focusOnActiveItem]
-  );
-
-  // Create a custom hook for menu item animation
-  const useMenuItemAnimation = (index: number) => {
-    return useAnimatedStyle(() => {
-      // Calculate arc position
-      const progress = index / (menuItems.length - 1);
-      const angle =
-        interpolate(
-          progress,
-          [0, 1],
-          [-Math.PI / 2.2, Math.PI / 8],
-          Extrapolate.CLAMP
-        ) + angleOffset.value;
-
-      const x = Math.sin(angle) * radius;
-      const y = -Math.cos(angle) * radius + baseY;
-
-      // Calculate rotation for visual alignment
-      const rotation = (angle * 180) / Math.PI;
-
-      // Smooth scale animation based on position
-      const centerDistance = Math.abs(x) / radius;
-      const scale = interpolate(
-        centerDistance,
-        [0, 1],
-        [1.05, 0.9],
-        Extrapolate.CLAMP
-      );
-
-      // Opacity fade for items at edges
-      const opacity = interpolate(
-        centerDistance,
-        [0, 0.8, 1],
-        [1, 0.8, 0.6],
-        Extrapolate.CLAMP
-      );
-
-      return {
-        position: "absolute" as const,
-        left: width / 2 + x - itemSize / 2,
-        top: y,
-        transform: [
-          { rotate: `${rotation}deg` },
-          { scale: withSpring(scale, springConfig) },
-        ],
-        opacity: withSpring(opacity, springConfig),
-      };
-    });
+  const getArcPosition = (index: number) => {
+    const angle = angleScale(index) + angleOffset;
+    const x = Math.sin(angle) * radius;
+    const y = -Math.cos(angle) * radius + 700;
+    return { x, y };
   };
 
-  // Menu item component that properly uses the hook
-  const MenuItemComponent: React.FC<{
-    item: (typeof menuItems)[0];
-    index: number;
-  }> = ({ item, index }) => {
-    const animatedStyle = useMenuItemAnimation(index);
-
-    return (
-      <Animated.View style={animatedStyle}>
-        <CurvedMenuItem
-          icon={
-            <MaterialIcons name={item.icon} size={30} color={COLORS.white} />
-          }
-          label={item.name}
-          isActive={index === activeMenuItem}
-          onPress={() => handleNavigation(item.link, index)}
-        />
-      </Animated.View>
-    );
-  };
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderMove: (_, gestureState) => {
+        const delta = gestureState.dx / 3500;
+        setAngleOffset((prev) => {
+          const next = prev + delta;
+          return Math.max(MIN_ANGLE_OFFSET, Math.min(MAX_ANGLE_OFFSET, next));
+        });
+      },
+    })
+  ).current;
 
   const renderHeader = () => (
-    <View style={styles.headerContainer}>
+    <View
+      style={[
+        styles.headerContainer,
+        { backgroundColor: dark ? COLORS.black : COLORS.white },
+      ]}
+    >
+      {/* Logo on the left */}
       <View style={styles.logoContainer}>
         <Image source={images.logo} style={styles.logoImage} />
       </View>
 
+      {/* Profile and notification on the right */}
       <View style={styles.profileContainer}>
         <NotificationBell style={styles.notificationBell} />
         <Menu>
@@ -220,13 +94,27 @@ export default function Home() {
           </MenuTrigger>
           <MenuOptions
             customStyles={{
-              optionsContainer: styles.menuOptionsContainer,
+              optionsContainer: {
+                ...styles.menuOptionsContainer,
+                backgroundColor: dark ? COLORS.dark2 : COLORS.white,
+              },
             }}
           >
             <MenuOption onSelect={() => navigate("profil")}>
               <View style={styles.menuItemHeader}>
-                <MaterialIcons name="person" size={24} color={COLORS.black} />
-                <Text style={styles.menuTextHeader}>Mon Profil</Text>
+                <MaterialIcons
+                  name="person"
+                  size={24}
+                  color={dark ? COLORS.white : COLORS.black}
+                />
+                <Text
+                  style={[
+                    styles.menuTextHeader,
+                    { color: dark ? COLORS.white : COLORS.black },
+                  ]}
+                >
+                  Mon Profil
+                </Text>
               </View>
             </MenuOption>
             <MenuOption onSelect={() => refRBSheet.current?.open()}>
@@ -245,27 +133,70 @@ export default function Home() {
 
   const renderGreeting = () => (
     <View style={styles.greetingContainer}>
-      <Text style={styles.greetingText}>Bienvenue Peter,</Text>
+      <Text
+        style={[
+          styles.greetingText,
+          { color: dark ? COLORS.white : COLORS.black },
+        ]}
+      >
+        Bienvenue Peter,
+      </Text>
+
+      {/* Animated avatar */}
       <AnimatedAvatar />
-      <Text style={styles.helpText}>
+
+      <Text
+        style={[styles.helpText, { color: dark ? COLORS.white : COLORS.black }]}
+      >
         Comment puis-je vous aider aujourd&apos;hui ?
       </Text>
     </View>
   );
 
   const renderMenu = () => (
-    <GestureDetector gesture={panGesture}>
-      <Animated.View style={styles.menuContainer}>
-        {menuItems.map((item, index) => (
-          <MenuItemComponent key={index} item={item} index={index} />
-        ))}
-      </Animated.View>
-    </GestureDetector>
+    <View style={styles.menuContainer} {...panResponder.panHandlers}>
+      {menuItems.map((item, index) => {
+        const { x, y } = getArcPosition(index);
+        const isActive = index === activeMenuItem;
+
+        return (
+          <Animated.View
+            key={index}
+            style={{
+              position: "absolute",
+              left: width / 2 + x - 78,
+              top: y,
+              transform: [
+                {
+                  rotate: `${angleScale(index) * (180 / Math.PI) + angleOffset * (180 / Math.PI)}deg`,
+                },
+              ],
+            }}
+          >
+            <CurvedMenuItem
+              icon={
+                <MaterialIcons
+                  name={item.icon}
+                  size={30}
+                  color={COLORS.white}
+                />
+              }
+              label={item.name}
+              isActive={isActive}
+              onPress={() => {
+                setActiveMenuItem(index);
+                navigate(item.link);
+              }}
+            />
+          </Animated.View>
+        );
+      })}
+    </View>
   );
 
   return (
-    <SafeAreaView style={styles.area}>
-      <View style={styles.container}>
+    <SafeAreaView style={[styles.area, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         {renderHeader()}
         {renderGreeting()}
         {renderMenu()}
@@ -277,12 +208,10 @@ export default function Home() {
 const styles = StyleSheet.create({
   area: {
     flex: 1,
-    backgroundColor: COLORS.white,
   },
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: COLORS.white,
   },
   headerContainer: {
     flexDirection: "row",
@@ -293,7 +222,6 @@ const styles = StyleSheet.create({
     padding: 2,
     paddingLeft: 15,
     paddingRight: 15,
-    backgroundColor: COLORS.white,
   },
   logoContainer: {
     justifyContent: "center",
@@ -318,16 +246,13 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   menuOptionsContainer: {
-    backgroundColor: COLORS.white,
+    backgroundColor: "#f9f9f9",
     padding: 10,
     borderRadius: 10,
     borderColor: "#ddd",
-    borderWidth: 1,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
     marginTop: 55,
     marginLeft: 0,
   },
@@ -352,18 +277,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 10,
-    color: COLORS.black,
   },
   helpText: {
     fontSize: 18,
     textAlign: "center",
     marginTop: 10,
-    color: COLORS.black,
   },
   menuContainer: {
     position: "relative",
     width: "100%",
-    height: height * 0.55,
-    overflow: "hidden",
+    height: 400,
   },
 });

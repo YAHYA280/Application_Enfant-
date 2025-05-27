@@ -1,8 +1,7 @@
 import React from "react";
+import { COLORS } from "@/constants";
 import { Feather } from "@expo/vector-icons";
 import { View, Text, StyleSheet } from "react-native";
-
-import { COLORS } from "@/constants";
 
 interface LearningEmptyStateProps {
   dark: boolean;

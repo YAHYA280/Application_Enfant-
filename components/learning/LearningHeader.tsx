@@ -1,7 +1,6 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-
 import { icons, COLORS } from "@/constants";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 
 interface LearningHeaderProps {
   title: string;

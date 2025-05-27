@@ -1,10 +1,13 @@
 import type { NavigationProp } from "@react-navigation/native";
+import type { Message, ChatHistory } from "@/contexts/types/chat";
 
 import { Audio } from "expo-av";
+import { icons, COLORS } from "@/constants";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import { useNavigation } from "@react-navigation/native";
 import React, { useRef, useState, useEffect } from "react";
+import { MOCK_AI_RESPONSES, MOCK_CHAT_HISTORY } from "@/data/_mock/_chat";
 import {
   View,
   FlatList,
@@ -15,11 +18,6 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
 } from "react-native";
-
-import type { Message, ChatHistory } from "@/contexts/types/chat";
-
-import { icons, COLORS } from "@/constants";
-import { MOCK_AI_RESPONSES, MOCK_CHAT_HISTORY } from "@/data/_mock/_chat";
 
 import { useTheme } from "../theme/ThemeProvider";
 import ChatInput from "../components/chat/ChatInput";

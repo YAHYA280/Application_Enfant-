@@ -1,11 +1,10 @@
 import type { GestureResponderEvent } from "react-native";
 
 import React from "react";
-import { Feather } from "@expo/vector-icons";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-
 import { COLORS } from "@/constants";
+import { Feather } from "@expo/vector-icons";
 import { useTheme } from "@/theme/ThemeProvider";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 interface Notification {
   id: string;

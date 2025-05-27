@@ -1,8 +1,5 @@
 import React from "react";
-import { COLORS } from "@/constants";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@/theme/ThemeProvider";
-import ConditionalComponent from "@/components/ConditionalComponent";
 import {
   View,
   Image,
@@ -11,6 +8,10 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+
+import { COLORS } from "@/constants";
+import { useTheme } from "@/theme/ThemeProvider";
+import ConditionalComponent from "@/components/ConditionalComponent";
 
 interface ChatInputProps {
   inputText: string;

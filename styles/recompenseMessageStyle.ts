@@ -1,5 +1,6 @@
-import { COLORS } from "@/constants";
 import { StyleSheet } from "react-native";
+
+import { COLORS } from "@/constants";
 
 
 const recomponseMessageStyles = StyleSheet.create({

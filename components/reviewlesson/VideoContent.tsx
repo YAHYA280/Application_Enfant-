@@ -1,19 +1,22 @@
+import type { AVPlaybackStatus } from "expo-av";
+
+import { Video, ResizeMode } from "expo-av";
+import { Feather } from "@expo/vector-icons";
 import React, { useRef, useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   View,
   Text,
   Image,
-  TouchableOpacity,
+  Platform,
   StyleSheet,
   ScrollView,
-  Platform,
+  TouchableOpacity,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { Video, ResizeMode } from "expo-av";
-import { LinearGradient } from "expo-linear-gradient";
-import { COLORS } from "@/constants";
+
 import type { Module } from "@/data";
-import type { AVPlaybackStatus } from "expo-av";
+
+import { COLORS } from "@/constants";
 
 interface VideoContentProps {
   module: Module;

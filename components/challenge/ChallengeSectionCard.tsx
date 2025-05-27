@@ -1,9 +1,6 @@
-import type { Exercice } from "@/services/mock";
 import type { GestureResponderEvent } from "react-native";
 
-import { COLORS } from "@/constants";
 import React, { useRef } from "react";
-import { useTheme } from "@/theme/ThemeProvider";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, MaterialIcons, SimpleLineIcons } from "@expo/vector-icons";
 import {
@@ -13,6 +10,11 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+
+import type { Exercice } from "@/services/mock";
+
+import { COLORS } from "@/constants";
+import { useTheme } from "@/theme/ThemeProvider";
 
 interface ChallengeSectionCardProps {
   exercice: Exercice;

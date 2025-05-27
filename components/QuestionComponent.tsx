@@ -1,9 +1,6 @@
-import type { Exercice as ExerciceBase } from "@/services/mock";
 import type { ImageSourcePropType } from "react-native";
 
-import { COLORS } from "@/constants";
 import React, { useState } from "react";
-import { useTheme } from "@/theme/ThemeProvider";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import {
@@ -15,6 +12,11 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+
+import type { Exercice as ExerciceBase } from "@/services/mock";
+
+import { COLORS } from "@/constants";
+import { useTheme } from "@/theme/ThemeProvider";
 
 interface QuestionComponentProps {
   exercice: ExerciceBase;

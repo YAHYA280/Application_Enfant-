@@ -1,9 +1,11 @@
+import type { NavigationProp } from "@react-navigation/native";
+
 import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+
 import { COLORS } from "@/constants";
 import { useTheme } from "@/theme/ThemeProvider";
-import type { NavigationProp } from "@react-navigation/native";
 
 interface ChatHeaderProps {
   title: string;

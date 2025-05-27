@@ -1,12 +1,7 @@
-import type { Message } from "@/contexts/types/chat";
-
 import * as Speech from "expo-speech";
-import { COLORS } from "@/constants";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
-import { useTheme } from "@/theme/ThemeProvider";
-import ToastNotification from "./ToastNotification";
 import {
   View,
   Text,
@@ -18,7 +13,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import type { Message } from "@/contexts/types/chat";
+
+import { COLORS } from "@/constants";
+import { useTheme } from "@/theme/ThemeProvider";
+
 import AudioMessage from "./AudioMessage";
+import ToastNotification from "./ToastNotification";
 
 // Type for toast actions
 type ToastActionType = "copy" | "like" | "dislike" | "speak" | "regenerate";

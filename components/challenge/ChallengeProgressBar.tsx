@@ -1,9 +1,9 @@
 import React from "react";
-import { SIZES } from "@/constants/theme";
 import * as Progress from "react-native-progress";
 import { View, Text, StyleSheet } from "react-native";
 
 import { COLORS } from "@/constants";
+import { SIZES } from "@/constants/theme";
 import { useTheme } from "@/theme/ThemeProvider";
 
 interface ChallengeProgressBarProps {

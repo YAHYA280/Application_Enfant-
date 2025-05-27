@@ -1,17 +1,19 @@
 import React from "react";
+import { Ionicons } from "@expo/vector-icons";
 import {
   View,
   Text,
   Modal,
   StyleSheet,
-  TouchableOpacity,
   ScrollView,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
-import { COLORS } from "@/constants";
-import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@/theme/ThemeProvider";
+
 import type { ChatHistory } from "@/contexts/types/chat";
+
+import { COLORS } from "@/constants";
+import { useTheme } from "@/theme/ThemeProvider";
 
 interface ChatHistoryDrawerProps {
   isVisible: boolean;

@@ -1,15 +1,17 @@
-import type { Challenge } from "@/services/mock";
 import type { NavigationProp } from "@react-navigation/native";
 
 import { StyleSheet } from "react-native";
-import { icons, COLORS } from "@/constants";
-import { mockChallenges } from "@/services/mock";
-import { useTheme } from "@/theme/ThemeProvider";
 import React, { useState, useEffect } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, Image, Animated, TouchableOpacity } from "react-native";
+
+import type { Challenge } from "@/services/mock";
+
+import { icons, COLORS } from "@/constants";
+import { mockChallenges } from "@/services/mock";
+import { useTheme } from "@/theme/ThemeProvider";
 import {
   ChallengeLessonCard,
   ChallengeEmptyState,

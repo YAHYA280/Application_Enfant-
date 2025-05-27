@@ -1,8 +1,8 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { COLORS } from "@/constants";
-import { useTheme } from "@/theme/ThemeProvider";
 import { LinearGradient } from "expo-linear-gradient";
+
+import { useTheme } from "@/theme/ThemeProvider";
 
 /**
  * A decorative background component for the chat UI

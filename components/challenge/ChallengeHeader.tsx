@@ -1,9 +1,9 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 
-import { COLORS, icons } from "@/constants";
+import { icons, COLORS } from "@/constants";
 import { useTheme } from "@/theme/ThemeProvider";
 
 interface ChallengeHeaderProps {

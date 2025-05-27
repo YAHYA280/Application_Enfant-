@@ -51,9 +51,9 @@ export const typeGuards = {
 };
 
 export type {
-  MultipleChoiceQuestion,
+  SpeakingQuestion,
   TrueOrFalseQuestion,
   FillInBlankQuestion,
   ShortAnswerQuestion,
-  SpeakingQuestion,
+  MultipleChoiceQuestion,
 };

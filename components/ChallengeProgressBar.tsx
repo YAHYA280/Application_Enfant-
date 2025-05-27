@@ -1,7 +1,8 @@
 import React from 'react';
-import { SIZES } from '@/constants/theme';
 import * as Progress from 'react-native-progress';
 import { View, Text, StyleSheet } from 'react-native';
+
+import { SIZES } from '@/constants/theme';
 
 import { COLORS } from '../constants';
 import { useTheme } from '../theme/ThemeProvider';

@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Animated, Easing } from "react-native";
+import React, { useRef, useEffect } from "react";
+import { View, Text, Easing, Animated, StyleSheet } from "react-native";
+
 import { COLORS } from "@/constants";
 import { useTheme } from "@/theme/ThemeProvider";
 

@@ -1,12 +1,15 @@
 import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import {
-  View,
-  Text,
-  Animated,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  FadeIn,
+  FadeOut,
+} from "react-native-reanimated";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
 import { COLORS } from "@/constants";
 
@@ -17,55 +20,118 @@ type CurvedMenuItemProps = {
   onPress?: () => void;
 };
 
+// Smooth spring configuration
+const springConfig = {
+  damping: 15,
+  stiffness: 150,
+  mass: 1,
+  overshootClamping: false,
+};
+
+// Quick timing config for press feedback
+const timingConfig = {
+  duration: 100,
+};
+
 const CurvedMenuItem: React.FC<CurvedMenuItemProps> = ({
   icon,
   label,
   isActive = false,
   onPress,
 }) => {
-  // Create animated value for simple animation effects
-  const scaleAnim = React.useRef(new Animated.Value(1)).current;
+  // Shared values for smooth animations
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
+  const pressed = useSharedValue(false);
 
-  // Handle press animations
-  const handlePressIn = () => {
-    Animated.timing(scaleAnim, {
-      toValue: 0.95,
-      duration: 150,
-      useNativeDriver: true,
-    }).start();
-  };
+  // Tap gesture with smooth animations
+  const tapGesture = Gesture.Tap()
+    .onBegin(() => {
+      pressed.value = true;
+      scale.value = withSpring(0.95, springConfig);
+      opacity.value = withTiming(0.8, timingConfig);
+    })
+    .onFinalize(() => {
+      pressed.value = false;
+      scale.value = withSpring(1, springConfig);
+      opacity.value = withTiming(1, timingConfig);
+    })
+    .onEnd(() => {
+      if (onPress) {
+        // Small delay for visual feedback
+        setTimeout(() => onPress(), 50);
+      }
+    });
 
-  const handlePressOut = () => {
-    Animated.timing(scaleAnim, {
-      toValue: 1,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
-  };
+  // Animated styles for the container
+  const animatedContainerStyle = useAnimatedStyle(() => {
+    // Active state animation
+    const activeScale = isActive ? 1.05 : 1;
+    const combinedScale = scale.value * activeScale;
+
+    return {
+      transform: [{ scale: withSpring(combinedScale, springConfig) }],
+      opacity: opacity.value,
+    };
+  });
+
+  // Animated styles for the background
+  const animatedBackgroundStyle = useAnimatedStyle(() => {
+    const shadowOpacity = isActive ? 0.25 : 0.12;
+    const elevation = isActive ? 10 : 6;
+
+    return {
+      shadowOpacity: withSpring(shadowOpacity, springConfig),
+      elevation: withSpring(elevation, springConfig),
+    };
+  });
+
+  // Animated styles for the icon container
+  const animatedIconStyle = useAnimatedStyle(() => {
+    const iconScale = pressed.value ? 0.9 : 1;
+    const activeIconScale = isActive ? 1.1 : 1;
+    const combinedIconScale = iconScale * activeIconScale;
+
+    return {
+      transform: [{ scale: withSpring(combinedIconScale, springConfig) }],
+    };
+  });
+
+  // Animated styles for the label
+  const animatedLabelStyle = useAnimatedStyle(() => {
+    const labelOpacity = pressed.value ? 0.7 : 1;
+
+    return {
+      opacity: withTiming(labelOpacity, timingConfig),
+    };
+  });
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-    >
-      <Animated.View
-        style={[styles.container, { transform: [{ scale: scaleAnim }] }]}
-      >
+    <GestureDetector gesture={tapGesture}>
+      <Animated.View style={[styles.container, animatedContainerStyle]}>
         {/* Card Background */}
-        <View style={[styles.background, isActive && styles.backgroundActive]}>
+        <Animated.View
+          style={[
+            styles.background,
+            isActive && styles.backgroundActive,
+            animatedBackgroundStyle,
+          ]}
+        >
           <LinearGradient
-            colors={isActive ? ["#FFFFFF", "#F0F0F0"] : ["#F8F8F8", "#EFEFEF"]}
+            colors={isActive ? ["#FFFFFF", "#F8F8F8"] : ["#FAFAFA", "#F0F0F0"]}
             style={styles.gradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           />
-        </View>
+        </Animated.View>
 
         {/* Icon Container with Gradient Background */}
-        <View
-          style={[styles.iconContainer, isActive && styles.iconContainerActive]}
+        <Animated.View
+          style={[
+            styles.iconContainer,
+            isActive && styles.iconContainerActive,
+            animatedIconStyle,
+          ]}
         >
           <LinearGradient
             colors={isActive ? ["#ff9e7c", "#ff6040"] : ["#ff8e69", "#ff5030"]}
@@ -73,17 +139,29 @@ const CurvedMenuItem: React.FC<CurvedMenuItemProps> = ({
           >
             <View style={styles.iconWrapper}>{icon}</View>
           </LinearGradient>
-        </View>
+        </Animated.View>
 
         {/* Label */}
-        <Text style={[styles.label, isActive && styles.labelActive]}>
+        <Animated.Text
+          style={[
+            styles.label,
+            isActive && styles.labelActive,
+            animatedLabelStyle,
+          ]}
+        >
           {label}
-        </Text>
+        </Animated.Text>
 
-        {/* Active Indicator */}
-        {isActive && <View style={styles.activeIndicator} />}
+        {/* Active Indicator with proper entering/exiting animations */}
+        {isActive && (
+          <Animated.View
+            style={styles.activeIndicator}
+            entering={FadeIn.duration(200)}
+            exiting={FadeOut.duration(150)}
+          />
+        )}
       </Animated.View>
-    </TouchableOpacity>
+    </GestureDetector>
   );
 };
 
@@ -105,7 +183,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.12,
     shadowRadius: 8,
     elevation: 6,
   },
@@ -136,7 +214,7 @@ const styles = StyleSheet.create({
   iconContainerActive: {
     shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.15,
     shadowRadius: 6,
     elevation: 6,
   },

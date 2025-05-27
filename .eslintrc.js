@@ -15,7 +15,15 @@ module.exports = {
     "perfectionist",
     "unused-imports",
   ],
-  ignorePatterns: ["scripts/"],
+  ignorePatterns: [
+    "scripts/",
+    "babel.config.js",
+    "metro.config.js",
+    "expo-env.d.ts",
+    ".expo/",
+    "dist/",
+    "node_modules/",
+  ],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -54,6 +62,18 @@ module.exports = {
       files: ["scripts/reset-project.js"],
       rules: {
         "@typescript-eslint/no-var-requires": "off",
+      },
+    },
+    {
+      files: ["babel.config.js", "metro.config.js"],
+      parser: "espree",
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: "module",
+      },
+      rules: {
+        "@typescript-eslint/no-var-requires": "off",
+        "import/no-extraneous-dependencies": "off",
       },
     },
   ],

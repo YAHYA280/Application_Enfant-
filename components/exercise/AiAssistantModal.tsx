@@ -1,6 +1,3 @@
-import type { Question } from "@/data";
-import type { Message } from "@/contexts/types/chat";
-
 import React, { useRef, useState, useEffect } from "react";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
@@ -8,18 +5,22 @@ import {
   Text,
   Modal,
   Platform,
-  StyleSheet,
   FlatList,
   Keyboard,
+  StyleSheet,
+  SafeAreaView,
   TouchableOpacity,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
-  SafeAreaView,
 } from "react-native";
+
+import type { Question } from "@/data";
+import type { Message } from "@/contexts/types/chat";
+
+import { COLORS } from "@/constants";
 
 import type { ShortAnswerQuestion as ShortAnswerQuestionType } from "./typeGuards";
 
-import { COLORS } from "@/constants";
 import { typeGuards } from "./typeGuards";
 import ChatInput from "../chat/ChatInput";
 import MessageBubble from "../MessageBubble";

@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Animated, Easing } from "react-native";
-import { COLORS } from "@/constants";
+import React, { useRef, useEffect } from "react";
+import { View, Text, Easing, Animated, StyleSheet } from "react-native";
+
 
 const AnimatedAvatar = () => {
   // Animation values

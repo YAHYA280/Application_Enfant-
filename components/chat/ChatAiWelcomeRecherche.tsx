@@ -1,7 +1,8 @@
-import { COLORS } from "@/constants";
 import React, { useRef, useEffect } from "react";
-import { useTheme } from "@/theme/ThemeProvider";
 import { View, Text, Easing, Animated, StyleSheet } from "react-native";
+
+import { COLORS } from "@/constants";
+import { useTheme } from "@/theme/ThemeProvider";
 
 const ChatAiWelcomeRecherche = () => {
   const { dark } = useTheme();

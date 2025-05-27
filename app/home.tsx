@@ -1,14 +1,9 @@
 import { Image } from "react-native";
 import { scaleLinear } from "d3-scale";
 import { useNavigation } from "expo-router";
-import { COLORS, images } from "@/constants";
 import React, { useRef, useState } from "react";
-import { useTheme } from "@/theme/ThemeProvider";
 import { MaterialIcons } from "@expo/vector-icons";
-import CurvedMenuItem from "@/components/CurvedMenuItem";
-import AnimatedAvatar from "@/components/AnimatedAvatar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import NotificationBell from "@/components/notifications/NotificationBell";
 import {
   Menu,
   MenuOption,
@@ -23,6 +18,12 @@ import {
   Dimensions,
   PanResponder,
 } from "react-native";
+
+import { COLORS, images } from "@/constants";
+import { useTheme } from "@/theme/ThemeProvider";
+import CurvedMenuItem from "@/components/CurvedMenuItem";
+import AnimatedAvatar from "@/components/AnimatedAvatar";
+import NotificationBell from "@/components/notifications/NotificationBell";
 
 const { width } = Dimensions.get("window");
 const MIN_ANGLE_OFFSET = -0.00000000000031;

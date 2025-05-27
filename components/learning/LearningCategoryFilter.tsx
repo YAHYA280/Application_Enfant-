@@ -1,5 +1,4 @@
 import React from "react";
-import { COLORS } from "@/constants";
 import {
   View,
   Text,
@@ -7,6 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+
+import { COLORS } from "@/constants";
 
 interface Category {
   id: string;

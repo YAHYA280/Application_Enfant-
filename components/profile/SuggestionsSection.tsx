@@ -1,9 +1,10 @@
 // components/profile/SuggestionsSection.tsx
 import React from "react";
-import { COLORS } from "@/constants";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+
+import { COLORS } from "@/constants";
 
 interface SuggestionsSectionProps {
   dark: boolean;

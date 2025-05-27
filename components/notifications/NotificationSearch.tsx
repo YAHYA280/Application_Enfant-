@@ -1,9 +1,5 @@
 import React from "react";
-import { icons } from "@/constants";
-import { COLORS } from "@/constants";
 import { Feather } from "@expo/vector-icons";
-import { useTheme } from "@/theme/ThemeProvider";
-import ConditionalComponent from "@/components/ConditionalComponent";
 import {
   View,
   Image,
@@ -11,6 +7,11 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+
+import { icons } from "@/constants";
+import { COLORS } from "@/constants";
+import { useTheme } from "@/theme/ThemeProvider";
+import ConditionalComponent from "@/components/ConditionalComponent";
 
 interface NotificationSearchProps {
   value: string;

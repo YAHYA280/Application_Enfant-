@@ -1,7 +1,6 @@
 import type { AVPlaybackStatus } from "expo-av";
 
 import { Audio } from "expo-av";
-import { COLORS } from "@/constants";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useRef, useState, useEffect } from "react";
 import {
@@ -11,6 +10,8 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
+
+import { COLORS } from "@/constants";
 
 type AudioMessageProps = {
   audioUri: string;

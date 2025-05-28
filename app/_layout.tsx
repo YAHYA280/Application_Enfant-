@@ -8,6 +8,7 @@ import "react-native-reanimated";
 import * as SplashScreen from "expo-splash-screen";
 import { MenuProvider } from "react-native-popup-menu";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   DarkTheme,
   DefaultTheme,
@@ -32,24 +33,26 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <MenuProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="home" />
-          <Stack.Screen name="chatAiAcceuil" />
-          <Stack.Screen name="chatAiRecherche" />
-          <Stack.Screen name="+not-found" />
-          <Stack.Screen name="lessondetailsmore" />
-          <Stack.Screen name="exerciseview" />
-          <Stack.Screen name="reviewlesson" />
-          <Stack.Screen name="challengedetailsmore" />
-          <Stack.Screen name="questionviewsreen" />
-          <Stack.Screen name="learning" />
-          <Stack.Screen name="defi" />
-        </Stack>
-        <StatusBar style="auto" />
-      </MenuProvider>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <MenuProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="home" />
+            <Stack.Screen name="chatAiAcceuil" />
+            <Stack.Screen name="chatAiRecherche" />
+            <Stack.Screen name="+not-found" />
+            <Stack.Screen name="lessondetailsmore" />
+            <Stack.Screen name="exerciseview" />
+            <Stack.Screen name="reviewlesson" />
+            <Stack.Screen name="challengedetailsmore" />
+            <Stack.Screen name="questionviewsreen" />
+            <Stack.Screen name="learning" />
+            <Stack.Screen name="defi" />
+          </Stack>
+          <StatusBar style="auto" />
+        </MenuProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }

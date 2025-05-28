@@ -1,85 +1,32 @@
 import { Image } from "react-native";
-import { scaleLinear } from "d3-scale";
 import { useNavigation } from "expo-router";
 import { COLORS, images } from "@/constants";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { useTheme } from "@/theme/ThemeProvider";
 import { MaterialIcons } from "@expo/vector-icons";
-import CurvedMenuItem from "@/components/CurvedMenuItem";
 import AnimatedAvatar from "@/components/AnimatedAvatar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NotificationBell from "@/components/notifications/NotificationBell";
+import CurvedMenu from "@/components/CurvedMenu";
 import {
   Menu,
   MenuOption,
   MenuOptions,
   MenuTrigger,
 } from "react-native-popup-menu";
-import {
-  View,
-  Text,
-  Animated,
-  StyleSheet,
-  Dimensions,
-  PanResponder,
-} from "react-native";
-
-const { width } = Dimensions.get("window");
-const MIN_ANGLE_OFFSET = -0.00000000000031;
-const MAX_ANGLE_OFFSET = 1.65;
-
-const menuItems: {
-  name: string;
-  icon: "home" | "library-books" | "emoji-events" | "search";
-  link: string;
-}[] = [
-  { name: "AI Devoir", icon: "home", link: "chatAiAcceuil" },
-  { name: "J'apprends", icon: "library-books", link: "learning" },
-  { name: "Challenge", icon: "emoji-events", link: "defi" },
-  { name: "AI Recherche", icon: "search", link: "chatAiRecherche" },
-];
+import { View, Text, StyleSheet } from "react-native";
 
 export default function Home() {
   const { navigate } = useNavigation<{ navigate: (screen: string) => void }>();
   const refRBSheet = useRef<{ open: () => void } | null>(null);
-  const { dark, colors } = useTheme();
+  const { colors } = useTheme();
 
-  // State to track active menu item
-  const [activeMenuItem, setActiveMenuItem] = useState(0);
-
-  const radius = 400;
-  const [angleOffset, setAngleOffset] = useState(1.65);
-  const angleScale = scaleLinear()
-    .domain([0, menuItems.length - 1])
-    .range([-Math.PI / 1.9, Math.PI / 30000]);
-
-  const getArcPosition = (index: number) => {
-    const angle = angleScale(index) + angleOffset;
-    const x = Math.sin(angle) * radius;
-    const y = -Math.cos(angle) * radius + 700;
-    return { x, y };
+  const handleNavigation = (link: string) => {
+    navigate(link);
   };
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderMove: (_, gestureState) => {
-        const delta = gestureState.dx / 3500;
-        setAngleOffset((prev) => {
-          const next = prev + delta;
-          return Math.max(MIN_ANGLE_OFFSET, Math.min(MAX_ANGLE_OFFSET, next));
-        });
-      },
-    })
-  ).current;
-
   const renderHeader = () => (
-    <View
-      style={[
-        styles.headerContainer,
-        { backgroundColor: dark ? COLORS.black : COLORS.white },
-      ]}
-    >
+    <View style={[styles.headerContainer, { backgroundColor: COLORS.white }]}>
       {/* Logo on the left */}
       <View style={styles.logoContainer}>
         <Image source={images.logo} style={styles.logoImage} />
@@ -96,23 +43,14 @@ export default function Home() {
             customStyles={{
               optionsContainer: {
                 ...styles.menuOptionsContainer,
-                backgroundColor: dark ? COLORS.dark2 : COLORS.white,
+                backgroundColor: COLORS.white,
               },
             }}
           >
             <MenuOption onSelect={() => navigate("profil")}>
               <View style={styles.menuItemHeader}>
-                <MaterialIcons
-                  name="person"
-                  size={24}
-                  color={dark ? COLORS.white : COLORS.black}
-                />
-                <Text
-                  style={[
-                    styles.menuTextHeader,
-                    { color: dark ? COLORS.white : COLORS.black },
-                  ]}
-                >
+                <MaterialIcons name="person" size={24} color={COLORS.black} />
+                <Text style={[styles.menuTextHeader, { color: COLORS.black }]}>
                   Mon Profil
                 </Text>
               </View>
@@ -133,64 +71,16 @@ export default function Home() {
 
   const renderGreeting = () => (
     <View style={styles.greetingContainer}>
-      <Text
-        style={[
-          styles.greetingText,
-          { color: dark ? COLORS.white : COLORS.black },
-        ]}
-      >
+      <Text style={[styles.greetingText, { color: COLORS.black }]}>
         Bienvenue Peter,
       </Text>
 
       {/* Animated avatar */}
       <AnimatedAvatar />
 
-      <Text
-        style={[styles.helpText, { color: dark ? COLORS.white : COLORS.black }]}
-      >
+      <Text style={[styles.helpText, { color: COLORS.black }]}>
         Comment puis-je vous aider aujourd&apos;hui ?
       </Text>
-    </View>
-  );
-
-  const renderMenu = () => (
-    <View style={styles.menuContainer} {...panResponder.panHandlers}>
-      {menuItems.map((item, index) => {
-        const { x, y } = getArcPosition(index);
-        const isActive = index === activeMenuItem;
-
-        return (
-          <Animated.View
-            key={index}
-            style={{
-              position: "absolute",
-              left: width / 2 + x - 78,
-              top: y,
-              transform: [
-                {
-                  rotate: `${angleScale(index) * (180 / Math.PI) + angleOffset * (180 / Math.PI)}deg`,
-                },
-              ],
-            }}
-          >
-            <CurvedMenuItem
-              icon={
-                <MaterialIcons
-                  name={item.icon}
-                  size={30}
-                  color={COLORS.white}
-                />
-              }
-              label={item.name}
-              isActive={isActive}
-              onPress={() => {
-                setActiveMenuItem(index);
-                navigate(item.link);
-              }}
-            />
-          </Animated.View>
-        );
-      })}
     </View>
   );
 
@@ -199,7 +89,11 @@ export default function Home() {
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         {renderHeader()}
         {renderGreeting()}
-        {renderMenu()}
+
+        {/* New Curved Menu */}
+        <View style={styles.menuWrapper}>
+          <CurvedMenu onNavigate={handleNavigation} />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -270,7 +164,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 30,
-    marginBottom: 30,
+    marginBottom: 20,
   },
   greetingText: {
     fontSize: 24,
@@ -283,9 +177,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 10,
   },
-  menuContainer: {
-    position: "relative",
-    width: "100%",
-    height: 400,
+  menuWrapper: {
+    flex: 1,
+    marginTop: 20,
   },
 });

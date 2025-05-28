@@ -15,7 +15,7 @@ module.exports = {
     "perfectionist",
     "unused-imports",
   ],
-  ignorePatterns: ["scripts/"],
+  ignorePatterns: ["scripts/", "babel.config.js"],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,

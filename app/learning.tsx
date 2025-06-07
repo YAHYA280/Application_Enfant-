@@ -3,14 +3,16 @@ import type { NavigationProp } from "@react-navigation/native";
 
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { View, FlatList, Animated, StyleSheet } from "react-native";
+import { View, FlatList, Animated, StatusBar, StyleSheet } from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import ConditionalComponent from "@/components/ConditionalComponent";
 
 import { Modules } from "../data";
 import { COLORS } from "../constants";
-import { useTheme } from "../theme/ThemeProvider";
 import LearningHeader from "../components/learning/LearningHeader";
 import LearningSearchBar from "../components/learning/LearningSearchBar";
 import LearningLessonCard from "../components/learning/LearningLessonCard";
@@ -48,7 +50,7 @@ const categories = [
 
 const Learning: React.FC<LearningProps> = () => {
   const navigation = useNavigation<NavigationProp<any>>();
-  const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const [selectedCategories, setSelectedCategories] = useState<string[]>(["1"]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -123,75 +125,81 @@ const Learning: React.FC<LearningProps> = () => {
   );
 
   return (
-    <SafeAreaView style={[styles.area, { backgroundColor: colors.background }]}>
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        {/* Header */}
-        <Animated.View
-          style={[
-            styles.headerAnimatedContainer,
-            {
-              opacity: headerOpacity,
-              backgroundColor: COLORS.white,
-            },
-          ]}
-        >
-          {isSearching ? (
-            <LearningSearchBar
-              searchQuery={searchQuery}
-              onChangeText={handleSearchQueryChange}
-              onCancel={cancelSearch}
-            />
-          ) : (
-            <LearningHeader
-              title="J'apprends"
-              onBackPress={() => navigation.goBack()}
-              onSearchPress={() => setIsSearching(true)}
-            />
-          )}
-        </Animated.View>
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
 
-        {/* Category Filter */}
-        <LearningCategoryFilter
-          categories={categories}
-          selectedCategories={selectedCategories}
-          onSelectCategory={handleCategorySelect}
-        />
+      {/* Safe area for status bar only */}
+      <SafeAreaView style={styles.statusBarSafeArea} edges={["top"]} />
 
-        {/* Main Content */}
-        <Animated.ScrollView
-          style={styles.scrollView}
-          showsVerticalScrollIndicator={false}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: true }
-          )}
-          scrollEventThrottle={16}
+      {/* Header */}
+      <Animated.View
+        style={[
+          styles.headerAnimatedContainer,
+          {
+            opacity: headerOpacity,
+            backgroundColor: COLORS.white,
+          },
+        ]}
+      >
+        {isSearching ? (
+          <LearningSearchBar
+            searchQuery={searchQuery}
+            onChangeText={handleSearchQueryChange}
+            onCancel={cancelSearch}
+          />
+        ) : (
+          <LearningHeader
+            title="J'apprends"
+            onBackPress={() => navigation.goBack()}
+            onSearchPress={() => setIsSearching(true)}
+          />
+        )}
+      </Animated.View>
+
+      {/* Category Filter */}
+      <LearningCategoryFilter
+        categories={categories}
+        selectedCategories={selectedCategories}
+        onSelectCategory={handleCategorySelect}
+      />
+
+      {/* Main Content */}
+      <Animated.ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={16}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: Math.max(insets.bottom, 24) },
+        ]}
+      >
+        <ConditionalComponent
+          isValid={filteredLessons.length > 0}
+          defaultComponent={<LearningEmptyState />}
         >
-          <ConditionalComponent
-            isValid={filteredLessons.length > 0}
-            defaultComponent={<LearningEmptyState />}
-          >
-            <FlatList
-              data={filteredLessons}
-              keyExtractor={(item) => item.id}
-              renderItem={renderLessonItem}
-              scrollEnabled={false} // Disable scrolling inside FlatList
-              contentContainerStyle={styles.listContainer}
-            />
-          </ConditionalComponent>
-        </Animated.ScrollView>
-      </View>
-    </SafeAreaView>
+          <FlatList
+            data={filteredLessons}
+            keyExtractor={(item) => item.id}
+            renderItem={renderLessonItem}
+            scrollEnabled={false} // Disable scrolling inside FlatList
+            contentContainerStyle={styles.listContainer}
+          />
+        </ConditionalComponent>
+      </Animated.ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  area: {
+  container: {
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  container: {
-    flex: 1,
+  statusBarSafeArea: {
     backgroundColor: COLORS.white,
   },
   headerAnimatedContainer: {
@@ -203,6 +211,9 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     paddingHorizontal: 16,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   listContainer: {
     paddingBottom: 24,

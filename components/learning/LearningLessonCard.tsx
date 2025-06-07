@@ -93,7 +93,7 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         activeOpacity={0.9}
-        style={[styles.container, { backgroundColor: COLORS.white }]}
+        style={styles.container}
       >
         {/* Effet de bordure premium avec gradient orange */}
         <LinearGradient
@@ -125,10 +125,7 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
           <View style={styles.contentContainer}>
             {/* En-tête avec titre et badge de difficulté */}
             <View style={styles.headerContainer}>
-              <Text
-                style={[styles.name, { color: COLORS.greyscale900 }]}
-                numberOfLines={2}
-              >
+              <Text style={styles.name} numberOfLines={2}>
                 {name}
               </Text>
 
@@ -148,14 +145,7 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
             <ConditionalComponent isValid={totalNumberOfLessons > 0}>
               <View style={styles.progressSection}>
                 <View style={styles.progressHeader}>
-                  <Text
-                    style={[
-                      styles.lessonsText,
-                      {
-                        color: COLORS.white,
-                      },
-                    ]}
-                  >
+                  <Text style={styles.lessonsText}>
                     {numberOfLessonsCompleted}/{totalNumberOfLessons} leçons
                   </Text>
                 </View>
@@ -215,6 +205,7 @@ const styles = StyleSheet.create({
     width: "100%",
     overflow: "hidden",
     borderRadius: 12,
+    backgroundColor: COLORS.white,
     shadowColor: COLORS.black,
     shadowOffset: {
       width: 0,
@@ -298,6 +289,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     lineHeight: 20,
     marginRight: 8,
+    color: COLORS.greyscale900,
   },
   difficultyBadge: {
     borderRadius: 6,
@@ -322,8 +314,8 @@ const styles = StyleSheet.create({
   lessonsText: {
     fontSize: 12,
     fontFamily: "medium",
+    color: COLORS.greyscale900,
   },
-
   statusContainer: {
     flexDirection: "row",
     justifyContent: "space-between",

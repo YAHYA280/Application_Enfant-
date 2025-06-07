@@ -91,12 +91,10 @@ const VideoContent: React.FC<VideoContentProps> = ({ module }) => {
         </View>
       </View>
 
-      <View style={[styles.videoInfoContainer, { backgroundColor: "#FFFFFF" }]}>
-        <Text style={[styles.videoTitle, { color: COLORS.greyscale900 }]}>
-          {module.name} - Vidéo explicative
-        </Text>
+      <View style={styles.videoInfoContainer}>
+        <Text style={styles.videoTitle}>{module.name} - Vidéo explicative</Text>
 
-        <Text style={[styles.videoDescription, { color: COLORS.greyScale800 }]}>
+        <Text style={styles.videoDescription}>
           {module.description ||
             `Cette vidéo couvre les concepts clés de ${module.name}, avec des exemples pratiques et des explications détaillées pour faciliter votre apprentissage.`}
         </Text>
@@ -120,60 +118,40 @@ const VideoContent: React.FC<VideoContentProps> = ({ module }) => {
       </View>
 
       <View style={styles.actionButtonsContainer}>
-        <TouchableOpacity
-          style={[styles.actionButton, { backgroundColor: "#FFFFFF" }]}
-        >
+        <TouchableOpacity style={styles.actionButton}>
           <LinearGradient
             colors={["#f5f5f5", "#e0e0e0"]}
             style={styles.actionButtonGradient}
           >
             <Feather name="bookmark" size={20} color={COLORS.primary} />
-            <Text
-              style={[styles.actionButtonText, { color: COLORS.greyscale900 }]}
-            >
-              Sauvegarder
-            </Text>
+            <Text style={styles.actionButtonText}>Sauvegarder</Text>
           </LinearGradient>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.actionButton, { backgroundColor: "#FFFFFF" }]}
-        >
+        <TouchableOpacity style={styles.actionButton}>
           <LinearGradient
             colors={["#f5f5f5", "#e0e0e0"]}
             style={styles.actionButtonGradient}
           >
             <Feather name="share-2" size={20} color={COLORS.primary} />
-            <Text
-              style={[styles.actionButtonText, { color: COLORS.greyscale900 }]}
-            >
-              Partager
-            </Text>
+            <Text style={styles.actionButtonText}>Partager</Text>
           </LinearGradient>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.actionButton, { backgroundColor: "#FFFFFF" }]}
-        >
+        <TouchableOpacity style={styles.actionButton}>
           <LinearGradient
             colors={["#f5f5f5", "#e0e0e0"]}
             style={styles.actionButtonGradient}
           >
             <Feather name="download" size={20} color={COLORS.primary} />
-            <Text
-              style={[styles.actionButtonText, { color: COLORS.greyscale900 }]}
-            >
-              Télécharger
-            </Text>
+            <Text style={styles.actionButtonText}>Télécharger</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
 
       {/* Related videos section */}
       <View style={styles.relatedVideosSection}>
-        <Text style={[styles.sectionTitle, { color: COLORS.greyscale900 }]}>
-          Vidéos supplémentaires
-        </Text>
+        <Text style={styles.sectionTitle}>Vidéos supplémentaires</Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -182,7 +160,7 @@ const VideoContent: React.FC<VideoContentProps> = ({ module }) => {
           {[1, 2, 3].map((item) => (
             <TouchableOpacity
               key={item}
-              style={[styles.relatedVideoItem, { backgroundColor: "#FFFFFF" }]}
+              style={styles.relatedVideoItem}
               activeOpacity={0.8}
             >
               <Image
@@ -192,13 +170,7 @@ const VideoContent: React.FC<VideoContentProps> = ({ module }) => {
               <View style={styles.relatedVideoOverlay}>
                 <Feather name="play-circle" size={28} color="#FFFFFF" />
               </View>
-              <Text
-                style={[
-                  styles.relatedVideoTitle,
-                  { color: COLORS.greyscale900 },
-                ]}
-                numberOfLines={2}
-              >
+              <Text style={styles.relatedVideoTitle} numberOfLines={2}>
                 {module.name} - Partie {item}
               </Text>
               <Text style={styles.relatedVideoDuration}>
@@ -274,6 +246,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   videoInfoContainer: {
+    backgroundColor: COLORS.white,
     padding: 16,
     borderRadius: 16,
     marginBottom: 16,
@@ -287,11 +260,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "bold",
     marginBottom: 8,
+    color: COLORS.greyscale900,
   },
   videoDescription: {
     fontSize: 14,
     lineHeight: 22,
     marginBottom: 16,
+    color: COLORS.greyScale800,
   },
   videoMetaContainer: {
     flexDirection: "row",
@@ -318,6 +293,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginHorizontal: 4,
     overflow: "hidden",
+    backgroundColor: COLORS.white,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -334,6 +310,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "medium",
     marginLeft: 6,
+    color: COLORS.greyscale900,
   },
   relatedVideosSection: {
     marginBottom: 24,
@@ -342,6 +319,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "bold",
     marginBottom: 16,
+    color: COLORS.greyscale900,
   },
   relatedVideosContainer: {
     paddingBottom: 8,
@@ -352,6 +330,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
     borderRadius: 12,
     overflow: "hidden",
+    backgroundColor: COLORS.white,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -376,6 +355,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "medium",
     padding: 12,
+    color: COLORS.greyscale900,
   },
   relatedVideoDuration: {
     position: "absolute",

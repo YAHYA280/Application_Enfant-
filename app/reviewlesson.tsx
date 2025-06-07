@@ -3,14 +3,19 @@ import type { RouteProp, NavigationProp } from "@react-navigation/native";
 import React, { useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRoute, useTheme, useNavigation } from "@react-navigation/native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import {
   View,
   Text,
   Animated,
   StyleSheet,
   TouchableOpacity,
+  StatusBar,
+  Platform,
 } from "react-native";
 
 import type { Module } from "@/data";
@@ -29,7 +34,7 @@ const ReviewLesson = () => {
   const route = useRoute<RouteProp<RootStackParamList, "reviewlesson">>();
   const { module } = route.params;
   const navigation = useNavigation<NavigationProp<any>>();
-  const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const [selectedTab, setSelectedTab] = useState<"video" | "materials">(
     "video"
   );
@@ -42,88 +47,108 @@ const ReviewLesson = () => {
     extrapolate: "clamp",
   });
 
+  // Calculate header height including safe area
+  const headerHeight = 60;
+  const totalHeaderHeight = headerHeight + insets.top;
+
   return (
-    <SafeAreaView style={[styles.area, { backgroundColor: colors.background }]}>
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        {/* Animated Header */}
-        <Animated.View
-          style={[
-            styles.headerBackground,
-            {
-              opacity: headerOpacity,
-              backgroundColor: "#FFFFFF",
-            },
-          ]}
-        >
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
+
+      {/* Animated Header */}
+      <Animated.View
+        style={[
+          styles.headerBackground,
+          {
+            opacity: headerOpacity,
+            backgroundColor: COLORS.white,
+            height: totalHeaderHeight,
+            paddingTop: insets.top,
+          },
+        ]}
+      >
+        <View style={styles.headerContent}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButtonFixed}
           >
-            <Feather name="arrow-left" size={24} color={COLORS.black} />
+            <Feather name="arrow-left" size={24} color={COLORS.greyscale900} />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: COLORS.black }]}>
-            {module.name} - Réviser
-          </Text>
-        </Animated.View>
+          <Text style={styles.headerTitle}>{module.name} - Réviser</Text>
+        </View>
+      </Animated.View>
 
-        <Animated.ScrollView
-          style={styles.scrollView}
-          showsVerticalScrollIndicator={false}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: false }
-          )}
-          scrollEventThrottle={16}
-        >
-          {/* Header */}
-          <View style={styles.heroContainer}>
-            <LinearGradient
-              colors={["#ff6040", "#ff8e69"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.heroGradient}
-            >
-              <View style={styles.heroContent}>
-                <TouchableOpacity
-                  onPress={() => navigation.goBack()}
-                  style={styles.backButton}
-                >
-                  <Feather name="arrow-left" size={24} color="#FFFFFF" />
-                </TouchableOpacity>
-
-                <View>
-                  <Text style={styles.moduleTitle}>{module.name}</Text>
-                  <Text style={styles.lessonTitle}>Matérial de révision</Text>
-                </View>
-
-                <View style={styles.progressIndicator}>
-                  <Text style={styles.progressText}>
-                    6 ressources disponibles
-                  </Text>
-                </View>
-              </View>
-            </LinearGradient>
-          </View>
-
-          <View
-            style={[styles.contentContainer, { backgroundColor: "#FFFFFF" }]}
+      <Animated.ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: Math.max(insets.bottom, 100) },
+        ]}
+      >
+        {/* Header */}
+        <View style={styles.heroContainer}>
+          <LinearGradient
+            colors={["#ff6040", "#ff8e69"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={[
+              styles.heroGradient,
+              {
+                paddingTop: insets.top + 60, // Account for status bar + extra padding
+              },
+            ]}
           >
-            {/* Tab Navigation */}
-            <HeaderTabs
-              selectedTab={selectedTab}
-              setSelectedTab={setSelectedTab}
-            />
+            <View style={styles.heroContent}>
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={styles.backButton}
+              >
+                <Feather name="arrow-left" size={24} color="#FFFFFF" />
+              </TouchableOpacity>
 
-            {/* Tab Content */}
-            {selectedTab === "video" ? (
-              <VideoContent module={module} />
-            ) : (
-              <MaterialsContent />
-            )}
-          </View>
-        </Animated.ScrollView>
+              <View>
+                <Text style={styles.moduleTitle}>{module.name}</Text>
+                <Text style={styles.lessonTitle}>Matérial de révision</Text>
+              </View>
 
-        {/* Enhanced Floating Action Button with text */}
+              <View style={styles.progressIndicator}>
+                <Text style={styles.progressText}>
+                  6 ressources disponibles
+                </Text>
+              </View>
+            </View>
+          </LinearGradient>
+        </View>
+
+        <View style={styles.contentContainer}>
+          {/* Tab Navigation */}
+          <HeaderTabs
+            selectedTab={selectedTab}
+            setSelectedTab={setSelectedTab}
+          />
+
+          {/* Tab Content */}
+          {selectedTab === "video" ? (
+            <VideoContent module={module} />
+          ) : (
+            <MaterialsContent />
+          )}
+        </View>
+      </Animated.ScrollView>
+
+      {/* Enhanced Floating Action Button with text */}
+      <View
+        style={[
+          styles.floatingButtonContainer,
+          { bottom: Math.max(insets.bottom, 20) },
+        ]}
+      >
         <TouchableOpacity style={styles.floatingButton}>
           <LinearGradient
             colors={["#ff6040", "#ff8e69"]}
@@ -136,29 +161,26 @@ const ReviewLesson = () => {
           </LinearGradient>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  area: {
-    flex: 1,
-  },
   container: {
     flex: 1,
+    backgroundColor: COLORS.white,
   },
   scrollView: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   headerBackground: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    height: 60,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
     zIndex: 100,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -166,10 +188,19 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 5,
   },
+  headerContent: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    height: 60,
+  },
   headerTitle: {
     fontSize: 18,
     fontFamily: "bold",
     marginLeft: 32,
+    color: COLORS.greyscale900,
+    flex: 1,
   },
   backButtonFixed: {
     width: 40,
@@ -183,7 +214,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   heroGradient: {
-    paddingTop: 60,
     paddingBottom: 30,
   },
   heroContent: {
@@ -225,11 +255,13 @@ const styles = StyleSheet.create({
     marginTop: -20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    backgroundColor: COLORS.white,
+  },
+  floatingButtonContainer: {
+    position: "absolute",
+    right: 20,
   },
   floatingButton: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
     borderRadius: 28,
     overflow: "hidden",
     shadowColor: "#000",

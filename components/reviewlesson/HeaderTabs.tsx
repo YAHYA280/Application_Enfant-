@@ -16,16 +16,14 @@ const HeaderTabs: React.FC<HeaderTabsProps> = ({
   setSelectedTab,
 }) => {
   return (
-    <View style={[styles.tabContainer, { backgroundColor: "#F5F5F5" }]}>
+    <View style={styles.tabContainer}>
       <TouchableOpacity
         style={[
           styles.tabButton,
           selectedTab === "video" && styles.activeTabButton,
-          selectedTab === "video" && {
-            backgroundColor: "#FFFFFF",
-          },
         ]}
         onPress={() => setSelectedTab("video")}
+        activeOpacity={0.7}
       >
         <Feather
           name="video"
@@ -36,10 +34,6 @@ const HeaderTabs: React.FC<HeaderTabsProps> = ({
           style={[
             styles.tabText,
             selectedTab === "video" && styles.activeTabText,
-            {
-              color:
-                selectedTab === "video" ? COLORS.primary : COLORS.greyScale800,
-            },
           ]}
         >
           Vidéo de cours
@@ -50,11 +44,9 @@ const HeaderTabs: React.FC<HeaderTabsProps> = ({
         style={[
           styles.tabButton,
           selectedTab === "materials" && styles.activeTabButton,
-          selectedTab === "materials" && {
-            backgroundColor: "#FFFFFF",
-          },
         ]}
         onPress={() => setSelectedTab("materials")}
+        activeOpacity={0.7}
       >
         <Feather
           name="file-text"
@@ -67,12 +59,6 @@ const HeaderTabs: React.FC<HeaderTabsProps> = ({
           style={[
             styles.tabText,
             selectedTab === "materials" && styles.activeTabText,
-            {
-              color:
-                selectedTab === "materials"
-                  ? COLORS.primary
-                  : COLORS.greyScale800,
-            },
           ]}
         >
           Supports de cours
@@ -89,6 +75,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 4,
     marginTop: 10,
+    backgroundColor: COLORS.greyscale100,
   },
   tabButton: {
     flex: 1,
@@ -99,6 +86,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   activeTabButton: {
+    backgroundColor: COLORS.white,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -109,6 +97,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "medium",
     marginLeft: 8,
+    color: COLORS.greyScale800,
   },
   activeTabText: {
     color: COLORS.primary,

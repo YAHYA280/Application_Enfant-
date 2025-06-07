@@ -8,11 +8,12 @@ import {
   FlatList,
   Keyboard,
   StyleSheet,
-  SafeAreaView,
+  StatusBar,
   TouchableOpacity,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { Question } from "@/data";
 import type { Message } from "@/contexts/types/chat";
@@ -37,6 +38,7 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
   onClose,
   currentQuestion,
 }) => {
+  const insets = useSafeAreaInsets();
   const [isQuestionVisible, setIsQuestionVisible] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
@@ -286,119 +288,135 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
       animationType="slide"
       transparent={false}
       onRequestClose={onClose}
+      statusBarTranslucent={Platform.OS === "android"}
     >
-      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-        <View style={{ flex: 1 }}>
-          {/* Modal Header */}
-          <View
-            style={[
-              styles.chatHeader,
-              { backgroundColor: COLORS.white },
-              { borderBottomColor: COLORS.greyscale300 },
-            ]}
-          >
-            <View style={styles.chatHeaderContent}>
-              <View style={styles.chatHeaderTitle}>
-                <MaterialCommunityIcons
-                  name="robot"
-                  size={24}
-                  color={COLORS.primary}
-                />
-                <Text
-                  style={[styles.headerTitle, { color: COLORS.greyscale900 }]}
-                >
-                  Assistant IA
-                </Text>
-              </View>
+      <View style={[styles.modalContainer, { backgroundColor: COLORS.white }]}>
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={COLORS.white}
+          translucent={Platform.OS === "android"}
+        />
 
-              <View style={styles.headerActions}>
-                <TouchableOpacity
-                  style={[
-                    styles.headerActionButton,
-                    {
-                      backgroundColor: isQuestionVisible
-                        ? COLORS.primary
-                        : "rgba(0,0,0,0.05)",
-                    },
-                  ]}
-                  onPress={() => setIsQuestionVisible(!isQuestionVisible)}
-                >
-                  <Text
-                    style={[
-                      styles.headerActionText,
-                      {
-                        color: isQuestionVisible
-                          ? "#FFFFFF"
-                          : COLORS.greyscale900,
-                      },
-                    ]}
-                  >
-                    {isQuestionVisible
-                      ? "Masquer la question"
-                      : "Voir la question"}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                  <Feather name="x" size={24} color={COLORS.greyscale900} />
-                </TouchableOpacity>
-              </View>
+        {/* Modal Header with proper safe area handling */}
+        <View
+          style={[
+            styles.chatHeader,
+            {
+              paddingTop: insets.top,
+              backgroundColor: COLORS.white,
+              borderBottomColor: COLORS.greyscale300,
+            },
+          ]}
+        >
+          <View style={styles.chatHeaderContent}>
+            <View style={styles.chatHeaderTitle}>
+              <MaterialCommunityIcons
+                name="robot"
+                size={24}
+                color={COLORS.primary}
+              />
+              <Text
+                style={[styles.headerTitle, { color: COLORS.greyscale900 }]}
+              >
+                Assistant IA
+              </Text>
             </View>
 
-            {/* Question Display */}
-            {isQuestionVisible && (
-              <View
+            <View style={styles.headerActions}>
+              <TouchableOpacity
                 style={[
-                  styles.questionContainer,
-                  { backgroundColor: "rgba(0,0,0,0.05)" },
+                  styles.headerActionButton,
+                  {
+                    backgroundColor: isQuestionVisible
+                      ? COLORS.primary
+                      : "rgba(0,0,0,0.05)",
+                  },
                 ]}
+                onPress={() => setIsQuestionVisible(!isQuestionVisible)}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
                 <Text
-                  style={[styles.questionText, { color: COLORS.greyscale900 }]}
+                  style={[
+                    styles.headerActionText,
+                    {
+                      color: isQuestionVisible
+                        ? "#FFFFFF"
+                        : COLORS.greyscale900,
+                    },
+                  ]}
                 >
-                  {currentQuestion.text}
+                  {isQuestionVisible
+                    ? "Masquer la question"
+                    : "Voir la question"}
                 </Text>
-              </View>
-            )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={onClose}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Feather name="x" size={24} color={COLORS.greyscale900} />
+              </TouchableOpacity>
+            </View>
           </View>
 
-          {/* Main Chat Area */}
-          <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 48 : 0}
-          >
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-              <View style={{ flex: 1 }}>
-                {/* Decorative Background */}
-                <ChatBackground>
-                  {/* Messages List */}
-                  <FlatList
-                    ref={flatListRef}
-                    data={messages}
-                    renderItem={({ item }) => (
-                      <MessageBubble
-                        message={item}
-                        onToggleLike={handleToggleLike}
-                        onRegenerate={handleRegenerate}
-                      />
-                    )}
-                    keyExtractor={(item) =>
-                      item.id || `message-${Date.now()}-${Math.random()}`
-                    }
-                    contentContainerStyle={[
-                      styles.messagesContainer,
-                      messages.length === 0 && { justifyContent: "center" },
-                    ]}
-                    showsVerticalScrollIndicator={false}
-                    keyboardShouldPersistTaps="handled"
-                    removeClippedSubviews={false}
-                  />
-                </ChatBackground>
-              </View>
-            </TouchableWithoutFeedback>
+          {/* Question Display */}
+          {isQuestionVisible && (
+            <View
+              style={[
+                styles.questionContainer,
+                { backgroundColor: "rgba(0,0,0,0.05)" },
+              ]}
+            >
+              <Text
+                style={[styles.questionText, { color: COLORS.greyscale900 }]}
+              >
+                {currentQuestion.text}
+              </Text>
+            </View>
+          )}
+        </View>
 
-            {/* Chat Input Component */}
+        {/* Main Chat Area */}
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.chatContent}>
+              {/* Decorative Background */}
+              <ChatBackground>
+                {/* Messages List */}
+                <FlatList
+                  ref={flatListRef}
+                  data={messages}
+                  renderItem={({ item }) => (
+                    <MessageBubble
+                      message={item}
+                      onToggleLike={handleToggleLike}
+                      onRegenerate={handleRegenerate}
+                    />
+                  )}
+                  keyExtractor={(item) =>
+                    item.id || `message-${Date.now()}-${Math.random()}`
+                  }
+                  contentContainerStyle={[
+                    styles.messagesContainer,
+                    messages.length === 0 && { justifyContent: "center" },
+                    { paddingBottom: Math.max(insets.bottom, 30) },
+                  ]}
+                  showsVerticalScrollIndicator={false}
+                  keyboardShouldPersistTaps="handled"
+                  removeClippedSubviews={false}
+                />
+              </ChatBackground>
+            </View>
+          </TouchableWithoutFeedback>
+
+          {/* Chat Input Component - positioned at absolute bottom */}
+          <View style={styles.inputContainer}>
             <ChatInput
               inputText={inputText}
               setInputText={setInputText}
@@ -415,22 +433,33 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
               audioPreviewUri={audioPreviewUri}
               audioLength={audioLength}
               removeAudioPreview={removeAudioPreview}
-              customPlaceholder="Posez votre question à l'assistant..."
+              customPlaceholder="Posez votre question..."
             />
-          </KeyboardAvoidingView>
-        </View>
-      </SafeAreaView>
+          </View>
+        </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: "transparent",
   },
+  chatContent: {
+    flex: 1,
+  },
+  inputContainer: {
+    backgroundColor: COLORS.white,
+    paddingBottom: Platform.OS === "ios" ? 10 : 0,
+  },
   chatHeader: {
     borderBottomWidth: 1,
+    paddingBottom: 0,
   },
   chatHeaderContent: {
     flexDirection: "row",
@@ -438,10 +467,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
+    minHeight: 56, // Ensure consistent height
   },
   chatHeaderTitle: {
     flexDirection: "row",
     alignItems: "center",
+    flex: 1,
   },
   headerTitle: {
     fontSize: 18,
@@ -464,6 +495,11 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     padding: 4,
+    borderRadius: 8,
+    minWidth: 32,
+    minHeight: 32,
+    alignItems: "center",
+    justifyContent: "center",
   },
   questionContainer: {
     padding: 16,

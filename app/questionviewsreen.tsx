@@ -2,7 +2,10 @@ import type { RouteProp, NavigationProp } from "@react-navigation/native";
 
 import React, { useRef, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import {
   View,
@@ -11,12 +14,12 @@ import {
   Animated,
   StyleSheet,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 
 import type { Exercice, Challenge } from "@/services/mock";
 
 import { COLORS } from "@/constants";
-import { useTheme } from "@/theme/ThemeProvider";
 import QuestionComponent from "@/components/QuestionComponent";
 import { mockExercices, challengeExerciceMap } from "@/services/mock";
 import { ChallengeHeader, ChallengeResultItem } from "@/components/challenge";
@@ -45,8 +48,8 @@ interface ExerciseAnswer {
 const ExerciseView = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, "exerciseview">>();
+  const insets = useSafeAreaInsets();
   const { challenge, exercice: initialExercice } = route.params;
-  const { colors } = useTheme();
 
   const [currentExercice, setCurrentExercice] =
     useState<Exercice>(initialExercice);
@@ -145,9 +148,12 @@ const ExerciseView = () => {
   const incorrectAnswers = userAnswers.filter((a) => !a.isCorrect).length;
 
   return (
-    <SafeAreaView
-      style={[styles.safeArea, { backgroundColor: colors.background }]}
-    >
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
+
+      {/* Safe area for status bar only */}
+      <SafeAreaView style={styles.statusBarSafeArea} edges={["top"]} />
+
       {/* Header */}
       <ChallengeHeader
         title={challenge.nom}
@@ -157,7 +163,12 @@ const ExerciseView = () => {
         }
       />
 
-      <View style={styles.container}>
+      <View
+        style={[
+          styles.mainContainer,
+          { paddingBottom: Math.max(insets.bottom, 16) },
+        ]}
+      >
         {showResults ? (
           <Animated.View
             style={[
@@ -197,11 +208,7 @@ const ExerciseView = () => {
 
             {/* Results List */}
             <View style={styles.resultsListContainer}>
-              <Text
-                style={[styles.sectionTitle, { color: COLORS.greyscale900 }]}
-              >
-                Vos réponses:
-              </Text>
+              <Text style={styles.sectionTitle}>Vos réponses:</Text>
 
               <FlatList
                 data={userAnswers}
@@ -250,11 +257,7 @@ const ExerciseView = () => {
         ) : (
           <View style={styles.exerciseContainer}>
             {/* Question Title */}
-            <Text
-              style={[styles.exerciseTitle, { color: COLORS.greyscale900 }]}
-            >
-              {currentExercice.titre}
-            </Text>
+            <Text style={styles.exerciseTitle}>{currentExercice.titre}</Text>
 
             {/* Progress Indicator */}
             <View style={styles.progressIndicator}>
@@ -284,15 +287,19 @@ const ExerciseView = () => {
           </View>
         )}
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
   container: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
+  statusBarSafeArea: {
+    backgroundColor: COLORS.white,
+  },
+  mainContainer: {
     flex: 1,
     padding: 16,
   },
@@ -303,6 +310,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontFamily: "bold",
     marginBottom: 16,
+    color: COLORS.greyscale900,
   },
   progressIndicator: {
     marginBottom: 24,
@@ -387,6 +395,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "bold",
     marginBottom: 16,
+    color: COLORS.greyscale900,
   },
   resultsList: {
     paddingBottom: 100,

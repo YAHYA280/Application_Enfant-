@@ -6,6 +6,10 @@ import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import {
   View,
   Text,
   Alert,
@@ -13,6 +17,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 
 import type { Module, Exercise } from "@/data";
@@ -22,7 +27,6 @@ import LessonSectionCard from "@/components/LessonSectionCard";
 import CourseProgressCircleBar from "@/components/CourseProgressCircleBar";
 
 import { SIZES, COLORS } from "../constants";
-import { useTheme } from "../theme/ThemeProvider";
 
 type RootStackParamList = {
   lessondetailsmore: { module: Module };
@@ -40,8 +44,8 @@ Dimensions.get("window");
 const LessonDetailsMore = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<{ params: { module: Module } }>>();
+  const insets = useSafeAreaInsets();
   const { module } = route.params;
-  const { colors } = useTheme();
 
   // Animation values for scroll effects
   const scrollY = React.useRef(new Animated.Value(0)).current;
@@ -61,6 +65,10 @@ const LessonDetailsMore = () => {
   const completionPercentage = Math.round(
     (module.numberOfLessonsCompleted / module.totalNumberOfLessons) * 100
   );
+
+  // Calculate header height including safe area
+  const headerHeight = 60;
+  const totalHeaderHeight = headerHeight + insets.top;
 
   const handleExercisePress = (exercise: Exercise) => {
     const moduleQuestionsForSubject =
@@ -87,8 +95,8 @@ const LessonDetailsMore = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <StatusBar style="dark" />
+    <View style={styles.container}>
+      <StatusBar style="dark" backgroundColor={COLORS.white} />
 
       {/* Animated Header Background */}
       <Animated.View
@@ -97,18 +105,20 @@ const LessonDetailsMore = () => {
           {
             opacity: headerOpacity,
             backgroundColor: COLORS.white,
+            height: totalHeaderHeight,
+            paddingTop: insets.top,
           },
         ]}
       >
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButtonFixed}
-        >
-          <Feather name="arrow-left" size={24} color={COLORS.black} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: COLORS.black }]}>
-          {module.name}
-        </Text>
+        <View style={styles.headerContent}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButtonFixed}
+          >
+            <Feather name="arrow-left" size={24} color={COLORS.greyscale900} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{module.name}</Text>
+        </View>
       </Animated.View>
 
       <Animated.ScrollView
@@ -119,6 +129,10 @@ const LessonDetailsMore = () => {
           { useNativeDriver: false }
         )}
         scrollEventThrottle={16}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: Math.max(insets.bottom, 24) },
+        ]}
       >
         {/* Hero Section with Image */}
         <View style={styles.heroContainer}>
@@ -132,14 +146,19 @@ const LessonDetailsMore = () => {
             colors={[
               "rgba(255,255,255,0)",
               "rgba(255,255,255,0.8)",
-              colors.background,
+              COLORS.white,
             ]}
             style={styles.imageOverlay}
           />
 
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={styles.backButton}
+            style={[
+              styles.backButton,
+              {
+                top: insets.top + 10, // Position below status bar with some padding
+              },
+            ]}
           >
             <View style={styles.backButtonInner}>
               <Feather name="arrow-left" size={24} color={COLORS.white} />
@@ -150,9 +169,7 @@ const LessonDetailsMore = () => {
         {/* Content Section */}
         <View style={styles.contentContainer}>
           {/* Module Info Card */}
-          <View
-            style={[styles.moduleInfoCard, { backgroundColor: COLORS.white }]}
-          >
+          <View style={styles.moduleInfoCard}>
             <LinearGradient
               colors={[
                 "rgba(255,142,105,0.3)",
@@ -168,11 +185,7 @@ const LessonDetailsMore = () => {
 
             <View style={styles.moduleInfoHeader}>
               <View style={styles.titleContainer}>
-                <Text
-                  style={[styles.moduleName, { color: COLORS.greyscale900 }]}
-                >
-                  {module.name}
-                </Text>
+                <Text style={styles.moduleName}>{module.name}</Text>
 
                 <View style={styles.categoryContainer}>
                   <LinearGradient
@@ -194,11 +207,7 @@ const LessonDetailsMore = () => {
               </View>
             </View>
 
-            <Text
-              style={[styles.descriptionText, { color: COLORS.grayscale700 }]}
-            >
-              {module.description}
-            </Text>
+            <Text style={styles.descriptionText}>{module.description}</Text>
 
             {/* Module stats - Reorganized to show one under another */}
             <View style={styles.statsContainer}>
@@ -206,14 +215,7 @@ const LessonDetailsMore = () => {
                 <View style={styles.statIconContainer}>
                   <Feather name="book-open" size={18} color={COLORS.primary} />
                 </View>
-                <Text
-                  style={[
-                    styles.statText,
-                    {
-                      color: COLORS.greyscale900,
-                    },
-                  ]}
-                >
+                <Text style={styles.statText}>
                   {module.numberOfLessonsCompleted} /{" "}
                   {module.totalNumberOfLessons} Exercices
                 </Text>
@@ -223,32 +225,14 @@ const LessonDetailsMore = () => {
                 <View style={styles.statIconContainer}>
                   <Feather name="clock" size={18} color={COLORS.primary} />
                 </View>
-                <Text
-                  style={[
-                    styles.statText,
-                    {
-                      color: COLORS.greyscale900,
-                    },
-                  ]}
-                >
-                  {module.estimatedTime}
-                </Text>
+                <Text style={styles.statText}>{module.estimatedTime}</Text>
               </View>
 
               <View style={styles.statItem}>
                 <View style={styles.statIconContainer}>
                   <Feather name="file-text" size={18} color={COLORS.primary} />
                 </View>
-                <Text
-                  style={[
-                    styles.statText,
-                    {
-                      color: COLORS.greyscale900,
-                    },
-                  ]}
-                >
-                  Documents
-                </Text>
+                <Text style={styles.statText}>Documents</Text>
               </View>
             </View>
 
@@ -277,11 +261,7 @@ const LessonDetailsMore = () => {
           {/* Exercises Section */}
           <View style={styles.exercisesSection}>
             <View style={styles.sectionHeader}>
-              <Text
-                style={[styles.sectionTitle, { color: COLORS.greyscale900 }]}
-              >
-                Exercices
-              </Text>
+              <Text style={styles.sectionTitle}>Exercices</Text>
 
               <View style={styles.exerciseCountContainer}>
                 <Text style={styles.exerciseCountText}>
@@ -321,15 +301,14 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  scrollContent: {
+    flexGrow: 1,
+  },
   headerBackground: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    height: 60,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
     zIndex: 100,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -337,10 +316,19 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 5,
   },
+  headerContent: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    height: 60,
+  },
   headerTitle: {
     fontSize: 18,
     fontFamily: "bold",
     marginLeft: 32,
+    color: COLORS.greyscale900,
+    flex: 1,
   },
   backButtonFixed: {
     width: 40,
@@ -367,7 +355,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 60,
     left: 30,
     zIndex: 10,
   },
@@ -388,9 +375,11 @@ const styles = StyleSheet.create({
     marginTop: -20,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
+    backgroundColor: COLORS.white,
     zIndex: 10,
   },
   moduleInfoCard: {
+    backgroundColor: COLORS.white,
     borderRadius: 20,
     padding: 20,
     marginBottom: 24,
@@ -423,6 +412,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontFamily: "bold",
     marginBottom: 12,
+    color: COLORS.greyscale900,
   },
   categoryContainer: {
     alignSelf: "flex-start",
@@ -442,12 +432,12 @@ const styles = StyleSheet.create({
   progressContainer: {
     alignItems: "center",
   },
-
   descriptionText: {
     fontSize: 16,
     fontFamily: "regular",
     lineHeight: 24,
     marginBottom: 24,
+    color: COLORS.greyScale800,
   },
   statsContainer: {
     paddingTop: 20,
@@ -475,6 +465,7 @@ const styles = StyleSheet.create({
   statText: {
     fontSize: 16,
     fontFamily: "medium",
+    color: COLORS.greyscale900,
   },
   reviewButton: {
     borderRadius: 15,
@@ -512,6 +503,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 22,
     fontFamily: "bold",
+    color: COLORS.greyscale900,
   },
   exerciseCountContainer: {
     backgroundColor: "rgba(255, 142, 105, 0.15)",

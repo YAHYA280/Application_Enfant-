@@ -5,7 +5,7 @@ import { useNavigation } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRoute, useTheme } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -14,7 +14,12 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  Platform,
 } from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { COLORS } from "@/constants";
 import ExerciseComponent from "@/components/ExerciceComponent";
@@ -31,8 +36,8 @@ type RootStackParamList = {
 
 const ExerciseView = () => {
   const navigation = useNavigation<NavigationProp<any>>();
-  const { colors } = useTheme();
   const route = useRoute<RouteProp<RootStackParamList, "exerciseview">>();
+  const insets = useSafeAreaInsets();
   const { module, exercise } = route.params;
   const exerciseQuestions = moduleQuestions[module.name][exercise.id] || [];
 
@@ -43,6 +48,10 @@ const ExerciseView = () => {
     outputRange: [0, 1],
     extrapolate: "clamp",
   });
+
+  // Calculate header height including safe area
+  const headerHeight = 60;
+  const totalHeaderHeight = headerHeight + insets.top;
 
   // Track progress
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -102,8 +111,8 @@ const ExerciseView = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <StatusBar style="dark" />
+    <View style={styles.container}>
+      <StatusBar style="dark" backgroundColor={COLORS.white} />
 
       {/* Animated Header */}
       <Animated.View
@@ -112,18 +121,20 @@ const ExerciseView = () => {
           {
             opacity: headerOpacity,
             backgroundColor: COLORS.white,
+            height: totalHeaderHeight,
+            paddingTop: insets.top,
           },
         ]}
       >
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButtonFixed}
-        >
-          <Feather name="arrow-left" size={24} color={COLORS.black} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: COLORS.black }]}>
-          {module.name} - Exercice
-        </Text>
+        <View style={styles.headerContent}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButtonFixed}
+          >
+            <Feather name="arrow-left" size={24} color={COLORS.greyscale900} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{module.name} - Exercice</Text>
+        </View>
       </Animated.View>
 
       <Animated.ScrollView
@@ -141,7 +152,12 @@ const ExerciseView = () => {
             colors={["#ff8e69", "#ffb692"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            style={styles.heroGradient}
+            style={[
+              styles.heroGradient,
+              {
+                paddingTop: insets.top + 60, // Account for status bar + extra padding
+              },
+            ]}
           >
             <View style={styles.heroContent}>
               <TouchableOpacity
@@ -172,9 +188,7 @@ const ExerciseView = () => {
 
         <View style={styles.contentContainer}>
           {/* Exercise Card */}
-          <View
-            style={[styles.exerciseCard, { backgroundColor: COLORS.white }]}
-          >
+          <View style={styles.exerciseCard}>
             <LinearGradient
               colors={[
                 "rgba(255,142,105,0.3)",
@@ -203,7 +217,12 @@ const ExerciseView = () => {
       </Animated.ScrollView>
 
       {/* Navigation Buttons */}
-      <View style={styles.navigationButtonsContainer}>
+      <View
+        style={[
+          styles.navigationButtonsContainer,
+          { paddingBottom: Math.max(insets.bottom, 16) },
+        ]}
+      >
         <TouchableOpacity
           onPress={handlePreviousQuestion}
           style={[
@@ -246,10 +265,6 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 60,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
     zIndex: 100,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -257,10 +272,19 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 5,
   },
+  headerContent: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    height: 60,
+  },
   headerTitle: {
     fontSize: 18,
     fontFamily: "bold",
     marginLeft: 32,
+    color: COLORS.greyscale900,
+    flex: 1,
   },
   backButtonFixed: {
     width: 40,
@@ -274,7 +298,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   heroGradient: {
-    paddingTop: 60,
     paddingBottom: 30,
   },
   heroContent: {
@@ -330,6 +353,7 @@ const styles = StyleSheet.create({
     marginTop: -15,
   },
   exerciseCard: {
+    backgroundColor: COLORS.white,
     borderRadius: 20,
     padding: 20,
     shadowColor: "#000",
@@ -356,7 +380,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingTop: 16,
     backgroundColor: "rgba(255,255,255,0.95)",
     borderTopWidth: 1,
     borderTopColor: "rgba(0,0,0,0.05)",

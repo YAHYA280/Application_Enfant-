@@ -95,34 +95,19 @@ const MaterialsContent: React.FC<MaterialsContentProps> = () => {
   });
 
   const renderMaterialItem = ({ item }: { item: MaterialItem }) => (
-    <TouchableOpacity
-      style={[styles.materialItem, { backgroundColor: "#FFFFFF" }]}
-      activeOpacity={0.7}
-    >
+    <TouchableOpacity style={styles.materialItem} activeOpacity={0.7}>
       <View style={styles.materialItemContent}>
-        <View
-          style={[
-            styles.materialIconContainer,
-            {
-              backgroundColor: "rgba(255, 142, 105, 0.15)",
-            },
-          ]}
-        >
+        <View style={styles.materialIconContainer}>
           <Image
             source={item.icon}
-            style={[styles.materialIcon, { tintColor: COLORS.primary }]}
+            style={styles.materialIcon}
             resizeMode="contain"
           />
         </View>
 
         <View style={styles.materialInfo}>
-          <Text style={[styles.materialTitle, { color: COLORS.greyscale900 }]}>
-            {item.title}
-          </Text>
-          <Text
-            style={[styles.materialDescription, { color: COLORS.greyScale800 }]}
-            numberOfLines={2}
-          >
+          <Text style={styles.materialTitle}>{item.title}</Text>
+          <Text style={styles.materialDescription} numberOfLines={2}>
             {item.description}
           </Text>
           <Text style={styles.materialMeta}>
@@ -130,12 +115,7 @@ const MaterialsContent: React.FC<MaterialsContentProps> = () => {
           </Text>
         </View>
 
-        <TouchableOpacity
-          style={[
-            styles.downloadButton,
-            { backgroundColor: "rgba(0,0,0,0.05)" },
-          ]}
-        >
+        <TouchableOpacity style={styles.downloadButton}>
           <Feather name="download" size={20} color={COLORS.primary} />
         </TouchableOpacity>
       </View>
@@ -154,17 +134,10 @@ const MaterialsContent: React.FC<MaterialsContentProps> = () => {
   return (
     <View style={styles.materialsTabContent}>
       <View style={styles.materialsHeaderContainer}>
-        <Text
-          style={[styles.materialsHeaderTitle, { color: COLORS.greyscale900 }]}
-        >
+        <Text style={styles.materialsHeaderTitle}>
           Supports de cours disponibles
         </Text>
-        <Text
-          style={[
-            styles.materialsHeaderSubtitle,
-            { color: COLORS.greyScale800 },
-          ]}
-        >
+        <Text style={styles.materialsHeaderSubtitle}>
           Téléchargez ces ressources pour approfondir votre apprentissage
         </Text>
       </View>
@@ -181,10 +154,6 @@ const MaterialsContent: React.FC<MaterialsContentProps> = () => {
               style={[
                 styles.categoryChip,
                 selectedCategory === category && styles.activeCategoryChip,
-                {
-                  backgroundColor:
-                    selectedCategory !== category ? "#F5F5F5" : undefined,
-                },
               ]}
               onPress={() => setSelectedCategory(category)}
             >
@@ -193,12 +162,6 @@ const MaterialsContent: React.FC<MaterialsContentProps> = () => {
                   styles.categoryChipText,
                   selectedCategory === category &&
                     styles.activeCategoryChipText,
-                  {
-                    color:
-                      selectedCategory !== category
-                        ? COLORS.greyScale800
-                        : undefined,
-                  },
                 ]}
               >
                 {category}
@@ -214,22 +177,13 @@ const MaterialsContent: React.FC<MaterialsContentProps> = () => {
           renderItem={renderMaterialItem}
           keyExtractor={(item) => item.id}
           scrollEnabled={false}
-          ItemSeparatorComponent={() => (
-            <View
-              style={[
-                styles.separator,
-                {
-                  backgroundColor: "rgba(0,0,0,0.05)",
-                },
-              ]}
-            />
-          )}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
           contentContainerStyle={styles.materialsListContent}
         />
       ) : (
         <View style={styles.emptyStateContainer}>
           <Feather name="inbox" size={50} color={COLORS.greyscale400} />
-          <Text style={[styles.emptyStateText, { color: COLORS.greyScale800 }]}>
+          <Text style={styles.emptyStateText}>
             Aucun document disponible dans cette catégorie
           </Text>
         </View>
@@ -249,10 +203,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "bold",
     marginBottom: 8,
+    color: COLORS.greyscale900,
   },
   materialsHeaderSubtitle: {
     fontSize: 14,
     lineHeight: 20,
+    color: COLORS.greyScale800,
   },
   materialsCategoriesContainer: {
     marginBottom: 20,
@@ -265,6 +221,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 8,
+    backgroundColor: COLORS.greyscale100,
   },
   activeCategoryChip: {
     backgroundColor: COLORS.primary,
@@ -272,14 +229,16 @@ const styles = StyleSheet.create({
   categoryChipText: {
     fontSize: 12,
     fontFamily: "medium",
+    color: COLORS.greyScale800,
   },
   activeCategoryChipText: {
-    color: "#FFFFFF",
+    color: COLORS.white,
   },
   materialsListContent: {
     paddingBottom: 20,
   },
   materialItem: {
+    backgroundColor: COLORS.white,
     borderRadius: 12,
     marginBottom: 12,
     shadowColor: "#000",
@@ -298,6 +257,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 8,
+    backgroundColor: "rgba(255, 142, 105, 0.15)",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -305,6 +265,7 @@ const styles = StyleSheet.create({
   materialIcon: {
     width: 24,
     height: 24,
+    tintColor: COLORS.primary,
   },
   materialInfo: {
     flex: 1,
@@ -314,11 +275,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "medium",
     marginBottom: 4,
+    color: COLORS.greyscale900,
   },
   materialDescription: {
     fontSize: 12,
     lineHeight: 18,
     marginBottom: 6,
+    color: COLORS.greyScale800,
   },
   materialMeta: {
     fontSize: 10,
@@ -329,12 +292,14 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
+    backgroundColor: "rgba(0,0,0,0.05)",
     justifyContent: "center",
     alignItems: "center",
   },
   separator: {
     height: 1,
     marginVertical: 8,
+    backgroundColor: "rgba(0,0,0,0.05)",
   },
   emptyStateContainer: {
     alignItems: "center",
@@ -346,6 +311,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     fontFamily: "medium",
+    color: COLORS.greyScale800,
   },
 });
 

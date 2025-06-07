@@ -5,6 +5,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 
 import { icons, COLORS } from "@/constants";
@@ -23,48 +24,28 @@ const LearningSearchBar: React.FC<LearningSearchBarProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onCancel} style={styles.backButton}>
+      <TouchableOpacity
+        onPress={onCancel}
+        style={styles.backButton}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      >
         <Image
           source={icons.back}
           resizeMode="contain"
-          style={[
-            styles.backIcon,
-            {
-              tintColor: COLORS.greyscale900,
-            },
-          ]}
+          style={styles.backIcon}
         />
       </TouchableOpacity>
 
       <View style={styles.searchInputContainer}>
-        <View
-          style={[
-            styles.searchBar,
-            {
-              backgroundColor: COLORS.grayscale100,
-              borderColor: "transparent",
-              borderWidth: 0,
-            },
-          ]}
-        >
+        <View style={styles.searchBar}>
           <Image
             source={icons.search3}
-            style={[
-              styles.searchIcon,
-              {
-                tintColor: COLORS.greyscale600,
-              },
-            ]}
+            style={styles.searchIcon}
             resizeMode="contain"
           />
 
           <TextInput
-            style={[
-              styles.searchInput,
-              {
-                color: COLORS.greyscale900,
-              },
-            ]}
+            style={styles.searchInput}
             value={searchQuery}
             onChangeText={onChangeText}
             placeholder="Rechercher des leçons..."
@@ -76,15 +57,11 @@ const LearningSearchBar: React.FC<LearningSearchBarProps> = ({
             <TouchableOpacity
               style={styles.clearButton}
               onPress={() => onChangeText("")}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <Image
                 source={icons.clear}
-                style={[
-                  styles.clearIcon,
-                  {
-                    tintColor: COLORS.greyscale600,
-                  },
-                ]}
+                style={styles.clearIcon}
                 resizeMode="contain"
               />
             </TouchableOpacity>
@@ -100,7 +77,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: Platform.OS === "ios" ? 12 : 10,
+    minHeight: Platform.OS === "ios" ? 60 : 56,
   },
   backButton: {
     marginRight: 12,
@@ -110,6 +88,7 @@ const styles = StyleSheet.create({
   backIcon: {
     width: 24,
     height: 24,
+    tintColor: COLORS.greyscale900,
   },
   searchInputContainer: {
     flex: 1,
@@ -120,17 +99,21 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 12,
     height: 46,
+    backgroundColor: COLORS.greyscale100,
+    borderWidth: 0,
   },
   searchIcon: {
     width: 20,
     height: 20,
     marginRight: 10,
+    tintColor: COLORS.greyscale600,
   },
   searchInput: {
     flex: 1,
     height: "100%",
     fontSize: 16,
     fontFamily: "regular",
+    color: COLORS.greyscale900,
   },
   clearButton: {
     padding: 6,
@@ -138,6 +121,7 @@ const styles = StyleSheet.create({
   clearIcon: {
     width: 18,
     height: 18,
+    tintColor: COLORS.greyscale600,
   },
 });
 

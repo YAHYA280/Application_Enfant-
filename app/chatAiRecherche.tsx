@@ -11,20 +11,17 @@ import {
   Platform,
   Keyboard,
   StyleSheet,
-  StatusBar,
+  SafeAreaView,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
 } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
 
 import type { Message, ChatHistory } from "@/contexts/types/chat";
 
 import { icons, COLORS } from "@/constants";
 import { MOCK_AI_RESPONSES, MOCK_CHAT_HISTORY } from "@/data/_mock/_chat";
 
+import { useTheme } from "../theme/ThemeProvider";
 import ChatInput from "../components/chat/ChatInput";
 import ChatHeader from "../components/chat/ChatHeader";
 import MessageBubble from "../components/MessageBubble";
@@ -34,9 +31,9 @@ import ChatAiWelcomeRecherche from "../components/chat/ChatAiWelcomeRecherche";
 
 export default function ChatAiRecherche() {
   const navigation = useNavigation<NavigationProp<any>>();
-  const insets = useSafeAreaInsets();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
+  const { colors } = useTheme();
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const flatListRef = useRef<FlatList | null>(null);
 
@@ -312,77 +309,67 @@ export default function ChatAiRecherche() {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
+      <View style={{ flex: 1 }}>
+        {/* Chat History Drawer */}
+        <ChatHistoryDrawer
+          isVisible={isDrawerVisible}
+          onClose={() => setIsDrawerVisible(false)}
+          chatHistory={chatHistory}
+          loadChatHistory={loadChatHistory}
+          startNewChat={startNewChat}
+        />
 
-      {/* Safe area for status bar only */}
-      <SafeAreaView style={styles.statusBarSafeArea} edges={["top"]} />
+        {/* Chat Header */}
+        <ChatHeader
+          title="AI Recherche"
+          navigation={navigation}
+          onShowHistory={() => setIsDrawerVisible(true)}
+          icons={icons}
+        />
 
-      {/* Chat History Drawer */}
-      <ChatHistoryDrawer
-        isVisible={isDrawerVisible}
-        onClose={() => setIsDrawerVisible(false)}
-        chatHistory={chatHistory}
-        loadChatHistory={loadChatHistory}
-        startNewChat={startNewChat}
-      />
-
-      {/* Chat Header */}
-      <ChatHeader
-        title="AI Recherche"
-        navigation={navigation}
-        onShowHistory={() => setIsDrawerVisible(true)}
-        icons={icons}
-      />
-
-      {/* Main Chat Area */}
-      <KeyboardAvoidingView
-        style={styles.keyboardView}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
-      >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.chatContainer}>
-            {/* Decorative Background */}
-            <ChatBackground>
-              {/* Custom Welcome component for first load */}
-              {isFirstLoad && messages.length === 0 && (
-                <ChatAiWelcomeRecherche />
-              )}
-
-              {/* Messages List */}
-              <FlatList
-                ref={flatListRef}
-                data={messages}
-                renderItem={({ item }) => (
-                  <MessageBubble
-                    message={item}
-                    onToggleLike={handleToggleLike}
-                    onRegenerate={handleRegenerate}
-                  />
-                )}
-                keyExtractor={(item) =>
-                  item.id || `message-${Date.now()}-${Math.random()}`
-                }
-                contentContainerStyle={[
-                  styles.messagesContainer,
-                  messages.length === 0 && { justifyContent: "center" },
-                ]}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-                removeClippedSubviews={false}
-              />
-            </ChatBackground>
-          </View>
-        </TouchableWithoutFeedback>
-
-        {/* Chat Input Component with custom placeholder and safe area for home indicator */}
-        <View
-          style={[
-            styles.inputWrapper,
-            { paddingBottom: Math.max(insets.bottom, 8) },
-          ]}
+        {/* Main Chat Area */}
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 48 : 0}
         >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={{ flex: 1 }}>
+              {/* Decorative Background */}
+              <ChatBackground>
+                {/* Custom Welcome component for first load */}
+                {isFirstLoad && messages.length === 0 && (
+                  <ChatAiWelcomeRecherche />
+                )}
+
+                {/* Messages List */}
+                <FlatList
+                  ref={flatListRef}
+                  data={messages}
+                  renderItem={({ item }) => (
+                    <MessageBubble
+                      message={item}
+                      onToggleLike={handleToggleLike}
+                      onRegenerate={handleRegenerate}
+                    />
+                  )}
+                  keyExtractor={(item) =>
+                    item.id || `message-${Date.now()}-${Math.random()}`
+                  }
+                  contentContainerStyle={[
+                    styles.messagesContainer,
+                    messages.length === 0 && { justifyContent: "center" },
+                  ]}
+                  showsVerticalScrollIndicator={false}
+                  keyboardShouldPersistTaps="handled"
+                  removeClippedSubviews={false}
+                />
+              </ChatBackground>
+            </View>
+          </TouchableWithoutFeedback>
+
+          {/* Chat Input Component with custom placeholder */}
           <ChatInput
             inputText={inputText}
             setInputText={setInputText}
@@ -402,32 +389,20 @@ export default function ChatAiRecherche() {
             // Custom placeholder text for AI Recherche
             customPlaceholder="Tapez votre sujet ici ..!"
           />
-        </View>
-      </KeyboardAvoidingView>
-    </View>
+        </KeyboardAvoidingView>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
-  },
-  statusBarSafeArea: {
-    backgroundColor: COLORS.white,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  chatContainer: {
-    flex: 1,
+    backgroundColor: "transparent",
   },
   messagesContainer: {
     padding: 10,
     flexGrow: 1,
     justifyContent: "flex-end",
-  },
-  inputWrapper: {
-    backgroundColor: COLORS.white,
   },
 });

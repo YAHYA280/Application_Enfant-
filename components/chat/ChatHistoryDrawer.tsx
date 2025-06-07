@@ -8,14 +8,12 @@ import {
   ScrollView,
   Dimensions,
   TouchableOpacity,
-  Platform,
-  StatusBar,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { ChatHistory } from "@/contexts/types/chat";
 
 import { COLORS } from "@/constants";
+import { useTheme } from "@/theme/ThemeProvider";
 
 interface ChatHistoryDrawerProps {
   isVisible: boolean;
@@ -25,8 +23,7 @@ interface ChatHistoryDrawerProps {
   startNewChat: () => void;
 }
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-const DRAWER_WIDTH = Math.min(SCREEN_WIDTH * 0.85, 380);
+const { height } = Dimensions.get("window");
 
 const ChatHistoryDrawer: React.FC<ChatHistoryDrawerProps> = ({
   isVisible,
@@ -35,21 +32,7 @@ const ChatHistoryDrawer: React.FC<ChatHistoryDrawerProps> = ({
   loadChatHistory,
   startNewChat,
 }) => {
-  const insets = useSafeAreaInsets();
-
-  // Better Android positioning calculation
-  const getDrawerTop = () => {
-    if (Platform.OS === "ios") {
-      return insets.top;
-    }
-
-    // For Android, we need to account for status bar properly
-    const statusBarHeight = StatusBar.currentHeight || 0;
-    return statusBarHeight;
-  };
-
-  const drawerTop = getDrawerTop();
-  const drawerHeight = SCREEN_HEIGHT - drawerTop;
+  const { dark } = useTheme();
 
   return (
     <Modal
@@ -57,96 +40,87 @@ const ChatHistoryDrawer: React.FC<ChatHistoryDrawerProps> = ({
       transparent
       visible={isVisible}
       onRequestClose={onClose}
-      statusBarTranslucent={Platform.OS === "android"}
     >
-      <TouchableOpacity
-        style={styles.drawerOverlay}
-        activeOpacity={1}
-        onPress={onClose}
-      >
-        <TouchableOpacity
-          activeOpacity={1}
+      <View style={styles.drawerOverlay}>
+        <View
           style={[
             styles.drawerContainer,
             {
-              top: drawerTop,
-              height: drawerHeight,
-              width: DRAWER_WIDTH,
+              backgroundColor: dark ? COLORS.dark1 : COLORS.white,
+              borderLeftColor: dark ? COLORS.dark3 : COLORS.greyscale300,
             },
           ]}
-          onPress={(e) => e.stopPropagation()}
         >
-          <View style={styles.drawerContent}>
-            {/* Header with proper spacing */}
-            <View
+          <View style={styles.drawerHeader}>
+            <Text
               style={[
-                styles.drawerHeader,
-                Platform.OS === "android" && { paddingTop: 8 },
+                styles.drawerHeaderTitle,
+                { color: dark ? COLORS.white : COLORS.greyscale900 },
               ]}
             >
-              <Text style={styles.drawerHeaderTitle}>
-                Historique des Discussions
-              </Text>
-              <TouchableOpacity
-                onPress={onClose}
-                style={styles.closeButton}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <Ionicons name="close" size={24} color={COLORS.greyscale900} />
-              </TouchableOpacity>
-            </View>
+              Historique des Discussions
+            </Text>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Ionicons
+                name="close"
+                size={24}
+                color={dark ? COLORS.white : COLORS.greyscale900}
+              />
+            </TouchableOpacity>
+          </View>
 
-            {/* Scrollable content */}
-            <ScrollView
-              style={styles.historyList}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.historyListContent}
-              bounces={Platform.OS === "ios"}
-            >
-              {chatHistory.map((chat, index) => (
-                <TouchableOpacity
-                  key={chat.id || `chat-${index}`}
-                  style={styles.chatHistoryItem}
-                  onPress={() => loadChatHistory(chat)}
-                  activeOpacity={0.7}
+          <ScrollView style={styles.historyList}>
+            {chatHistory.map((chat, index) => (
+              <TouchableOpacity
+                key={chat.id || `chat-${index}`}
+                style={[
+                  styles.chatHistoryItem,
+                  {
+                    backgroundColor: dark ? COLORS.dark2 : COLORS.white,
+                    borderBottomColor: dark
+                      ? COLORS.dark3
+                      : COLORS.greyscale300,
+                  },
+                ]}
+                onPress={() => loadChatHistory(chat)}
+              >
+                <View style={styles.chatInfo}>
+                  <Text
+                    style={[
+                      styles.chatHistoryTitle,
+                      { color: dark ? COLORS.white : COLORS.greyscale900 },
+                    ]}
+                  >
+                    {chat.title}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.chatHistorySubtitle,
+                      { color: dark ? COLORS.gray : COLORS.greyscale900 },
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {chat.lastMessage}
+                  </Text>
+                </View>
+                <Text
+                  style={[
+                    styles.chatHistoryDate,
+                    { color: dark ? COLORS.gray : COLORS.greyscale600 },
+                  ]}
                 >
-                  <View style={styles.chatInfo}>
-                    <Text style={styles.chatHistoryTitle} numberOfLines={1}>
-                      {chat.title}
-                    </Text>
-                    <Text style={styles.chatHistorySubtitle} numberOfLines={2}>
-                      {chat.lastMessage}
-                    </Text>
-                  </View>
-                  <Text style={styles.chatHistoryDate}>{chat.date}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-
-            {/* Bottom section with proper safe area */}
-            <View
-              style={[
-                styles.bottomSection,
-                {
-                  paddingBottom:
-                    Platform.OS === "ios" ? Math.max(insets.bottom, 16) : 20, // Fixed padding for Android
-                },
-              ]}
-            >
-              <TouchableOpacity
-                style={styles.newChatButton}
-                onPress={startNewChat}
-                activeOpacity={0.8}
-              >
-                <Ionicons name="add" size={24} color={COLORS.white} />
-                <Text style={styles.newChatButtonText}>
-                  Nouvelle Discussion
+                  {chat.date}
                 </Text>
               </TouchableOpacity>
-            </View>
-          </View>
-        </TouchableOpacity>
-      </TouchableOpacity>
+            ))}
+          </ScrollView>
+
+          <TouchableOpacity style={styles.newChatButton} onPress={startNewChat}>
+            <Ionicons name="add" size={24} color={COLORS.white} />
+            <Text style={styles.newChatButtonText}>Nouvelle Discussion</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </Modal>
   );
 };
@@ -159,120 +133,87 @@ const styles = StyleSheet.create({
   drawerContainer: {
     position: "absolute",
     right: 0,
-    backgroundColor: COLORS.white,
+    top: 45,
+    bottom: 0,
+    width: "80%",
+    backgroundColor: "white",
+    padding: 16,
     borderLeftWidth: 1,
-    borderLeftColor: COLORS.greyscale300,
-    borderTopLeftRadius: Platform.OS === "android" ? 16 : 20,
-    borderBottomLeftRadius: Platform.OS === "android" ? 0 : 20,
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
     shadowColor: "#000",
     shadowOffset: { width: -2, height: 0 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: Platform.OS === "android" ? 16 : 8,
-  },
-  drawerContent: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: Platform.OS === "android" ? 16 : 20,
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
   },
   drawerHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingBottom: 16,
-    marginBottom: 16,
+    marginBottom: 20,
+    paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.greyscale300,
-    minHeight: 50,
+    borderBottomColor: "#E0E0E0",
+    marginTop: 8,
   },
   drawerHeaderTitle: {
-    fontSize: Platform.OS === "android" ? 17 : 18,
+    fontSize: 20,
     fontWeight: "bold",
-    color: COLORS.greyscale900,
-    flex: 1,
-    lineHeight: Platform.OS === "android" ? 24 : 22,
   },
   closeButton: {
     padding: 8,
-    borderRadius: 8,
-    backgroundColor: COLORS.greyscale100,
-    marginLeft: 12,
-    minWidth: 40,
-    minHeight: 40,
-    alignItems: "center",
-    justifyContent: "center",
   },
   historyList: {
     flex: 1,
-    maxHeight: SCREEN_HEIGHT * 0.6, // Ensure it doesn't take too much space
-  },
-  historyListContent: {
-    paddingBottom: 16,
-    flexGrow: 1,
   },
   chatHistoryItem: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-    paddingVertical: Platform.OS === "android" ? 16 : 14,
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: COLORS.greyscale300,
-    borderRadius: 12,
-    marginBottom: 10,
-    backgroundColor: COLORS.greyscale100,
-    minHeight: Platform.OS === "android" ? 70 : 60,
+    alignItems: "center",
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderRadius: 8,
+    marginBottom: 8,
+    paddingHorizontal: 12,
   },
   chatInfo: {
     flex: 1,
-    marginRight: 12,
-    justifyContent: "center",
+    marginRight: 10,
   },
   chatHistoryTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "600",
-    marginBottom: 6,
-    color: COLORS.greyscale900,
-    lineHeight: 20,
+    marginBottom: 4,
   },
   chatHistorySubtitle: {
-    fontSize: 13,
-    lineHeight: 18,
-    color: COLORS.greyscale600,
+    fontSize: 14,
+    color: "grey",
   },
   chatHistoryDate: {
-    fontSize: 11,
-    marginTop: 2,
-    color: COLORS.greyscale500,
-    lineHeight: 14,
-  },
-  bottomSection: {
-    paddingTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.greyscale300,
-    backgroundColor: COLORS.white,
+    fontSize: 12,
+    color: "grey",
   },
   newChatButton: {
     flexDirection: "row",
     backgroundColor: COLORS.primary,
-    paddingVertical: Platform.OS === "android" ? 18 : 16,
-    paddingHorizontal: 20,
-    borderRadius: 16,
+    padding: 16,
+    borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
+    marginTop: 16,
+    marginBottom: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: Platform.OS === "android" ? 8 : 4,
-    minHeight: Platform.OS === "android" ? 56 : 50,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
   newChatButtonText: {
-    color: COLORS.white,
-    marginLeft: 10,
+    color: "white",
+    marginLeft: 8,
     fontWeight: "600",
-    fontSize: 15,
-    lineHeight: 20,
+    fontSize: 16,
   },
 });
 

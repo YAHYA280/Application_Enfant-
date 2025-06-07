@@ -31,7 +31,7 @@ type RootStackParamList = {
 
 const ExerciseView = () => {
   const navigation = useNavigation<NavigationProp<any>>();
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
   const route = useRoute<RouteProp<RootStackParamList, "exerciseview">>();
   const { module, exercise } = route.params;
   const exerciseQuestions = moduleQuestions[module.name][exercise.id] || [];
@@ -103,7 +103,7 @@ const ExerciseView = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <StatusBar style={dark ? "light" : "dark"} />
+      <StatusBar style="dark" />
 
       {/* Animated Header */}
       <Animated.View
@@ -111,7 +111,7 @@ const ExerciseView = () => {
           styles.headerBackground,
           {
             opacity: headerOpacity,
-            backgroundColor: dark ? COLORS.dark1 : COLORS.white,
+            backgroundColor: COLORS.white,
           },
         ]}
       >
@@ -119,18 +119,9 @@ const ExerciseView = () => {
           onPress={() => navigation.goBack()}
           style={styles.backButtonFixed}
         >
-          <Feather
-            name="arrow-left"
-            size={24}
-            color={dark ? COLORS.white : COLORS.black}
-          />
+          <Feather name="arrow-left" size={24} color={COLORS.black} />
         </TouchableOpacity>
-        <Text
-          style={[
-            styles.headerTitle,
-            { color: dark ? COLORS.white : COLORS.black },
-          ]}
-        >
+        <Text style={[styles.headerTitle, { color: COLORS.black }]}>
           {module.name} - Exercice
         </Text>
       </Animated.View>
@@ -147,7 +138,7 @@ const ExerciseView = () => {
         {/* Header */}
         <View style={styles.heroContainer}>
           <LinearGradient
-            colors={dark ? ["#ff6040", "#ff8e69"] : ["#ff8e69", "#ffb692"]}
+            colors={["#ff8e69", "#ffb692"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.heroGradient}
@@ -182,27 +173,15 @@ const ExerciseView = () => {
         <View style={styles.contentContainer}>
           {/* Exercise Card */}
           <View
-            style={[
-              styles.exerciseCard,
-              { backgroundColor: dark ? COLORS.dark2 : COLORS.white },
-            ]}
+            style={[styles.exerciseCard, { backgroundColor: COLORS.white }]}
           >
             <LinearGradient
-              colors={
-                dark
-                  ? [
-                      "rgba(255,100,64,0.25)",
-                      "rgba(30,30,30,0)",
-                      "rgba(30,30,30,0)",
-                      "rgba(255,100,64,0.25)",
-                    ]
-                  : [
-                      "rgba(255,142,105,0.3)",
-                      "rgba(255,255,255,0)",
-                      "rgba(255,255,255,0)",
-                      "rgba(255,142,105,0.3)",
-                    ]
-              }
+              colors={[
+                "rgba(255,142,105,0.3)",
+                "rgba(255,255,255,0)",
+                "rgba(255,255,255,0)",
+                "rgba(255,142,105,0.3)",
+              ]}
               locations={[0, 0.3, 0.7, 1]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}

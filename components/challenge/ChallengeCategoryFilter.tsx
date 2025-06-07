@@ -19,23 +19,16 @@ interface ChallengeCategoryFilterProps {
   categories: Category[];
   selectedCategory: string;
   onSelectCategory: (categoryId: string) => void;
-  dark: boolean;
 }
 
 const ChallengeCategoryFilter: React.FC<ChallengeCategoryFilterProps> = ({
   categories,
   selectedCategory,
   onSelectCategory,
-  dark,
 }) => {
   return (
     <View style={styles.container}>
-      <Text
-        style={[
-          styles.filterTitle,
-          { color: dark ? COLORS.white : COLORS.greyscale900 },
-        ]}
-      >
+      <Text style={[styles.filterTitle, { color: COLORS.greyscale900 }]}>
         Catégories
       </Text>
 
@@ -69,17 +62,15 @@ const ChallengeCategoryFilter: React.FC<ChallengeCategoryFilterProps> = ({
                   style={[
                     styles.categoryItem,
                     {
-                      backgroundColor: dark
-                        ? COLORS.dark2
-                        : COLORS.greyscale100,
-                      borderColor: dark ? COLORS.dark3 : COLORS.greyscale300,
+                      backgroundColor: COLORS.greyscale100,
+                      borderColor: COLORS.greyscale300,
                     },
                   ]}
                 >
                   <Text
                     style={[
                       styles.categoryText,
-                      { color: dark ? COLORS.white : COLORS.greyscale900 },
+                      { color: COLORS.greyscale900 },
                     ]}
                   >
                     {category.name}

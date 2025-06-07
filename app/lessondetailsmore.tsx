@@ -41,7 +41,7 @@ const LessonDetailsMore = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<{ params: { module: Module } }>>();
   const { module } = route.params;
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
 
   // Animation values for scroll effects
   const scrollY = React.useRef(new Animated.Value(0)).current;
@@ -88,7 +88,7 @@ const LessonDetailsMore = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <StatusBar style={dark ? "light" : "dark"} />
+      <StatusBar style="dark" />
 
       {/* Animated Header Background */}
       <Animated.View
@@ -96,7 +96,7 @@ const LessonDetailsMore = () => {
           styles.headerBackground,
           {
             opacity: headerOpacity,
-            backgroundColor: dark ? COLORS.dark1 : COLORS.white,
+            backgroundColor: COLORS.white,
           },
         ]}
       >
@@ -104,18 +104,9 @@ const LessonDetailsMore = () => {
           onPress={() => navigation.goBack()}
           style={styles.backButtonFixed}
         >
-          <Feather
-            name="arrow-left"
-            size={24}
-            color={dark ? COLORS.white : COLORS.black}
-          />
+          <Feather name="arrow-left" size={24} color={COLORS.black} />
         </TouchableOpacity>
-        <Text
-          style={[
-            styles.headerTitle,
-            { color: dark ? COLORS.white : COLORS.black },
-          ]}
-        >
+        <Text style={[styles.headerTitle, { color: COLORS.black }]}>
           {module.name}
         </Text>
       </Animated.View>
@@ -138,15 +129,11 @@ const LessonDetailsMore = () => {
           />
 
           <LinearGradient
-            colors={
-              dark
-                ? ["rgba(0,0,0,0)", "rgba(0,0,0,0.8)", colors.background]
-                : [
-                    "rgba(255,255,255,0)",
-                    "rgba(255,255,255,0.8)",
-                    colors.background,
-                  ]
-            }
+            colors={[
+              "rgba(255,255,255,0)",
+              "rgba(255,255,255,0.8)",
+              colors.background,
+            ]}
             style={styles.imageOverlay}
           />
 
@@ -164,27 +151,15 @@ const LessonDetailsMore = () => {
         <View style={styles.contentContainer}>
           {/* Module Info Card */}
           <View
-            style={[
-              styles.moduleInfoCard,
-              { backgroundColor: dark ? COLORS.dark2 : COLORS.white },
-            ]}
+            style={[styles.moduleInfoCard, { backgroundColor: COLORS.white }]}
           >
             <LinearGradient
-              colors={
-                dark
-                  ? [
-                      "rgba(255,100,64,0.25)",
-                      "rgba(30,30,30,0)",
-                      "rgba(30,30,30,0)",
-                      "rgba(255,100,64,0.25)",
-                    ]
-                  : [
-                      "rgba(255,142,105,0.3)",
-                      "rgba(255,255,255,0)",
-                      "rgba(255,255,255,0)",
-                      "rgba(255,142,105,0.3)",
-                    ]
-              }
+              colors={[
+                "rgba(255,142,105,0.3)",
+                "rgba(255,255,255,0)",
+                "rgba(255,255,255,0)",
+                "rgba(255,142,105,0.3)",
+              ]}
               locations={[0, 0.3, 0.7, 1]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
@@ -194,10 +169,7 @@ const LessonDetailsMore = () => {
             <View style={styles.moduleInfoHeader}>
               <View style={styles.titleContainer}>
                 <Text
-                  style={[
-                    styles.moduleName,
-                    { color: dark ? COLORS.white : COLORS.greyscale900 },
-                  ]}
+                  style={[styles.moduleName, { color: COLORS.greyscale900 }]}
                 >
                   {module.name}
                 </Text>
@@ -223,10 +195,7 @@ const LessonDetailsMore = () => {
             </View>
 
             <Text
-              style={[
-                styles.descriptionText,
-                { color: dark ? COLORS.secondaryWhite : COLORS.grayscale700 },
-              ]}
+              style={[styles.descriptionText, { color: COLORS.grayscale700 }]}
             >
               {module.description}
             </Text>
@@ -241,7 +210,7 @@ const LessonDetailsMore = () => {
                   style={[
                     styles.statText,
                     {
-                      color: dark ? COLORS.secondaryWhite : COLORS.greyscale900,
+                      color: COLORS.greyscale900,
                     },
                   ]}
                 >
@@ -258,7 +227,7 @@ const LessonDetailsMore = () => {
                   style={[
                     styles.statText,
                     {
-                      color: dark ? COLORS.secondaryWhite : COLORS.greyscale900,
+                      color: COLORS.greyscale900,
                     },
                   ]}
                 >
@@ -274,7 +243,7 @@ const LessonDetailsMore = () => {
                   style={[
                     styles.statText,
                     {
-                      color: dark ? COLORS.secondaryWhite : COLORS.greyscale900,
+                      color: COLORS.greyscale900,
                     },
                   ]}
                 >
@@ -309,10 +278,7 @@ const LessonDetailsMore = () => {
           <View style={styles.exercisesSection}>
             <View style={styles.sectionHeader}>
               <Text
-                style={[
-                  styles.sectionTitle,
-                  { color: dark ? COLORS.white : COLORS.greyscale900 },
-                ]}
+                style={[styles.sectionTitle, { color: COLORS.greyscale900 }]}
               >
                 Exercices
               </Text>
@@ -401,7 +367,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 60, // Moved lower (originally 16)
+    top: 60,
     left: 30,
     zIndex: 10,
   },

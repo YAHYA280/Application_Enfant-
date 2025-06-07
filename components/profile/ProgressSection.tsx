@@ -6,7 +6,6 @@ import { View, Text, Animated, StyleSheet } from "react-native";
 import { COLORS } from "@/constants";
 
 interface ProgressSectionProps {
-  dark: boolean;
   totalProgress: number;
   subjectProgress: {
     [key: string]: number;
@@ -17,7 +16,7 @@ interface ProgressBarProps {
   progress: number;
   color: string;
   label: string;
-  dark: boolean;
+
   delay?: number;
 }
 
@@ -25,7 +24,6 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   progress,
   color,
   label,
-  dark,
   delay = 0,
 }) => {
   const animatedWidth = React.useRef(new Animated.Value(0)).current;
@@ -42,12 +40,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   return (
     <View style={styles.progressItemContainer}>
       <View style={styles.progressLabelContainer}>
-        <Text
-          style={[
-            styles.progressLabel,
-            { color: dark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)" },
-          ]}
-        >
+        <Text style={[styles.progressLabel, { color: "rgba(0,0,0,0.6)" }]}>
           {label}
         </Text>
         <Text style={[styles.progressValue, { color }]}>{progress}%</Text>
@@ -56,9 +49,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
         style={[
           styles.progressBarBackground,
           {
-            backgroundColor: dark
-              ? "rgba(255,255,255,0.1)"
-              : "rgba(0,0,0,0.05)",
+            backgroundColor: "rgba(0,0,0,0.05)",
           },
         ]}
       >
@@ -80,7 +71,6 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
 };
 
 const ProgressSection: React.FC<ProgressSectionProps> = ({
-  dark,
   totalProgress,
   subjectProgress,
 }) => {
@@ -93,26 +83,12 @@ const ProgressSection: React.FC<ProgressSectionProps> = ({
 
   return (
     <View style={styles.container}>
-      <View
-        style={[
-          styles.progressCard,
-          { backgroundColor: dark ? COLORS.dark2 : COLORS.white },
-        ]}
-      >
+      <View style={[styles.progressCard, { backgroundColor: COLORS.white }]}>
         <LinearGradient
-          colors={
-            dark
-              ? ["rgba(255,96,64,0.2)", "rgba(255,142,105,0.05)"]
-              : ["rgba(255,96,64,0.05)", "transparent"]
-          }
+          colors={["rgba(255,96,64,0.05)", "transparent"]}
           style={styles.cardGradient}
         >
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: dark ? COLORS.white : COLORS.black },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: COLORS.black }]}>
             Progrès global
           </Text>
 
@@ -120,31 +96,16 @@ const ProgressSection: React.FC<ProgressSectionProps> = ({
             progress={totalProgress}
             color={getProgressColor(totalProgress)}
             label="Taux de réussite global"
-            dark={dark}
           />
         </LinearGradient>
       </View>
 
-      <View
-        style={[
-          styles.progressCard,
-          { backgroundColor: dark ? COLORS.dark2 : COLORS.white },
-        ]}
-      >
+      <View style={[styles.progressCard, { backgroundColor: COLORS.white }]}>
         <LinearGradient
-          colors={
-            dark
-              ? ["rgba(255,96,64,0.1)", "transparent"]
-              : ["rgba(255,96,64,0.02)", "transparent"]
-          }
+          colors={["rgba(255,96,64,0.02)", "transparent"]}
           style={styles.cardGradient}
         >
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: dark ? COLORS.white : COLORS.black },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: COLORS.black }]}>
             Progrès par matière
           </Text>
 
@@ -154,7 +115,6 @@ const ProgressSection: React.FC<ProgressSectionProps> = ({
               progress={progress}
               color={getProgressColor(progress)}
               label={subject.charAt(0).toUpperCase() + subject.slice(1)}
-              dark={dark}
               delay={index * 100}
             />
           ))}

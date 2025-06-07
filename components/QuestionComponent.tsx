@@ -16,7 +16,6 @@ import {
 import type { Exercice as ExerciceBase } from "@/services/mock";
 
 import { COLORS } from "@/constants";
-import { useTheme } from "@/theme/ThemeProvider";
 
 interface QuestionComponentProps {
   exercice: ExerciceBase;
@@ -38,7 +37,6 @@ const QuestionComponent: React.FC<QuestionComponentProps> = ({
   onSubmit,
   onNext,
 }) => {
-  const { dark } = useTheme();
   const [selectedAnswer, setSelectedAnswer] = useState<string>("");
   const [submittedAnswer, setSubmittedAnswer] = useState<string>("");
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean>(false);
@@ -109,7 +107,7 @@ const QuestionComponent: React.FC<QuestionComponentProps> = ({
           style={[
             styles.pointBadge,
             {
-              backgroundColor: dark ? COLORS.dark2 : "rgba(255, 142, 105, 0.1)",
+              backgroundColor: "rgba(255, 142, 105, 0.1)",
             },
           ]}
         >
@@ -120,28 +118,16 @@ const QuestionComponent: React.FC<QuestionComponentProps> = ({
         </View>
 
         <View
-          style={[
-            styles.timeBadge,
-            { backgroundColor: dark ? COLORS.dark2 : "rgba(0,0,0,0.05)" },
-          ]}
+          style={[styles.timeBadge, { backgroundColor: "rgba(0,0,0,0.05)" }]}
         >
-          <Ionicons
-            name="time-outline"
-            size={14}
-            color={dark ? COLORS.greyscale500 : COLORS.gray}
-          />
+          <Ionicons name="time-outline" size={14} color={COLORS.gray} />
           <Text style={styles.timeText}>{exercice.dureeQuestion} secondes</Text>
         </View>
       </View>
 
       {/* Question Content */}
       <View style={styles.questionContainer}>
-        <Text
-          style={[
-            styles.questionText,
-            { color: dark ? COLORS.white : COLORS.greyscale900 },
-          ]}
-        >
+        <Text style={[styles.questionText, { color: COLORS.greyscale900 }]}>
           {exercice.contenu}
         </Text>
       </View>
@@ -163,12 +149,7 @@ const QuestionComponent: React.FC<QuestionComponentProps> = ({
 
       {/* Options Container */}
       <View style={styles.optionsContainer}>
-        <Text
-          style={[
-            styles.optionsTitle,
-            { color: dark ? COLORS.white : COLORS.greyscale900 },
-          ]}
-        >
+        <Text style={[styles.optionsTitle, { color: COLORS.greyscale900 }]}>
           Choisissez une réponse :
         </Text>
 
@@ -181,7 +162,7 @@ const QuestionComponent: React.FC<QuestionComponentProps> = ({
 
           let optionStyle = {};
           let textStyle = {
-            color: dark ? COLORS.white : COLORS.greyscale900,
+            color: COLORS.greyscale900,
           };
 
           if (showAnswer) {
@@ -194,9 +175,7 @@ const QuestionComponent: React.FC<QuestionComponentProps> = ({
             }
           } else if (isSelected) {
             optionStyle = {
-              backgroundColor: dark
-                ? "rgba(255, 142, 105, 0.2)"
-                : "rgba(255, 142, 105, 0.1)",
+              backgroundColor: "rgba(255, 142, 105, 0.1)",
               borderColor: COLORS.primary,
             };
             textStyle = { color: COLORS.primary };
@@ -208,8 +187,8 @@ const QuestionComponent: React.FC<QuestionComponentProps> = ({
               style={[
                 styles.optionButton,
                 {
-                  backgroundColor: dark ? COLORS.dark2 : COLORS.white,
-                  borderColor: dark ? COLORS.dark3 : COLORS.greyscale300,
+                  backgroundColor: COLORS.white,
+                  borderColor: COLORS.greyscale300,
                 },
                 optionStyle,
               ]}
@@ -259,12 +238,7 @@ const QuestionComponent: React.FC<QuestionComponentProps> = ({
             </Text>
           </View>
 
-          <Text
-            style={[
-              styles.feedbackText,
-              { color: dark ? COLORS.white : COLORS.greyscale900 },
-            ]}
-          >
+          <Text style={[styles.feedbackText, { color: COLORS.greyscale900 }]}>
             {isAnswerCorrect
               ? "Bravo ! Vous avez choisi la bonne réponse."
               : `La réponse correcte était: ${exercice.reponseCorrecte}`}

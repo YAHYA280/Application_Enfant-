@@ -29,7 +29,7 @@ const ReviewLesson = () => {
   const route = useRoute<RouteProp<RootStackParamList, "reviewlesson">>();
   const { module } = route.params;
   const navigation = useNavigation<NavigationProp<any>>();
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
   const [selectedTab, setSelectedTab] = useState<"video" | "materials">(
     "video"
   );
@@ -51,7 +51,7 @@ const ReviewLesson = () => {
             styles.headerBackground,
             {
               opacity: headerOpacity,
-              backgroundColor: dark ? COLORS.dark1 : "#FFFFFF",
+              backgroundColor: "#FFFFFF",
             },
           ]}
         >
@@ -59,18 +59,9 @@ const ReviewLesson = () => {
             onPress={() => navigation.goBack()}
             style={styles.backButtonFixed}
           >
-            <Feather
-              name="arrow-left"
-              size={24}
-              color={dark ? COLORS.white : COLORS.black}
-            />
+            <Feather name="arrow-left" size={24} color={COLORS.black} />
           </TouchableOpacity>
-          <Text
-            style={[
-              styles.headerTitle,
-              { color: dark ? COLORS.white : COLORS.black },
-            ]}
-          >
+          <Text style={[styles.headerTitle, { color: COLORS.black }]}>
             {module.name} - Réviser
           </Text>
         </Animated.View>
@@ -87,7 +78,7 @@ const ReviewLesson = () => {
           {/* Header */}
           <View style={styles.heroContainer}>
             <LinearGradient
-              colors={dark ? ["#ff6040", "#ff8e69"] : ["#ff6040", "#ff8e69"]}
+              colors={["#ff6040", "#ff8e69"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.heroGradient}
@@ -115,23 +106,19 @@ const ReviewLesson = () => {
           </View>
 
           <View
-            style={[
-              styles.contentContainer,
-              { backgroundColor: dark ? COLORS.dark1 : "#FFFFFF" },
-            ]}
+            style={[styles.contentContainer, { backgroundColor: "#FFFFFF" }]}
           >
             {/* Tab Navigation */}
             <HeaderTabs
               selectedTab={selectedTab}
               setSelectedTab={setSelectedTab}
-              dark={dark}
             />
 
             {/* Tab Content */}
             {selectedTab === "video" ? (
-              <VideoContent module={module} dark={dark} />
+              <VideoContent module={module} />
             ) : (
-              <MaterialsContent dark={dark} />
+              <MaterialsContent />
             )}
           </View>
         </Animated.ScrollView>

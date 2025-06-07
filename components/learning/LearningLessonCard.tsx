@@ -14,7 +14,7 @@ import {
 } from "react-native";
 
 import { COLORS } from "../../constants";
-import { useTheme } from "../../theme/ThemeProvider";
+
 import LessonProgressBar from "./../LessonProgressBar";
 import ConditionalComponent from "./../ConditionalComponent";
 
@@ -42,8 +42,6 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
   difficulty = "medium",
   onPress,
 }) => {
-  const { dark } = useTheme();
-
   // Calcul du pourcentage de progression
   const progressPercentage =
     totalNumberOfLessons > 0
@@ -95,10 +93,7 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         activeOpacity={0.9}
-        style={[
-          styles.container,
-          { backgroundColor: dark ? COLORS.dark2 : COLORS.white },
-        ]}
+        style={[styles.container, { backgroundColor: COLORS.white }]}
       >
         {/* Effet de bordure premium avec gradient orange */}
         <LinearGradient
@@ -131,10 +126,7 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
             {/* En-tête avec titre et badge de difficulté */}
             <View style={styles.headerContainer}>
               <Text
-                style={[
-                  styles.name,
-                  { color: dark ? COLORS.white : COLORS.greyscale900 },
-                ]}
+                style={[styles.name, { color: COLORS.greyscale900 }]}
                 numberOfLines={2}
               >
                 {name}

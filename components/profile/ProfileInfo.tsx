@@ -8,7 +8,6 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { COLORS } from "@/constants";
 
 interface ProfileInfoProps {
-  dark: boolean;
   image: any;
   identifiant: string;
   name: string;
@@ -18,7 +17,6 @@ interface ProfileInfoProps {
 }
 
 const ProfileInfo: React.FC<ProfileInfoProps> = ({
-  dark,
   image,
   identifiant,
   name,
@@ -29,20 +27,11 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={
-          dark
-            ? ["rgba(255,96,64,0.2)", "rgba(255,142,105,0.1)"]
-            : ["rgba(255,96,64,0.1)", "rgba(255,142,105,0.05)"]
-        }
+        colors={["rgba(255,96,64,0.1)", "rgba(255,142,105,0.05)"]}
         style={styles.gradientBackground}
       >
         <View style={styles.imageContainer}>
-          <View
-            style={[
-              styles.imageWrapper,
-              { borderColor: dark ? COLORS.dark3 : COLORS.white },
-            ]}
-          >
+          <View style={[styles.imageWrapper, { borderColor: COLORS.white }]}>
             <Image source={image} contentFit="cover" style={styles.image} />
           </View>
           <TouchableOpacity style={styles.editButton} onPress={onPickImage}>
@@ -59,17 +48,11 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
           <InfoItem
             label="Identifiant"
             value={identifiant}
-            dark={dark}
             icon="finger-print"
           />
-          <InfoItem
-            label="Nom Complet"
-            value={name}
-            dark={dark}
-            icon="person"
-          />
-          <InfoItem label="Email" value={email} dark={dark} icon="mail" />
-          <InfoItem label="Classe" value={classe} dark={dark} icon="school" />
+          <InfoItem label="Nom Complet" value={name} icon="person" />
+          <InfoItem label="Email" value={email} icon="mail" />
+          <InfoItem label="Classe" value={classe} icon="school" />
         </View>
       </LinearGradient>
     </View>
@@ -79,34 +62,23 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
 interface InfoItemProps {
   label: string;
   value: string;
-  dark: boolean;
+
   icon: string;
 }
 
-const InfoItem: React.FC<InfoItemProps> = ({ label, value, dark, icon }) => (
+const InfoItem: React.FC<InfoItemProps> = ({ label, value, icon }) => (
   <View style={styles.infoItem}>
     <View
       style={[
         styles.iconContainer,
-        { backgroundColor: dark ? COLORS.dark3 : "rgba(255,255,255,0.8)" },
+        { backgroundColor: "rgba(255,255,255,0.8)" },
       ]}
     >
       <Ionicons name={icon as any} size={16} color={COLORS.primary} />
     </View>
     <View style={styles.textContainer}>
-      <Text
-        style={[
-          styles.label,
-          { color: dark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)" },
-        ]}
-      >
-        {label}
-      </Text>
-      <Text
-        style={[styles.value, { color: dark ? COLORS.white : COLORS.black }]}
-      >
-        {value}
-      </Text>
+      <Text style={[styles.label, { color: "rgba(0,0,0,0.6)" }]}>{label}</Text>
+      <Text style={[styles.value, { color: COLORS.black }]}>{value}</Text>
     </View>
   </View>
 );

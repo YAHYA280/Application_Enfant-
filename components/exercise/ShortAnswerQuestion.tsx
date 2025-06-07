@@ -17,7 +17,6 @@ interface ShortAnswerQuestionProps {
   currentQuestionIndex: number;
   answers: Array<any>;
   updateAnswer: (answer: any) => void;
-  dark: boolean;
 }
 
 const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({
@@ -25,19 +24,13 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({
   currentQuestionIndex,
   answers,
   updateAnswer,
-  dark,
 }) => {
   const [showExplanation, setShowExplanation] = useState(false);
 
   return (
     <View style={styles.questionContent}>
       <View style={styles.questionTextContainer}>
-        <Text
-          style={[
-            styles.questionText,
-            { color: dark ? COLORS.white : COLORS.greyscale900 },
-          ]}
-        >
+        <Text style={[styles.questionText, { color: COLORS.greyscale900 }]}>
           {question.text}
         </Text>
         <TouchableOpacity
@@ -67,17 +60,13 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({
           style={[
             styles.shortAnswerInput,
             {
-              backgroundColor: dark
-                ? "rgba(50, 50, 50, 0.5)"
-                : "rgba(240, 240, 240, 0.5)",
-              color: dark ? COLORS.white : COLORS.greyscale900,
-              borderColor: dark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)",
+              backgroundColor: "rgba(240, 240, 240, 0.5)",
+              color: COLORS.greyscale900,
+              borderColor: "rgba(0,0,0,0.1)",
             },
           ]}
           placeholder="Tapez votre réponse ici..."
-          placeholderTextColor={
-            dark ? COLORS.greyscale500 : COLORS.greyscale400
-          }
+          placeholderTextColor={COLORS.greyscale400}
           multiline
           value={
             typeof answers[currentQuestionIndex] === "string"

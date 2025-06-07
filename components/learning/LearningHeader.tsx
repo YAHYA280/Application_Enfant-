@@ -7,14 +7,12 @@ interface LearningHeaderProps {
   title: string;
   onBackPress: () => void;
   onSearchPress: () => void;
-  dark: boolean;
 }
 
 const LearningHeader: React.FC<LearningHeaderProps> = ({
   title,
   onBackPress,
   onSearchPress,
-  dark,
 }) => {
   return (
     <View style={styles.headerContainer}>
@@ -26,7 +24,7 @@ const LearningHeader: React.FC<LearningHeaderProps> = ({
             style={[
               styles.backIcon,
               {
-                tintColor: dark ? COLORS.white : COLORS.greyscale900,
+                tintColor: COLORS.greyscale900,
               },
             ]}
           />
@@ -35,7 +33,7 @@ const LearningHeader: React.FC<LearningHeaderProps> = ({
           style={[
             styles.headerTitle,
             {
-              color: dark ? COLORS.white : COLORS.greyscale900,
+              color: COLORS.greyscale900,
             },
           ]}
         >
@@ -49,7 +47,7 @@ const LearningHeader: React.FC<LearningHeaderProps> = ({
           style={[
             styles.searchIcon,
             {
-              tintColor: dark ? COLORS.white : COLORS.greyscale900,
+              tintColor: COLORS.greyscale900,
             },
           ]}
         />

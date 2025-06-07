@@ -12,7 +12,6 @@ interface TrueOrFalseQuestionProps {
   answers: Array<any>;
   updateAnswer: (answer: any) => void;
   isAnswerCorrect: boolean | null;
-  dark: boolean;
 }
 
 const TrueOrFalseQuestion: React.FC<TrueOrFalseQuestionProps> = ({
@@ -21,19 +20,13 @@ const TrueOrFalseQuestion: React.FC<TrueOrFalseQuestionProps> = ({
   answers,
   updateAnswer,
   isAnswerCorrect,
-  dark,
 }) => {
   const [showExplanation, setShowExplanation] = useState(false);
 
   return (
     <View style={styles.questionContent}>
       <View style={styles.questionTextContainer}>
-        <Text
-          style={[
-            styles.questionText,
-            { color: dark ? COLORS.white : COLORS.greyscale900 },
-          ]}
-        >
+        <Text style={[styles.questionText, { color: COLORS.greyscale900 }]}>
           {question.text}
         </Text>
         <TouchableOpacity
@@ -74,11 +67,8 @@ const TrueOrFalseQuestion: React.FC<TrueOrFalseQuestionProps> = ({
               question.correctAnswer === true &&
               styles.correctOption,
             {
-              backgroundColor: dark
-                ? answers[currentQuestionIndex] === true
-                  ? "rgba(255, 142, 105, 0.3)"
-                  : "rgba(50, 50, 50, 0.5)"
-                : answers[currentQuestionIndex] === true
+              backgroundColor:
+                answers[currentQuestionIndex] === true
                   ? "rgba(255, 142, 105, 0.2)"
                   : "rgba(240, 240, 240, 0.5)",
             },
@@ -89,7 +79,7 @@ const TrueOrFalseQuestion: React.FC<TrueOrFalseQuestionProps> = ({
           <Text
             style={[
               styles.trueOrFalseText,
-              { color: dark ? COLORS.white : COLORS.greyscale900 },
+              { color: COLORS.greyscale900 },
               answers[currentQuestionIndex] === true && { fontFamily: "bold" },
             ]}
           >
@@ -124,11 +114,8 @@ const TrueOrFalseQuestion: React.FC<TrueOrFalseQuestionProps> = ({
               question.correctAnswer === false &&
               styles.correctOption,
             {
-              backgroundColor: dark
-                ? answers[currentQuestionIndex] === false
-                  ? "rgba(255, 142, 105, 0.3)"
-                  : "rgba(50, 50, 50, 0.5)"
-                : answers[currentQuestionIndex] === false
+              backgroundColor:
+                answers[currentQuestionIndex] === false
                   ? "rgba(255, 142, 105, 0.2)"
                   : "rgba(240, 240, 240, 0.5)",
             },
@@ -139,7 +126,7 @@ const TrueOrFalseQuestion: React.FC<TrueOrFalseQuestionProps> = ({
           <Text
             style={[
               styles.trueOrFalseText,
-              { color: dark ? COLORS.white : COLORS.greyscale900 },
+              { color: COLORS.greyscale900 },
               answers[currentQuestionIndex] === false && { fontFamily: "bold" },
             ]}
           >

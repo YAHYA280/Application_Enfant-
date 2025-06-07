@@ -16,7 +16,6 @@ import {
 import type { Message } from "@/contexts/types/chat";
 
 import { COLORS } from "@/constants";
-import { useTheme } from "@/theme/ThemeProvider";
 
 import AudioMessage from "./AudioMessage";
 import ToastNotification from "./ToastNotification";
@@ -37,7 +36,6 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   onToggleLike,
   onRegenerate,
 }) => {
-  const { dark } = useTheme();
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const isAI = message.sender === "ai";
 
@@ -111,11 +109,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           onPress={handleCopyMessage}
           style={styles.actionButton}
         >
-          <Ionicons
-            name="copy"
-            size={18}
-            color={dark ? COLORS.greyscale500 : COLORS.gray}
-          />
+          <Ionicons name="copy" size={18} color={COLORS.gray} />
         </TouchableOpacity>
 
         {/* Listen Button */}
@@ -123,11 +117,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           onPress={handleTextToSpeech}
           style={styles.actionButton}
         >
-          <Ionicons
-            name="volume-medium"
-            size={18}
-            color={dark ? COLORS.greyscale500 : COLORS.gray}
-          />
+          <Ionicons name="volume-medium" size={18} color={COLORS.gray} />
         </TouchableOpacity>
 
         {/* Refresh Button */}
@@ -135,11 +125,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           onPress={handleRegenerate}
           style={styles.actionButton}
         >
-          <Ionicons
-            name="refresh"
-            size={18}
-            color={dark ? COLORS.greyscale500 : COLORS.gray}
-          />
+          <Ionicons name="refresh" size={18} color={COLORS.gray} />
         </TouchableOpacity>
 
         {/* Like/Dislike Buttons */}
@@ -148,13 +134,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
             <FontAwesome
               name={message.liked === "like" ? "thumbs-up" : "thumbs-o-up"}
               size={18}
-              color={
-                message.liked === "like"
-                  ? COLORS.primary
-                  : dark
-                    ? COLORS.greyscale500
-                    : COLORS.gray
-              }
+              color={message.liked === "like" ? COLORS.primary : COLORS.gray}
             />
           </TouchableOpacity>
 
@@ -164,13 +144,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                 message.liked === "dislike" ? "thumbs-down" : "thumbs-o-down"
               }
               size={18}
-              color={
-                message.liked === "dislike"
-                  ? COLORS.primary
-                  : dark
-                    ? COLORS.greyscale500
-                    : COLORS.gray
-              }
+              color={message.liked === "dislike" ? COLORS.primary : COLORS.gray}
             />
           </TouchableOpacity>
         </View>
@@ -184,12 +158,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
       return (
         <TouchableOpacity style={styles.documentContainer}>
           <Ionicons name="document-text" size={24} color={COLORS.primary} />
-          <Text
-            style={[
-              styles.documentText,
-              { color: dark ? COLORS.white : COLORS.greyscale900 },
-            ]}
-          >
+          <Text style={[styles.documentText, { color: COLORS.greyscale900 }]}>
             {message.text}
           </Text>
         </TouchableOpacity>
@@ -221,21 +190,15 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
             ? [
                 styles.aiBubble,
                 {
-                  backgroundColor: dark
-                    ? "rgba(53, 56, 63, 0.8)"
-                    : "rgba(255, 255, 255, 0.9)",
-                  borderColor: dark ? COLORS.dark3 : COLORS.greyscale300,
+                  backgroundColor: "rgba(255, 255, 255, 0.9)",
+                  borderColor: COLORS.greyscale300,
                 },
               ]
             : [
                 styles.userBubble,
                 {
-                  backgroundColor: dark
-                    ? "rgba(255, 142, 105, 0.3)"
-                    : "rgba(255, 142, 105, 0.2)",
-                  borderColor: dark
-                    ? "rgba(255, 142, 105, 0.5)"
-                    : COLORS.primary,
+                  backgroundColor: "rgba(255, 142, 105, 0.2)",
+                  borderColor: COLORS.primary,
                 },
               ],
         ]}
@@ -250,12 +213,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
 
         {/* Text message */}
         {message.mediaType !== "audio" && message.mediaType !== "pdf" && (
-          <Text
-            style={[
-              styles.bubbleText,
-              { color: dark ? COLORS.white : COLORS.greyscale900 },
-            ]}
-          >
+          <Text style={[styles.bubbleText, { color: COLORS.greyscale900 }]}>
             {message.text}
           </Text>
         )}
@@ -294,12 +252,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
         )}
 
         {/* Timestamp */}
-        <Text
-          style={[
-            styles.timestamp,
-            { color: dark ? COLORS.gray : COLORS.greyscale600 },
-          ]}
-        >
+        <Text style={[styles.timestamp, { color: COLORS.greyscale600 }]}>
           {formatTime(message.timestamp)}
         </Text>
 

@@ -7,27 +7,16 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { COLORS } from "@/constants";
 
 interface SuggestionsSectionProps {
-  dark: boolean;
   suggestions: string[];
 }
 
 const SuggestionsSection: React.FC<SuggestionsSectionProps> = ({
-  dark,
   suggestions,
 }) => {
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: dark ? COLORS.dark2 : COLORS.white },
-      ]}
-    >
+    <View style={[styles.container, { backgroundColor: COLORS.white }]}>
       <LinearGradient
-        colors={
-          dark
-            ? ["rgba(255,96,64,0.15)", "rgba(255,142,105,0.02)"]
-            : ["rgba(255,96,64,0.05)", "rgba(255,255,255,0)"]
-        }
+        colors={["rgba(255,96,64,0.05)", "rgba(255,255,255,0)"]}
         style={styles.containerGradient}
       >
         <View style={styles.headerContainer}>
@@ -38,21 +27,11 @@ const SuggestionsSection: React.FC<SuggestionsSectionProps> = ({
               color={COLORS.primary}
               style={styles.titleIcon}
             />
-            <Text
-              style={[
-                styles.sectionTitle,
-                { color: dark ? COLORS.white : COLORS.black },
-              ]}
-            >
+            <Text style={[styles.sectionTitle, { color: COLORS.black }]}>
               Suggestions et Conseils
             </Text>
           </View>
-          <Text
-            style={[
-              styles.sectionSubtitle,
-              { color: dark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)" },
-            ]}
-          >
+          <Text style={[styles.sectionSubtitle, { color: "rgba(0,0,0,0.6)" }]}>
             Recommandations personnalisées pour votre progression
           </Text>
         </View>
@@ -64,20 +43,13 @@ const SuggestionsSection: React.FC<SuggestionsSectionProps> = ({
                 style={[
                   styles.suggestionIconContainer,
                   {
-                    backgroundColor: dark
-                      ? "rgba(255,255,255,0.1)"
-                      : "rgba(255,96,64,0.1)",
+                    backgroundColor: "rgba(255,96,64,0.1)",
                   },
                 ]}
               >
                 <Feather name="check-circle" size={16} color={COLORS.primary} />
               </View>
-              <Text
-                style={[
-                  styles.suggestionText,
-                  { color: dark ? COLORS.white : COLORS.black },
-                ]}
-              >
+              <Text style={[styles.suggestionText, { color: COLORS.black }]}>
                 {suggestion}
               </Text>
             </View>
@@ -85,10 +57,7 @@ const SuggestionsSection: React.FC<SuggestionsSectionProps> = ({
         </View>
 
         <TouchableOpacity
-          style={[
-            styles.actionButton,
-            { backgroundColor: dark ? COLORS.dark3 : COLORS.white },
-          ]}
+          style={[styles.actionButton, { backgroundColor: COLORS.white }]}
         >
           <LinearGradient
             colors={[COLORS.primary, "#ff8e69"]}

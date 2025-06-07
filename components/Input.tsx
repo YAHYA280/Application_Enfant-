@@ -6,7 +6,6 @@ import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 
 import { SIZES, COLORS } from "../constants";
-import { useTheme } from "../theme/ThemeProvider";
 
 interface InputProps extends TextInputProps {
   id: string;
@@ -17,7 +16,6 @@ interface InputProps extends TextInputProps {
 
 const Input: FC<InputProps> = (props) => {
   const [isFocused, setIsFocused] = useState(false);
-  const { dark } = useTheme();
 
   const handleFocus = () => {
     setIsFocused(true);
@@ -37,16 +35,10 @@ const Input: FC<InputProps> = (props) => {
         style={[
           styles.inputContainer,
           {
-            borderColor: isFocused
-              ? COLORS.primary
-              : dark
-                ? COLORS.dark2
-                : COLORS.greyscale500,
+            borderColor: isFocused ? COLORS.primary : COLORS.greyscale500,
             backgroundColor: isFocused
               ? COLORS.tansparentPrimary
-              : dark
-                ? COLORS.dark2
-                : COLORS.greyscale500,
+              : COLORS.greyscale500,
           },
         ]}
       >
@@ -66,7 +58,7 @@ const Input: FC<InputProps> = (props) => {
           onChangeText={onChangeText}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          style={[styles.input, { color: dark ? COLORS.white : COLORS.black }]}
+          style={[styles.input, { color: COLORS.black }]}
           placeholder={props.placeholder}
           placeholderTextColor={props.placeholderTextColor}
           autoCapitalize="none"

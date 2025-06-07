@@ -34,7 +34,7 @@ interface DefiProps {
 
 const Defi: React.FC<DefiProps> = () => {
   const navigation = useNavigation<NavigationProp<any>>();
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const scrollY = React.useRef(new Animated.Value(0)).current;
   const [filteredChallenges, setFilteredChallenges] =
@@ -71,8 +71,8 @@ const Defi: React.FC<DefiProps> = () => {
             styles.fixedHeader,
             {
               opacity: headerOpacity,
-              backgroundColor: dark ? COLORS.dark1 : colors.background,
-              borderBottomColor: dark ? COLORS.dark2 : COLORS.greyscale300,
+              backgroundColor: colors.background,
+              borderBottomColor: COLORS.greyscale300,
             },
           ]}
         >
@@ -85,7 +85,7 @@ const Defi: React.FC<DefiProps> = () => {
                   style={[
                     styles.backIcon,
                     {
-                      tintColor: dark ? COLORS.white : COLORS.greyscale900,
+                      tintColor: COLORS.greyscale900,
                     },
                   ]}
                 />
@@ -94,7 +94,7 @@ const Defi: React.FC<DefiProps> = () => {
                 style={[
                   styles.headerTitle,
                   {
-                    color: dark ? COLORS.white : COLORS.greyscale900,
+                    color: COLORS.greyscale900,
                   },
                 ]}
               >
@@ -120,7 +120,7 @@ const Defi: React.FC<DefiProps> = () => {
                 style={[
                   styles.backIcon,
                   {
-                    tintColor: dark ? COLORS.white : COLORS.greyscale900,
+                    tintColor: COLORS.greyscale900,
                   },
                 ]}
               />
@@ -129,7 +129,7 @@ const Defi: React.FC<DefiProps> = () => {
               style={[
                 styles.headerTitle,
                 {
-                  color: dark ? COLORS.white : COLORS.greyscale900,
+                  color: COLORS.greyscale900,
                 },
               ]}
             >
@@ -169,7 +169,6 @@ const Defi: React.FC<DefiProps> = () => {
           categories={CATEGORIES}
           selectedCategory={selectedCategory}
           onSelectCategory={handleCategorySelect}
-          dark={dark}
         />
       </>
     );
@@ -203,7 +202,6 @@ const Defi: React.FC<DefiProps> = () => {
             </View>
           ) : (
             <ChallengeEmptyState
-              dark={dark}
               message="Aucun challenge trouvé"
               subMessage="Essayez de sélectionner une autre catégorie."
               buttonText="Voir tous les challenges"

@@ -9,27 +9,20 @@ type Tab = "video" | "materials";
 interface HeaderTabsProps {
   selectedTab: Tab;
   setSelectedTab: (tab: Tab) => void;
-  dark: boolean;
 }
 
 const HeaderTabs: React.FC<HeaderTabsProps> = ({
   selectedTab,
   setSelectedTab,
-  dark,
 }) => {
   return (
-    <View
-      style={[
-        styles.tabContainer,
-        { backgroundColor: dark ? COLORS.dark2 : "#F5F5F5" },
-      ]}
-    >
+    <View style={[styles.tabContainer, { backgroundColor: "#F5F5F5" }]}>
       <TouchableOpacity
         style={[
           styles.tabButton,
           selectedTab === "video" && styles.activeTabButton,
           selectedTab === "video" && {
-            backgroundColor: dark ? COLORS.dark3 : "#FFFFFF",
+            backgroundColor: "#FFFFFF",
           },
         ]}
         onPress={() => setSelectedTab("video")}
@@ -37,13 +30,7 @@ const HeaderTabs: React.FC<HeaderTabsProps> = ({
         <Feather
           name="video"
           size={20}
-          color={
-            selectedTab === "video"
-              ? COLORS.primary
-              : dark
-                ? COLORS.greyscale500
-                : COLORS.greyScale800
-          }
+          color={selectedTab === "video" ? COLORS.primary : COLORS.greyScale800}
         />
         <Text
           style={[
@@ -51,11 +38,7 @@ const HeaderTabs: React.FC<HeaderTabsProps> = ({
             selectedTab === "video" && styles.activeTabText,
             {
               color:
-                selectedTab === "video"
-                  ? COLORS.primary
-                  : dark
-                    ? COLORS.greyscale500
-                    : COLORS.greyScale800,
+                selectedTab === "video" ? COLORS.primary : COLORS.greyScale800,
             },
           ]}
         >
@@ -68,7 +51,7 @@ const HeaderTabs: React.FC<HeaderTabsProps> = ({
           styles.tabButton,
           selectedTab === "materials" && styles.activeTabButton,
           selectedTab === "materials" && {
-            backgroundColor: dark ? COLORS.dark3 : "#FFFFFF",
+            backgroundColor: "#FFFFFF",
           },
         ]}
         onPress={() => setSelectedTab("materials")}
@@ -77,11 +60,7 @@ const HeaderTabs: React.FC<HeaderTabsProps> = ({
           name="file-text"
           size={20}
           color={
-            selectedTab === "materials"
-              ? COLORS.primary
-              : dark
-                ? COLORS.greyscale500
-                : COLORS.greyScale800
+            selectedTab === "materials" ? COLORS.primary : COLORS.greyScale800
           }
         />
         <Text
@@ -92,9 +71,7 @@ const HeaderTabs: React.FC<HeaderTabsProps> = ({
               color:
                 selectedTab === "materials"
                   ? COLORS.primary
-                  : dark
-                    ? COLORS.greyscale500
-                    : COLORS.greyScale800,
+                  : COLORS.greyScale800,
             },
           ]}
         >

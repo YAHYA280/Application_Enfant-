@@ -33,7 +33,7 @@ export default function ChatAiRecherche() {
   const navigation = useNavigation<NavigationProp<any>>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const flatListRef = useRef<FlatList | null>(null);
 
@@ -309,9 +309,7 @@ export default function ChatAiRecherche() {
   };
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: dark ? COLORS.dark1 : COLORS.white }}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <View style={{ flex: 1 }}>
         {/* Chat History Drawer */}
         <ChatHistoryDrawer

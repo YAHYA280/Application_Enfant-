@@ -20,11 +20,10 @@ interface GradeItem {
 }
 
 interface GradesSectionProps {
-  dark: boolean;
   grades: GradeItem[];
 }
 
-const GradesSection: React.FC<GradesSectionProps> = ({ dark, grades }) => {
+const GradesSection: React.FC<GradesSectionProps> = ({ grades }) => {
   const [filteredGrades, setFilteredGrades] = useState<GradeItem[]>(grades);
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
@@ -81,20 +80,10 @@ const GradesSection: React.FC<GradesSectionProps> = ({ dark, grades }) => {
   const renderHeader = () => (
     <View style={styles.headerContainer}>
       <View>
-        <Text
-          style={[
-            styles.sectionTitle,
-            { color: dark ? COLORS.white : COLORS.black },
-          ]}
-        >
+        <Text style={[styles.sectionTitle, { color: COLORS.black }]}>
           Notes et Évaluations
         </Text>
-        <Text
-          style={[
-            styles.sectionSubtitle,
-            { color: dark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)" },
-          ]}
-        >
+        <Text style={[styles.sectionSubtitle, { color: "rgba(0,0,0,0.6)" }]}>
           Suivez vos résultats académiques
         </Text>
       </View>
@@ -141,9 +130,7 @@ const GradesSection: React.FC<GradesSectionProps> = ({ dark, grades }) => {
                   {
                     backgroundColor: isActive
                       ? COLORS.primary
-                      : dark
-                        ? "rgba(255,255,255,0.1)"
-                        : "rgba(0,0,0,0.05)",
+                      : "rgba(0,0,0,0.05)",
                   },
                 ]}
                 onPress={() => handleFilterChange(filter.id)}
@@ -151,20 +138,14 @@ const GradesSection: React.FC<GradesSectionProps> = ({ dark, grades }) => {
                 <Ionicons
                   name={filter.icon as any}
                   size={14}
-                  color={
-                    isActive ? COLORS.white : dark ? COLORS.white : COLORS.black
-                  }
+                  color={isActive ? COLORS.white : COLORS.black}
                   style={styles.filterIcon}
                 />
                 <Text
                   style={[
                     styles.filterChipText,
                     {
-                      color: isActive
-                        ? COLORS.white
-                        : dark
-                          ? COLORS.white
-                          : COLORS.black,
+                      color: isActive ? COLORS.white : COLORS.black,
                     },
                   ]}
                 >
@@ -184,7 +165,7 @@ const GradesSection: React.FC<GradesSectionProps> = ({ dark, grades }) => {
       style={[
         styles.tableHeader,
         {
-          backgroundColor: dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+          backgroundColor: "rgba(0,0,0,0.05)",
         },
       ]}
     >
@@ -192,17 +173,13 @@ const GradesSection: React.FC<GradesSectionProps> = ({ dark, grades }) => {
         style={[
           styles.headerText,
           styles.subjectHeader,
-          { color: dark ? COLORS.white : COLORS.black },
+          { color: COLORS.black },
         ]}
       >
         Matière
       </Text>
       <Text
-        style={[
-          styles.headerText,
-          styles.gradeHeader,
-          { color: dark ? COLORS.white : COLORS.black },
-        ]}
+        style={[styles.headerText, styles.gradeHeader, { color: COLORS.black }]}
       >
         Note
       </Text>
@@ -210,7 +187,7 @@ const GradesSection: React.FC<GradesSectionProps> = ({ dark, grades }) => {
         style={[
           styles.headerText,
           styles.evaluationHeader,
-          { color: dark ? COLORS.white : COLORS.black },
+          { color: COLORS.black },
         ]}
       >
         Évaluation
@@ -224,10 +201,7 @@ const GradesSection: React.FC<GradesSectionProps> = ({ dark, grades }) => {
 
     return (
       <View
-        style={[
-          styles.gradeItemContainer,
-          { backgroundColor: dark ? COLORS.dark3 : COLORS.white },
-        ]}
+        style={[styles.gradeItemContainer, { backgroundColor: COLORS.white }]}
       >
         <View style={styles.subjectContainer}>
           <View
@@ -248,12 +222,7 @@ const GradesSection: React.FC<GradesSectionProps> = ({ dark, grades }) => {
               color={gradeColor}
             />
           </View>
-          <Text
-            style={[
-              styles.subjectText,
-              { color: dark ? COLORS.white : COLORS.black },
-            ]}
-          >
+          <Text style={[styles.subjectText, { color: COLORS.black }]}>
             {item.subject}
           </Text>
         </View>
@@ -301,25 +270,11 @@ const GradesSection: React.FC<GradesSectionProps> = ({ dark, grades }) => {
   // Render empty state
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
-      <Feather
-        name="file-text"
-        size={40}
-        color={dark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}
-      />
-      <Text
-        style={[
-          styles.emptyText,
-          { color: dark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)" },
-        ]}
-      >
+      <Feather name="file-text" size={40} color="rgba(0,0,0,0.2)" />
+      <Text style={[styles.emptyText, { color: "rgba(0,0,0,0.5)" }]}>
         Aucune note disponible
       </Text>
-      <Text
-        style={[
-          styles.emptySubtext,
-          { color: dark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)" },
-        ]}
-      >
+      <Text style={[styles.emptySubtext, { color: "rgba(0,0,0,0.3)" }]}>
         Essayez un autre filtre pour voir plus de résultats
       </Text>
     </View>
@@ -327,12 +282,7 @@ const GradesSection: React.FC<GradesSectionProps> = ({ dark, grades }) => {
 
   return (
     <View style={styles.outerContainer}>
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: dark ? COLORS.dark2 : COLORS.white },
-        ]}
-      >
+      <View style={[styles.container, { backgroundColor: COLORS.white }]}>
         {/* Top accent bar */}
         <View style={styles.accentBar} />
 
@@ -355,9 +305,7 @@ const GradesSection: React.FC<GradesSectionProps> = ({ dark, grades }) => {
                   style={[
                     styles.separator,
                     {
-                      backgroundColor: dark
-                        ? "rgba(255,255,255,0.05)"
-                        : "rgba(0,0,0,0.05)",
+                      backgroundColor: "rgba(0,0,0,0.05)",
                     },
                   ]}
                 />

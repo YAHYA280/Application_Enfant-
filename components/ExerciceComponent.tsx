@@ -6,8 +6,6 @@ import { useNavigation } from "@react-navigation/native";
 
 import type { Module, Question, Exercise } from "@/data";
 
-import { useTheme } from "@/theme/ThemeProvider";
-
 import SummaryModal from "./exercise/SummaryModal";
 import { typeGuards } from "./exercise/typeGuards";
 import ActionButtons from "./exercise/ActionButtons";
@@ -46,7 +44,7 @@ const EnhancedExerciseComponent: React.FC<EnhancedExerciseComponentProps> = ({
 }) => {
   // Use explicit typing for the navigation object
   const navigation = useNavigation<NavigationProp<AppParamList>>();
-  const { dark } = useTheme();
+
   const currentQuestion = questions[currentQuestionIndex];
   const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
   const [showAiModal, setShowAiModal] = useState(false);
@@ -89,7 +87,6 @@ const EnhancedExerciseComponent: React.FC<EnhancedExerciseComponentProps> = ({
           answers={answers}
           updateAnswer={updateAnswer}
           isAnswerCorrect={isAnswerCorrect}
-          dark={dark}
         />
       );
     }
@@ -102,7 +99,6 @@ const EnhancedExerciseComponent: React.FC<EnhancedExerciseComponentProps> = ({
           answers={answers}
           updateAnswer={updateAnswer}
           isAnswerCorrect={isAnswerCorrect}
-          dark={dark}
         />
       );
     }
@@ -115,7 +111,6 @@ const EnhancedExerciseComponent: React.FC<EnhancedExerciseComponentProps> = ({
           answers={answers}
           updateAnswer={updateAnswer}
           isAnswerCorrect={isAnswerCorrect}
-          dark={dark}
         />
       );
     }
@@ -127,13 +122,12 @@ const EnhancedExerciseComponent: React.FC<EnhancedExerciseComponentProps> = ({
           currentQuestionIndex={currentQuestionIndex}
           answers={answers}
           updateAnswer={updateAnswer}
-          dark={dark}
         />
       );
     }
 
     if (typeGuards.isSpeakingQuestion(currentQuestion)) {
-      return <SpeakingQuestion question={currentQuestion} dark={dark} />;
+      return <SpeakingQuestion question={currentQuestion} />;
     }
 
     return null;
@@ -156,7 +150,6 @@ const EnhancedExerciseComponent: React.FC<EnhancedExerciseComponentProps> = ({
         visible={showAiModal}
         onClose={() => setShowAiModal(false)}
         currentQuestion={currentQuestion}
-        dark={dark}
       />
 
       {/* Summary Modal */}
@@ -165,7 +158,6 @@ const EnhancedExerciseComponent: React.FC<EnhancedExerciseComponentProps> = ({
         onClose={() => setShowSummaryModal(false)}
         questions={questions}
         answers={answers}
-        dark={dark}
       />
     </View>
   );

@@ -3,17 +3,13 @@ import type {
   ViewStyle,
   TextStyle,
   ImageStyle,
-  ImageSourcePropType} from "react-native";
+  ImageSourcePropType,
+} from "react-native";
 
 import React from "react";
 import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 import { useTheme } from "../theme/ThemeProvider";
 import { SIZES, icons, COLORS } from "../constants";
@@ -24,14 +20,14 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ title }) => {
   const navigation = useNavigation<NavigationProp<any>>();
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <View
       style={[
         styles.container,
         {
-          backgroundColor: dark ? COLORS.dark1 : COLORS.white,
+          backgroundColor: COLORS.white,
         },
       ]}
     >

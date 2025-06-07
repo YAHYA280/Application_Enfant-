@@ -21,11 +21,10 @@ interface BadgeItem {
 }
 
 interface BadgesSectionProps {
-  dark: boolean;
   badges: BadgeItem[];
 }
 
-const BadgesSection: React.FC<BadgesSectionProps> = ({ dark, badges }) => {
+const BadgesSection: React.FC<BadgesSectionProps> = ({ badges }) => {
   // Animation for each badge
   const animatedScales = badges.map(() => new Animated.Value(1));
 
@@ -53,10 +52,7 @@ const BadgesSection: React.FC<BadgesSectionProps> = ({ dark, badges }) => {
     return (
       <Animated.View style={[styles.badgeWrapper, animatedStyle]}>
         <TouchableOpacity
-          style={[
-            styles.badgeContainer,
-            { backgroundColor: dark ? COLORS.dark2 : COLORS.white },
-          ]}
+          style={[styles.badgeContainer, { backgroundColor: COLORS.white }]}
           onPress={() => handlePress(index)}
           activeOpacity={0.8}
         >
@@ -75,10 +71,7 @@ const BadgesSection: React.FC<BadgesSectionProps> = ({ dark, badges }) => {
               />
             </View>
             <Text
-              style={[
-                styles.badgeLabel,
-                { color: dark ? COLORS.white : COLORS.black },
-              ]}
+              style={[styles.badgeLabel, { color: COLORS.black }]}
               numberOfLines={2}
             >
               {item.label}
@@ -92,20 +85,10 @@ const BadgesSection: React.FC<BadgesSectionProps> = ({ dark, badges }) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text
-          style={[
-            styles.sectionTitle,
-            { color: dark ? COLORS.white : COLORS.black },
-          ]}
-        >
+        <Text style={[styles.sectionTitle, { color: COLORS.black }]}>
           Récompenses et Distinctions
         </Text>
-        <Text
-          style={[
-            styles.sectionSubtitle,
-            { color: dark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)" },
-          ]}
-        >
+        <Text style={[styles.sectionSubtitle, { color: "rgba(0,0,0,0.6)" }]}>
           Vos badges et accomplissements
         </Text>
       </View>
@@ -121,24 +104,12 @@ const BadgesSection: React.FC<BadgesSectionProps> = ({ dark, badges }) => {
       />
 
       <TouchableOpacity
-        style={[
-          styles.viewAllButton,
-          { backgroundColor: dark ? COLORS.dark3 : "rgba(0,0,0,0.05)" },
-        ]}
+        style={[styles.viewAllButton, { backgroundColor: "rgba(0,0,0,0.05)" }]}
       >
-        <Text
-          style={[
-            styles.viewAllText,
-            { color: dark ? COLORS.white : COLORS.black },
-          ]}
-        >
+        <Text style={[styles.viewAllText, { color: COLORS.black }]}>
           Voir tous les badges
         </Text>
-        <Ionicons
-          name="chevron-forward"
-          size={16}
-          color={dark ? COLORS.white : COLORS.black}
-        />
+        <Ionicons name="chevron-forward" size={16} color={COLORS.black} />
       </TouchableOpacity>
     </View>
   );

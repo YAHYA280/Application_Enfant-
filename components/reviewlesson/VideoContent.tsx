@@ -20,7 +20,6 @@ import { COLORS } from "@/constants";
 
 interface VideoContentProps {
   module: Module;
-  dark: boolean;
 }
 
 const videoUrl =
@@ -28,7 +27,7 @@ const videoUrl =
 const thumbnailUrl =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg";
 
-const VideoContent: React.FC<VideoContentProps> = ({ module, dark }) => {
+const VideoContent: React.FC<VideoContentProps> = ({ module }) => {
   const videoRef = useRef<Video>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -92,27 +91,12 @@ const VideoContent: React.FC<VideoContentProps> = ({ module, dark }) => {
         </View>
       </View>
 
-      <View
-        style={[
-          styles.videoInfoContainer,
-          { backgroundColor: dark ? COLORS.dark2 : "#FFFFFF" },
-        ]}
-      >
-        <Text
-          style={[
-            styles.videoTitle,
-            { color: dark ? COLORS.white : COLORS.greyscale900 },
-          ]}
-        >
+      <View style={[styles.videoInfoContainer, { backgroundColor: "#FFFFFF" }]}>
+        <Text style={[styles.videoTitle, { color: COLORS.greyscale900 }]}>
           {module.name} - Vidéo explicative
         </Text>
 
-        <Text
-          style={[
-            styles.videoDescription,
-            { color: dark ? COLORS.greyscale500 : COLORS.greyScale800 },
-          ]}
-        >
+        <Text style={[styles.videoDescription, { color: COLORS.greyScale800 }]}>
           {module.description ||
             `Cette vidéo couvre les concepts clés de ${module.name}, avec des exemples pratiques et des explications détaillées pour faciliter votre apprentissage.`}
         </Text>
@@ -137,21 +121,15 @@ const VideoContent: React.FC<VideoContentProps> = ({ module, dark }) => {
 
       <View style={styles.actionButtonsContainer}>
         <TouchableOpacity
-          style={[
-            styles.actionButton,
-            { backgroundColor: dark ? COLORS.dark2 : "#FFFFFF" },
-          ]}
+          style={[styles.actionButton, { backgroundColor: "#FFFFFF" }]}
         >
           <LinearGradient
-            colors={dark ? ["#333", "#444"] : ["#f5f5f5", "#e0e0e0"]}
+            colors={["#f5f5f5", "#e0e0e0"]}
             style={styles.actionButtonGradient}
           >
             <Feather name="bookmark" size={20} color={COLORS.primary} />
             <Text
-              style={[
-                styles.actionButtonText,
-                { color: dark ? COLORS.white : COLORS.greyscale900 },
-              ]}
+              style={[styles.actionButtonText, { color: COLORS.greyscale900 }]}
             >
               Sauvegarder
             </Text>
@@ -159,21 +137,15 @@ const VideoContent: React.FC<VideoContentProps> = ({ module, dark }) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[
-            styles.actionButton,
-            { backgroundColor: dark ? COLORS.dark2 : "#FFFFFF" },
-          ]}
+          style={[styles.actionButton, { backgroundColor: "#FFFFFF" }]}
         >
           <LinearGradient
-            colors={dark ? ["#333", "#444"] : ["#f5f5f5", "#e0e0e0"]}
+            colors={["#f5f5f5", "#e0e0e0"]}
             style={styles.actionButtonGradient}
           >
             <Feather name="share-2" size={20} color={COLORS.primary} />
             <Text
-              style={[
-                styles.actionButtonText,
-                { color: dark ? COLORS.white : COLORS.greyscale900 },
-              ]}
+              style={[styles.actionButtonText, { color: COLORS.greyscale900 }]}
             >
               Partager
             </Text>
@@ -181,21 +153,15 @@ const VideoContent: React.FC<VideoContentProps> = ({ module, dark }) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[
-            styles.actionButton,
-            { backgroundColor: dark ? COLORS.dark2 : "#FFFFFF" },
-          ]}
+          style={[styles.actionButton, { backgroundColor: "#FFFFFF" }]}
         >
           <LinearGradient
-            colors={dark ? ["#333", "#444"] : ["#f5f5f5", "#e0e0e0"]}
+            colors={["#f5f5f5", "#e0e0e0"]}
             style={styles.actionButtonGradient}
           >
             <Feather name="download" size={20} color={COLORS.primary} />
             <Text
-              style={[
-                styles.actionButtonText,
-                { color: dark ? COLORS.white : COLORS.greyscale900 },
-              ]}
+              style={[styles.actionButtonText, { color: COLORS.greyscale900 }]}
             >
               Télécharger
             </Text>
@@ -205,12 +171,7 @@ const VideoContent: React.FC<VideoContentProps> = ({ module, dark }) => {
 
       {/* Related videos section */}
       <View style={styles.relatedVideosSection}>
-        <Text
-          style={[
-            styles.sectionTitle,
-            { color: dark ? COLORS.white : COLORS.greyscale900 },
-          ]}
-        >
+        <Text style={[styles.sectionTitle, { color: COLORS.greyscale900 }]}>
           Vidéos supplémentaires
         </Text>
         <ScrollView
@@ -221,10 +182,7 @@ const VideoContent: React.FC<VideoContentProps> = ({ module, dark }) => {
           {[1, 2, 3].map((item) => (
             <TouchableOpacity
               key={item}
-              style={[
-                styles.relatedVideoItem,
-                { backgroundColor: dark ? COLORS.dark2 : "#FFFFFF" },
-              ]}
+              style={[styles.relatedVideoItem, { backgroundColor: "#FFFFFF" }]}
               activeOpacity={0.8}
             >
               <Image
@@ -237,7 +195,7 @@ const VideoContent: React.FC<VideoContentProps> = ({ module, dark }) => {
               <Text
                 style={[
                   styles.relatedVideoTitle,
-                  { color: dark ? COLORS.white : COLORS.greyscale900 },
+                  { color: COLORS.greyscale900 },
                 ]}
                 numberOfLines={2}
               >

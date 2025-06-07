@@ -1,20 +1,21 @@
 import { Image } from "react-native";
-import { useNavigation } from "expo-router";
-import { COLORS, images } from "@/constants";
 import React, { useRef } from "react";
-import { useTheme } from "@/theme/ThemeProvider";
+import { useNavigation } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
-import AnimatedAvatar from "@/components/AnimatedAvatar";
+import { View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import NotificationBell from "@/components/notifications/NotificationBell";
-import CurvedMenu from "@/components/CurvedMenu";
 import {
   Menu,
   MenuOption,
   MenuOptions,
   MenuTrigger,
 } from "react-native-popup-menu";
-import { View, Text, StyleSheet } from "react-native";
+
+import { COLORS, images } from "@/constants";
+import { useTheme } from "@/theme/ThemeProvider";
+import CurvedMenu from "@/components/CurvedMenu";
+import AnimatedAvatar from "@/components/AnimatedAvatar";
+import NotificationBell from "@/components/notifications/NotificationBell";
 
 export default function Home() {
   const { navigate } = useNavigation<{ navigate: (screen: string) => void }>();

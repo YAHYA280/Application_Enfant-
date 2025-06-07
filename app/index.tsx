@@ -57,7 +57,7 @@ const Login = () => {
   const [formState, dispatchFormState] = useReducer(reducer, initialState);
   const [error] = useState(null);
   const [isChecked, setChecked] = useState(false);
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
 
   const inputChangedHandler = useCallback(
     (inputId: string, inputValue: string) => {
@@ -92,7 +92,7 @@ const Login = () => {
             style={[
               styles.title,
               {
-                color: dark ? COLORS.white : COLORS.black,
+                color: COLORS.black,
               },
             ]}
           >
@@ -103,7 +103,7 @@ const Login = () => {
             onInputChanged={inputChangedHandler}
             errorText={formState.inputValidities.email}
             placeholder="Email"
-            placeholderTextColor={dark ? COLORS.grayTie : COLORS.black}
+            placeholderTextColor={COLORS.black}
             icon={icons.email}
             keyboardType="email-address"
           />
@@ -113,7 +113,7 @@ const Login = () => {
             autoCapitalize="none"
             id="password"
             placeholder="Mot de passe"
-            placeholderTextColor={dark ? COLORS.grayTie : COLORS.black}
+            placeholderTextColor={COLORS.black}
             icon={icons.padlock}
             secureTextEntry
           />
@@ -122,18 +122,11 @@ const Login = () => {
               <Checkbox
                 style={styles.checkbox}
                 value={isChecked}
-                color={
-                  isChecked ? COLORS.primary : dark ? COLORS.primary : "gray"
-                }
+                color={isChecked ? COLORS.primary : "gray"}
                 onValueChange={setChecked}
               />
               <View style={{ flex: 1 }}>
-                <Text
-                  style={[
-                    styles.privacy,
-                    { color: dark ? COLORS.white : COLORS.black },
-                  ]}
-                >
+                <Text style={[styles.privacy, { color: COLORS.black }]}>
                   Se souvenir de moi
                 </Text>
               </View>

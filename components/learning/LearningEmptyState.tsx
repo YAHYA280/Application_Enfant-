@@ -4,34 +4,18 @@ import { View, Text, StyleSheet } from "react-native";
 
 import { COLORS } from "@/constants";
 
-interface LearningEmptyStateProps {
-  dark: boolean;
-}
+interface LearningEmptyStateProps {}
 
-const LearningEmptyState: React.FC<LearningEmptyStateProps> = ({ dark }) => {
+const LearningEmptyState: React.FC<LearningEmptyStateProps> = () => {
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        <Feather
-          name="search"
-          size={50}
-          color={dark ? COLORS.greyscale500 : COLORS.greyscale400}
-        />
+        <Feather name="search" size={50} color={COLORS.greyscale400} />
       </View>
-      <Text
-        style={[
-          styles.title,
-          { color: dark ? COLORS.white : COLORS.greyscale900 },
-        ]}
-      >
+      <Text style={[styles.title, { color: COLORS.greyscale900 }]}>
         Aucune leçon trouvée
       </Text>
-      <Text
-        style={[
-          styles.subtitle,
-          { color: dark ? COLORS.greyscale500 : COLORS.greyscale600 },
-        ]}
-      >
+      <Text style={[styles.subtitle, { color: COLORS.greyscale600 }]}>
         Essayez de modifier vos critères de recherche ou sélectionnez une autre
         catégorie.
       </Text>

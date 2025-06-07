@@ -30,14 +30,12 @@ interface AiAssistantModalProps {
   visible: boolean;
   onClose: () => void;
   currentQuestion: Question;
-  dark: boolean;
 }
 
 const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
   visible,
   onClose,
   currentQuestion,
-  dark,
 }) => {
   const [isQuestionVisible, setIsQuestionVisible] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -289,16 +287,14 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
       transparent={false}
       onRequestClose={onClose}
     >
-      <SafeAreaView
-        style={{ flex: 1, backgroundColor: dark ? COLORS.dark1 : COLORS.white }}
-      >
+      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
         <View style={{ flex: 1 }}>
           {/* Modal Header */}
           <View
             style={[
               styles.chatHeader,
-              { backgroundColor: dark ? COLORS.dark1 : COLORS.white },
-              { borderBottomColor: dark ? COLORS.dark2 : COLORS.greyscale300 },
+              { backgroundColor: COLORS.white },
+              { borderBottomColor: COLORS.greyscale300 },
             ]}
           >
             <View style={styles.chatHeaderContent}>
@@ -309,10 +305,7 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
                   color={COLORS.primary}
                 />
                 <Text
-                  style={[
-                    styles.headerTitle,
-                    { color: dark ? COLORS.white : COLORS.greyscale900 },
-                  ]}
+                  style={[styles.headerTitle, { color: COLORS.greyscale900 }]}
                 >
                   Assistant IA
                 </Text>
@@ -325,9 +318,7 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
                     {
                       backgroundColor: isQuestionVisible
                         ? COLORS.primary
-                        : dark
-                          ? COLORS.dark2
-                          : "rgba(0,0,0,0.05)",
+                        : "rgba(0,0,0,0.05)",
                     },
                   ]}
                   onPress={() => setIsQuestionVisible(!isQuestionVisible)}
@@ -338,9 +329,7 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
                       {
                         color: isQuestionVisible
                           ? "#FFFFFF"
-                          : dark
-                            ? COLORS.white
-                            : COLORS.greyscale900,
+                          : COLORS.greyscale900,
                       },
                     ]}
                   >
@@ -351,11 +340,7 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                  <Feather
-                    name="x"
-                    size={24}
-                    color={dark ? COLORS.white : COLORS.greyscale900}
-                  />
+                  <Feather name="x" size={24} color={COLORS.greyscale900} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -365,14 +350,11 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
               <View
                 style={[
                   styles.questionContainer,
-                  { backgroundColor: dark ? COLORS.dark2 : "rgba(0,0,0,0.05)" },
+                  { backgroundColor: "rgba(0,0,0,0.05)" },
                 ]}
               >
                 <Text
-                  style={[
-                    styles.questionText,
-                    { color: dark ? COLORS.white : COLORS.greyscale900 },
-                  ]}
+                  style={[styles.questionText, { color: COLORS.greyscale900 }]}
                 >
                   {currentQuestion.text}
                 </Text>

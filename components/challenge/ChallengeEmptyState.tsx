@@ -7,7 +7,6 @@ import { COLORS } from "@/constants";
 import { useTheme } from "@/theme/ThemeProvider";
 
 interface ChallengeEmptyStateProps {
-  dark: boolean;
   message?: string;
   subMessage?: string;
   icon?: string;
@@ -16,7 +15,6 @@ interface ChallengeEmptyStateProps {
 }
 
 const ChallengeEmptyState: React.FC<ChallengeEmptyStateProps> = ({
-  dark,
   message = "Aucun challenge trouvé",
   subMessage = "Essayez de modifier vos critères de recherche ou sélectionnez une autre catégorie.",
   icon = "trophy",
@@ -31,9 +29,7 @@ const ChallengeEmptyState: React.FC<ChallengeEmptyStateProps> = ({
         style={[
           styles.iconContainer,
           {
-            backgroundColor: dark
-              ? "rgba(255, 142, 105, 0.1)"
-              : "rgba(255, 142, 105, 0.05)",
+            backgroundColor: "rgba(255, 142, 105, 0.05)",
           },
         ]}
       >
@@ -45,21 +41,11 @@ const ChallengeEmptyState: React.FC<ChallengeEmptyStateProps> = ({
         />
       </View>
 
-      <Text
-        style={[
-          styles.title,
-          { color: dark ? COLORS.white : COLORS.greyscale900 },
-        ]}
-      >
+      <Text style={[styles.title, { color: COLORS.greyscale900 }]}>
         {message}
       </Text>
 
-      <Text
-        style={[
-          styles.subtitle,
-          { color: dark ? COLORS.greyscale500 : COLORS.greyscale600 },
-        ]}
-      >
+      <Text style={[styles.subtitle, { color: COLORS.greyscale600 }]}>
         {subMessage}
       </Text>
 

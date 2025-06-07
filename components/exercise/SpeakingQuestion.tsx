@@ -9,13 +9,9 @@ import { COLORS } from "../../constants";
 
 interface SpeakingQuestionProps {
   question: SpeakingQuestionType;
-  dark: boolean;
 }
 
-const SpeakingQuestion: React.FC<SpeakingQuestionProps> = ({
-  question,
-  dark,
-}) => {
+const SpeakingQuestion: React.FC<SpeakingQuestionProps> = ({ question }) => {
   const [showExplanation, setShowExplanation] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
 
@@ -27,12 +23,7 @@ const SpeakingQuestion: React.FC<SpeakingQuestionProps> = ({
   return (
     <View style={styles.questionContent}>
       <View style={styles.questionTextContainer}>
-        <Text
-          style={[
-            styles.questionText,
-            { color: dark ? COLORS.white : COLORS.greyscale900 },
-          ]}
-        >
+        <Text style={[styles.questionText, { color: COLORS.greyscale900 }]}>
           {question.text}
         </Text>
         <TouchableOpacity

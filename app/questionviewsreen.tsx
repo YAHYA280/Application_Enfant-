@@ -46,7 +46,7 @@ const ExerciseView = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, "exerciseview">>();
   const { challenge, exercice: initialExercice } = route.params;
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
 
   const [currentExercice, setCurrentExercice] =
     useState<Exercice>(initialExercice);
@@ -198,10 +198,7 @@ const ExerciseView = () => {
             {/* Results List */}
             <View style={styles.resultsListContainer}>
               <Text
-                style={[
-                  styles.sectionTitle,
-                  { color: dark ? COLORS.white : COLORS.greyscale900 },
-                ]}
+                style={[styles.sectionTitle, { color: COLORS.greyscale900 }]}
               >
                 Vos réponses:
               </Text>
@@ -254,10 +251,7 @@ const ExerciseView = () => {
           <View style={styles.exerciseContainer}>
             {/* Question Title */}
             <Text
-              style={[
-                styles.exerciseTitle,
-                { color: dark ? COLORS.white : COLORS.greyscale900 },
-              ]}
+              style={[styles.exerciseTitle, { color: COLORS.greyscale900 }]}
             >
               {currentExercice.titre}
             </Text>

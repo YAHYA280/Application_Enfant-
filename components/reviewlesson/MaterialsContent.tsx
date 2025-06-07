@@ -23,9 +23,7 @@ type MaterialItem = {
 
 type CategoryType = "Tous" | "PDF" | "Images" | "Documents" | "Exercices";
 
-interface MaterialsContentProps {
-  dark: boolean;
-}
+interface MaterialsContentProps {}
 
 const lessonMaterials = [
   {
@@ -80,7 +78,7 @@ const lessonMaterials = [
   },
 ];
 
-const MaterialsContent: React.FC<MaterialsContentProps> = ({ dark }) => {
+const MaterialsContent: React.FC<MaterialsContentProps> = () => {
   // Add state to track the selected category
   const [selectedCategory, setSelectedCategory] =
     useState<CategoryType>("Tous");
@@ -98,10 +96,7 @@ const MaterialsContent: React.FC<MaterialsContentProps> = ({ dark }) => {
 
   const renderMaterialItem = ({ item }: { item: MaterialItem }) => (
     <TouchableOpacity
-      style={[
-        styles.materialItem,
-        { backgroundColor: dark ? COLORS.dark2 : "#FFFFFF" },
-      ]}
+      style={[styles.materialItem, { backgroundColor: "#FFFFFF" }]}
       activeOpacity={0.7}
     >
       <View style={styles.materialItemContent}>
@@ -109,9 +104,7 @@ const MaterialsContent: React.FC<MaterialsContentProps> = ({ dark }) => {
           style={[
             styles.materialIconContainer,
             {
-              backgroundColor: dark
-                ? "rgba(255, 142, 105, 0.2)"
-                : "rgba(255, 142, 105, 0.15)",
+              backgroundColor: "rgba(255, 142, 105, 0.15)",
             },
           ]}
         >
@@ -123,19 +116,11 @@ const MaterialsContent: React.FC<MaterialsContentProps> = ({ dark }) => {
         </View>
 
         <View style={styles.materialInfo}>
-          <Text
-            style={[
-              styles.materialTitle,
-              { color: dark ? COLORS.white : COLORS.greyscale900 },
-            ]}
-          >
+          <Text style={[styles.materialTitle, { color: COLORS.greyscale900 }]}>
             {item.title}
           </Text>
           <Text
-            style={[
-              styles.materialDescription,
-              { color: dark ? COLORS.greyscale500 : COLORS.greyScale800 },
-            ]}
+            style={[styles.materialDescription, { color: COLORS.greyScale800 }]}
             numberOfLines={2}
           >
             {item.description}
@@ -148,7 +133,7 @@ const MaterialsContent: React.FC<MaterialsContentProps> = ({ dark }) => {
         <TouchableOpacity
           style={[
             styles.downloadButton,
-            { backgroundColor: dark ? COLORS.dark3 : "rgba(0,0,0,0.05)" },
+            { backgroundColor: "rgba(0,0,0,0.05)" },
           ]}
         >
           <Feather name="download" size={20} color={COLORS.primary} />
@@ -170,17 +155,14 @@ const MaterialsContent: React.FC<MaterialsContentProps> = ({ dark }) => {
     <View style={styles.materialsTabContent}>
       <View style={styles.materialsHeaderContainer}>
         <Text
-          style={[
-            styles.materialsHeaderTitle,
-            { color: dark ? COLORS.white : COLORS.greyscale900 },
-          ]}
+          style={[styles.materialsHeaderTitle, { color: COLORS.greyscale900 }]}
         >
           Supports de cours disponibles
         </Text>
         <Text
           style={[
             styles.materialsHeaderSubtitle,
-            { color: dark ? COLORS.greyscale500 : COLORS.greyScale800 },
+            { color: COLORS.greyScale800 },
           ]}
         >
           Téléchargez ces ressources pour approfondir votre apprentissage
@@ -201,11 +183,7 @@ const MaterialsContent: React.FC<MaterialsContentProps> = ({ dark }) => {
                 selectedCategory === category && styles.activeCategoryChip,
                 {
                   backgroundColor:
-                    dark && selectedCategory !== category
-                      ? COLORS.dark2
-                      : selectedCategory !== category
-                        ? "#F5F5F5"
-                        : undefined,
+                    selectedCategory !== category ? "#F5F5F5" : undefined,
                 },
               ]}
               onPress={() => setSelectedCategory(category)}
@@ -217,11 +195,9 @@ const MaterialsContent: React.FC<MaterialsContentProps> = ({ dark }) => {
                     styles.activeCategoryChipText,
                   {
                     color:
-                      dark && selectedCategory !== category
-                        ? COLORS.greyscale500
-                        : selectedCategory !== category
-                          ? COLORS.greyScale800
-                          : undefined,
+                      selectedCategory !== category
+                        ? COLORS.greyScale800
+                        : undefined,
                   },
                 ]}
               >
@@ -243,9 +219,7 @@ const MaterialsContent: React.FC<MaterialsContentProps> = ({ dark }) => {
               style={[
                 styles.separator,
                 {
-                  backgroundColor: dark
-                    ? "rgba(255,255,255,0.05)"
-                    : "rgba(0,0,0,0.05)",
+                  backgroundColor: "rgba(0,0,0,0.05)",
                 },
               ]}
             />
@@ -254,17 +228,8 @@ const MaterialsContent: React.FC<MaterialsContentProps> = ({ dark }) => {
         />
       ) : (
         <View style={styles.emptyStateContainer}>
-          <Feather
-            name="inbox"
-            size={50}
-            color={dark ? COLORS.greyscale500 : COLORS.greyscale400}
-          />
-          <Text
-            style={[
-              styles.emptyStateText,
-              { color: dark ? COLORS.greyscale500 : COLORS.greyScale800 },
-            ]}
-          >
+          <Feather name="inbox" size={50} color={COLORS.greyscale400} />
+          <Text style={[styles.emptyStateText, { color: COLORS.greyScale800 }]}>
             Aucun document disponible dans cette catégorie
           </Text>
         </View>

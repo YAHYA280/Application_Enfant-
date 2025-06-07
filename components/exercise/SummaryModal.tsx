@@ -18,7 +18,6 @@ interface SummaryModalProps {
   onClose: () => void;
   questions: Question[];
   answers: Array<any>;
-  dark: boolean;
 }
 
 const SummaryModal: React.FC<SummaryModalProps> = ({
@@ -26,7 +25,6 @@ const SummaryModal: React.FC<SummaryModalProps> = ({
   onClose,
   questions,
   answers,
-  dark,
 }) => {
   // Format the answer based on its type
   const formatAnswer = (answer: any): string => {
@@ -52,24 +50,17 @@ const SummaryModal: React.FC<SummaryModalProps> = ({
         <View
           style={[
             styles.summaryModalContainer,
-            { backgroundColor: dark ? COLORS.dark2 : COLORS.white },
+            { backgroundColor: COLORS.white },
           ]}
         >
           <View style={styles.summaryModalHeader}>
             <Text
-              style={[
-                styles.summaryModalTitle,
-                { color: dark ? COLORS.white : COLORS.greyscale900 },
-              ]}
+              style={[styles.summaryModalTitle, { color: COLORS.greyscale900 }]}
             >
               Résumé de vos réponses
             </Text>
             <TouchableOpacity onPress={onClose}>
-              <Feather
-                name="x"
-                size={24}
-                color={dark ? COLORS.white : COLORS.greyscale900}
-              />
+              <Feather name="x" size={24} color={COLORS.greyscale900} />
             </TouchableOpacity>
           </View>
 
@@ -80,9 +71,7 @@ const SummaryModal: React.FC<SummaryModalProps> = ({
                 style={[
                   styles.summaryQuestionItem,
                   {
-                    borderBottomColor: dark
-                      ? "rgba(255,255,255,0.1)"
-                      : "rgba(0,0,0,0.1)",
+                    borderBottomColor: "rgba(0,0,0,0.1)",
                   },
                 ]}
               >
@@ -90,7 +79,7 @@ const SummaryModal: React.FC<SummaryModalProps> = ({
                   <Text
                     style={[
                       styles.summaryQuestionNumber,
-                      { color: dark ? COLORS.primary : COLORS.primary },
+                      { color: COLORS.primary },
                     ]}
                   >
                     Question {index + 1}
@@ -122,7 +111,7 @@ const SummaryModal: React.FC<SummaryModalProps> = ({
                 <Text
                   style={[
                     styles.summaryQuestionText,
-                    { color: dark ? COLORS.white : COLORS.greyscale900 },
+                    { color: COLORS.greyscale900 },
                   ]}
                 >
                   {question.text}
@@ -134,9 +123,7 @@ const SummaryModal: React.FC<SummaryModalProps> = ({
                       style={[
                         styles.summaryAnswerLabel,
                         {
-                          color: dark
-                            ? COLORS.greyscale500
-                            : COLORS.greyScale800,
+                          color: COLORS.greyScale800,
                         },
                       ]}
                     >
@@ -145,7 +132,7 @@ const SummaryModal: React.FC<SummaryModalProps> = ({
                     <Text
                       style={[
                         styles.summaryAnswerText,
-                        { color: dark ? COLORS.white : COLORS.greyscale900 },
+                        { color: COLORS.greyscale900 },
                       ]}
                     >
                       {formatAnswer(answers[index])}

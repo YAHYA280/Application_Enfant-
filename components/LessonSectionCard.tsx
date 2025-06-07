@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 import { COLORS } from "../constants";
-import { useTheme } from "../theme/ThemeProvider";
+
 import LessonProgressBar from "./LessonProgressBar";
 
 interface LessonSectionCardProps {
@@ -32,8 +32,6 @@ const LessonSectionCard: React.FC<LessonSectionCardProps> = ({
   progress,
   onPress,
 }) => {
-  const { dark } = useTheme();
-
   // Animation for press effect
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -65,12 +63,10 @@ const LessonSectionCard: React.FC<LessonSectionCardProps> = ({
         style={[
           styles.container,
           {
-            backgroundColor: dark ? COLORS.dark2 : COLORS.white,
+            backgroundColor: COLORS.white,
             borderColor: isCompleted
               ? "rgba(255, 142, 105, 0.3)"
-              : dark
-                ? "rgba(255, 255, 255, 0.1)"
-                : "rgba(0, 0, 0, 0.05)",
+              : "rgba(0, 0, 0, 0.05)",
           },
         ]}
       >
@@ -78,11 +74,7 @@ const LessonSectionCard: React.FC<LessonSectionCardProps> = ({
         <View style={styles.leftSection}>
           <LinearGradient
             colors={
-              isCompleted
-                ? ["#ff6040", "#ff8e50"]
-                : dark
-                  ? ["#333", "#444"]
-                  : ["#f5f5f5", "#e5e5e5"]
+              isCompleted ? ["#ff6040", "#ff8e50"] : ["#f5f5f5", "#e5e5e5"]
             }
             style={styles.numContainer}
             start={{ x: 0, y: 0 }}
@@ -92,11 +84,7 @@ const LessonSectionCard: React.FC<LessonSectionCardProps> = ({
               style={[
                 styles.numText,
                 {
-                  color: isCompleted
-                    ? COLORS.white
-                    : dark
-                      ? COLORS.white
-                      : COLORS.greyscale900,
+                  color: isCompleted ? COLORS.white : COLORS.greyscale900,
                 },
               ]}
             >
@@ -111,7 +99,7 @@ const LessonSectionCard: React.FC<LessonSectionCardProps> = ({
             style={[
               styles.title,
               {
-                color: dark ? COLORS.white : COLORS.dark1,
+                color: COLORS.dark1,
                 fontWeight: isCompleted ? "700" : "600",
               },
             ]}
@@ -158,14 +146,10 @@ const LessonSectionCard: React.FC<LessonSectionCardProps> = ({
             <View
               style={[
                 styles.iconContainer,
-                { backgroundColor: dark ? COLORS.dark3 : COLORS.grayscale200 },
+                { backgroundColor: COLORS.grayscale200 },
               ]}
             >
-              <Ionicons
-                name="lock-closed"
-                size={16}
-                color={dark ? COLORS.grayscale400 : COLORS.gray}
-              />
+              <Ionicons name="lock-closed" size={16} color={COLORS.gray} />
             </View>
           )}
         </View>

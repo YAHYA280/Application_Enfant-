@@ -12,7 +12,6 @@ interface MultipleChoiceQuestionProps {
   answers: Array<any>;
   updateAnswer: (answer: any) => void;
   isAnswerCorrect: boolean | null;
-  dark: boolean;
 }
 
 const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
@@ -21,19 +20,13 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
   answers,
   updateAnswer,
   isAnswerCorrect,
-  dark,
 }) => {
   const [showExplanation, setShowExplanation] = useState(false);
 
   return (
     <View style={styles.questionContent}>
       <View style={styles.questionTextContainer}>
-        <Text
-          style={[
-            styles.questionText,
-            { color: dark ? COLORS.white : COLORS.greyscale900 },
-          ]}
-        >
+        <Text style={[styles.questionText, { color: COLORS.greyscale900 }]}>
           {question.text}
         </Text>
         <TouchableOpacity
@@ -81,13 +74,9 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                   isAnswer &&
                   styles.correctOption,
                 {
-                  backgroundColor: dark
-                    ? isSelected
-                      ? "rgba(255, 142, 105, 0.3)"
-                      : "rgba(50, 50, 50, 0.5)"
-                    : isSelected
-                      ? "rgba(255, 142, 105, 0.2)"
-                      : "rgba(240, 240, 240, 0.5)",
+                  backgroundColor: isSelected
+                    ? "rgba(255, 142, 105, 0.2)"
+                    : "rgba(240, 240, 240, 0.5)",
                 },
               ]}
               onPress={() => updateAnswer(option.id)}
@@ -102,9 +91,7 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                       borderColor: COLORS.primary,
                     },
                     {
-                      borderColor: dark
-                        ? COLORS.greyscale500
-                        : COLORS.greyScale800,
+                      borderColor: COLORS.greyScale800,
                     },
                   ]}
                 >
@@ -113,7 +100,7 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                       styles.optionIndicatorText,
                       isSelected && { color: COLORS.white },
                       {
-                        color: dark ? COLORS.greyscale500 : COLORS.greyScale800,
+                        color: COLORS.greyScale800,
                       },
                     ]}
                   >
@@ -123,7 +110,7 @@ const MultipleChoiceQuestion: React.FC<MultipleChoiceQuestionProps> = ({
                 <Text
                   style={[
                     styles.optionText,
-                    { color: dark ? COLORS.white : COLORS.greyscale900 },
+                    { color: COLORS.greyscale900 },
                     isSelected && { fontFamily: "bold" },
                   ]}
                 >

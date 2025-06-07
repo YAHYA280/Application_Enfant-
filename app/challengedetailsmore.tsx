@@ -38,7 +38,7 @@ const Challengedetailsmore = () => {
   const route = useRoute<RouteProp<{ params: { challenge: Challenge } }>>();
   const { challenge } = route.params;
 
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
 
   const exerciceIds = challengeExerciceMap[challenge.id] || [];
   const exercises = mockExercices.filter((ex) => exerciceIds.includes(ex.id));
@@ -83,7 +83,7 @@ const Challengedetailsmore = () => {
     <View
       style={[styles.mainContainer, { backgroundColor: colors.background }]}
     >
-      <StatusBar style={dark ? "light" : "dark"} />
+      <StatusBar style="dark" />
 
       {/* Hero section with image and linear gradient overlay */}
       <View style={styles.heroSection}>
@@ -94,11 +94,7 @@ const Challengedetailsmore = () => {
         />
 
         <LinearGradient
-          colors={[
-            "transparent",
-            "rgba(0,0,0,0.7)",
-            dark ? colors.background : "rgba(255,255,255,0.9)",
-          ]}
+          colors={["transparent", "rgba(0,0,0,0.7)", "rgba(255,255,255,0.9)"]}
           style={styles.imageGradient}
         />
 
@@ -124,10 +120,7 @@ const Challengedetailsmore = () => {
           <View style={styles.headerContainer}>
             <View style={styles.titleRow}>
               <Text
-                style={[
-                  styles.challengeName,
-                  { color: dark ? COLORS.white : COLORS.greyscale900 },
-                ]}
+                style={[styles.challengeName, { color: COLORS.greyscale900 }]}
               >
                 {challenge.nom}
               </Text>
@@ -146,10 +139,7 @@ const Challengedetailsmore = () => {
 
             <View style={styles.descriptionContainer}>
               <Text
-                style={[
-                  styles.descriptionText,
-                  { color: dark ? COLORS.secondaryWhite : COLORS.grayscale700 },
-                ]}
+                style={[styles.descriptionText, { color: COLORS.grayscale700 }]}
               >
                 {challenge.description}
               </Text>
@@ -167,10 +157,7 @@ const Challengedetailsmore = () => {
                 </View>
                 <View style={styles.metricTextContainer}>
                   <Text
-                    style={[
-                      styles.metricValue,
-                      { color: dark ? COLORS.white : COLORS.greyscale900 },
-                    ]}
+                    style={[styles.metricValue, { color: COLORS.greyscale900 }]}
                   >
                     {completedExercisesCount} / {exercises.length}
                   </Text>
@@ -188,10 +175,7 @@ const Challengedetailsmore = () => {
                 </View>
                 <View style={styles.metricTextContainer}>
                   <Text
-                    style={[
-                      styles.metricValue,
-                      { color: dark ? COLORS.white : COLORS.greyscale900 },
-                    ]}
+                    style={[styles.metricValue, { color: COLORS.greyscale900 }]}
                   >
                     {challenge.duree}
                   </Text>
@@ -209,10 +193,7 @@ const Challengedetailsmore = () => {
                 </View>
                 <View style={styles.metricTextContainer}>
                   <Text
-                    style={[
-                      styles.metricValue,
-                      { color: dark ? COLORS.white : COLORS.greyscale900 },
-                    ]}
+                    style={[styles.metricValue, { color: COLORS.greyscale900 }]}
                   >
                     {challenge.nombreTentatives}
                   </Text>
@@ -225,10 +206,7 @@ const Challengedetailsmore = () => {
             <View style={styles.progressSection}>
               <View style={styles.progressHeader}>
                 <Text
-                  style={[
-                    styles.progressTitle,
-                    { color: dark ? COLORS.white : COLORS.greyscale900 },
-                  ]}
+                  style={[styles.progressTitle, { color: COLORS.greyscale900 }]}
                 >
                   Progression
                 </Text>
@@ -269,10 +247,7 @@ const Challengedetailsmore = () => {
           {/* Exercises section */}
           <View style={styles.exercisesContainer}>
             <Text
-              style={[
-                styles.exercisesTitle,
-                { color: dark ? COLORS.white : COLORS.greyscale900 },
-              ]}
+              style={[styles.exercisesTitle, { color: COLORS.greyscale900 }]}
             >
               Questions
             </Text>

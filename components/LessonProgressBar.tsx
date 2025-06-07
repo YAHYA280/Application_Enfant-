@@ -3,7 +3,6 @@ import * as Progress from "react-native-progress";
 import { View, Text, StyleSheet } from "react-native";
 
 import { SIZES, COLORS } from "../constants";
-import { useTheme } from "../theme/ThemeProvider";
 
 interface LessonProgressBarProps {
   numberOfLessonsCompleted: number;
@@ -26,7 +25,6 @@ const LessonProgressBar: React.FC<LessonProgressBarProps> = ({
     totalNumberOfLessons > 0
       ? numberOfLessonsCompleted / totalNumberOfLessons
       : 0;
-  const { dark } = useTheme();
 
   // Logique de couleur modifiée selon les nouvelles exigences
   const getProgressColor = () => {
@@ -46,7 +44,7 @@ const LessonProgressBar: React.FC<LessonProgressBarProps> = ({
           progress={progress}
           width={SIZES.width - 280}
           height={6}
-          unfilledColor={dark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.05)"}
+          unfilledColor="rgba(0,0,0,0.05)"
           borderColor="transparent"
           borderWidth={0}
           borderRadius={3}

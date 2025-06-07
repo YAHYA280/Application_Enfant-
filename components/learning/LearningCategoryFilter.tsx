@@ -18,14 +18,12 @@ interface LearningCategoryFilterProps {
   categories: Category[];
   selectedCategories: string[];
   onSelectCategory: (categoryId: string) => void;
-  dark: boolean;
 }
 
 const LearningCategoryFilter: React.FC<LearningCategoryFilterProps> = ({
   categories,
   selectedCategories,
   onSelectCategory,
-  dark,
 }) => {
   return (
     <View style={styles.container}>
@@ -48,10 +46,8 @@ const LearningCategoryFilter: React.FC<LearningCategoryFilterProps> = ({
                       borderColor: COLORS.primary,
                     }
                   : {
-                      backgroundColor: dark
-                        ? COLORS.dark2
-                        : COLORS.greyscale100,
-                      borderColor: dark ? COLORS.dark3 : COLORS.greyscale300,
+                      backgroundColor: COLORS.greyscale100,
+                      borderColor: COLORS.greyscale300,
                     },
               ]}
               onPress={() => onSelectCategory(category.id)}
@@ -60,11 +56,7 @@ const LearningCategoryFilter: React.FC<LearningCategoryFilterProps> = ({
                 style={[
                   styles.categoryText,
                   {
-                    color: isSelected
-                      ? COLORS.white
-                      : dark
-                        ? COLORS.white
-                        : COLORS.greyscale900,
+                    color: isSelected ? COLORS.white : COLORS.greyscale900,
                   },
                 ]}
               >

@@ -35,7 +35,7 @@ const RecompenseMessage = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, "recompenseMessage">>();
   const { challenge, score, totalPossibleScore } = route.params;
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
 
   const successThreshold = totalPossibleScore * 0.7;
   const isSuccess = score >= successThreshold;
@@ -192,7 +192,7 @@ const RecompenseMessage = () => {
           {/* Score display */}
           <View style={styles.scoreContainer}>
             <LinearGradient
-              colors={[resultStyle.color, dark ? colors.background : "#FFF"]}
+              colors={[resultStyle.color, "#FFF"]}
               start={{ x: 0.5, y: 0 }}
               end={{ x: 0.5, y: 1 }}
               style={styles.scoreGradient}
@@ -207,24 +207,14 @@ const RecompenseMessage = () => {
 
           {/* Message */}
           <View style={styles.messageContainer}>
-            <Text
-              style={[
-                styles.messageText,
-                { color: dark ? COLORS.white : COLORS.greyscale900 },
-              ]}
-            >
+            <Text style={[styles.messageText, { color: COLORS.greyscale900 }]}>
               {message}
             </Text>
           </View>
 
           {/* Performance tips */}
           <View style={styles.tipsContainer}>
-            <Text
-              style={[
-                styles.tipsTitle,
-                { color: dark ? COLORS.white : COLORS.greyscale900 },
-              ]}
-            >
+            <Text style={[styles.tipsTitle, { color: COLORS.greyscale900 }]}>
               {isSuccess ? "Continuez comme ça!" : "Conseils pour s'améliorer"}
             </Text>
 
@@ -236,9 +226,7 @@ const RecompenseMessage = () => {
                       style={[
                         styles.tipText,
                         {
-                          color: dark
-                            ? COLORS.greyscale500
-                            : COLORS.greyscale600,
+                          color: COLORS.greyscale600,
                         },
                       ]}
                     >
@@ -251,9 +239,7 @@ const RecompenseMessage = () => {
                       style={[
                         styles.tipText,
                         {
-                          color: dark
-                            ? COLORS.greyscale500
-                            : COLORS.greyscale600,
+                          color: COLORS.greyscale600,
                         },
                       ]}
                     >
@@ -268,9 +254,7 @@ const RecompenseMessage = () => {
                       style={[
                         styles.tipText,
                         {
-                          color: dark
-                            ? COLORS.greyscale500
-                            : COLORS.greyscale600,
+                          color: COLORS.greyscale600,
                         },
                       ]}
                     >
@@ -282,9 +266,7 @@ const RecompenseMessage = () => {
                       style={[
                         styles.tipText,
                         {
-                          color: dark
-                            ? COLORS.greyscale500
-                            : COLORS.greyscale600,
+                          color: COLORS.greyscale600,
                         },
                       ]}
                     >
@@ -296,9 +278,7 @@ const RecompenseMessage = () => {
                       style={[
                         styles.tipText,
                         {
-                          color: dark
-                            ? COLORS.greyscale500
-                            : COLORS.greyscale600,
+                          color: COLORS.greyscale600,
                         },
                       ]}
                     >

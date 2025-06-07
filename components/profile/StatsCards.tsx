@@ -7,7 +7,6 @@ import { View, Text, Animated, StyleSheet } from "react-native";
 import { COLORS } from "@/constants";
 
 interface StatsCardsProps {
-  dark: boolean;
   stats: {
     daysSpent: number;
     timeSpent: string;
@@ -21,7 +20,7 @@ interface StatCardProps {
   iconColor: string;
   value: string | number;
   label: string;
-  dark: boolean;
+
   gradientStart: string;
   gradientEnd: string;
 }
@@ -31,7 +30,7 @@ const StatCard: React.FC<StatCardProps> = ({
   iconColor,
   value,
   label,
-  dark,
+
   gradientStart,
   gradientEnd,
 }) => {
@@ -66,37 +65,20 @@ const StatCard: React.FC<StatCardProps> = ({
         colors={[gradientStart, gradientEnd]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={[
-          styles.card,
-          { backgroundColor: dark ? COLORS.dark2 : COLORS.white },
-        ]}
+        style={[styles.card, { backgroundColor: COLORS.white }]}
       >
         <View
           style={[
             styles.iconContainer,
             {
-              backgroundColor: dark
-                ? "rgba(255,255,255,0.1)"
-                : "rgba(0,0,0,0.05)",
+              backgroundColor: "rgba(0,0,0,0.05)",
             },
           ]}
         >
           <Ionicons name={icon as any} size={24} color={iconColor} />
         </View>
-        <Text
-          style={[
-            styles.cardValue,
-            { color: dark ? COLORS.white : COLORS.black },
-          ]}
-        >
-          {value}
-        </Text>
-        <Text
-          style={[
-            styles.cardLabel,
-            { color: dark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)" },
-          ]}
-        >
+        <Text style={[styles.cardValue, { color: COLORS.black }]}>{value}</Text>
+        <Text style={[styles.cardLabel, { color: "rgba(0,0,0,0.6)" }]}>
           {label}
         </Text>
       </LinearGradient>
@@ -104,15 +86,10 @@ const StatCard: React.FC<StatCardProps> = ({
   );
 };
 
-const StatsCards: React.FC<StatsCardsProps> = ({ dark, stats }) => {
+const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
   return (
     <View style={styles.container}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          { color: dark ? COLORS.white : COLORS.black },
-        ]}
-      >
+      <Text style={[styles.sectionTitle, { color: COLORS.black }]}>
         Statistiques d&apos;apprentissage
       </Text>
 
@@ -122,9 +99,8 @@ const StatsCards: React.FC<StatsCardsProps> = ({ dark, stats }) => {
           iconColor="#FF4500"
           value={stats.daysSpent}
           label="Jours d'activité"
-          dark={dark}
-          gradientStart={dark ? "rgba(255,69,0,0.2)" : "rgba(255,69,0,0.1)"}
-          gradientEnd={dark ? "rgba(255,69,0,0.05)" : "rgba(255,69,0,0.02)"}
+          gradientStart="rgba(255,69,0,0.1)"
+          gradientEnd="rgba(255,69,0,0.02)"
         />
 
         <StatCard
@@ -132,9 +108,8 @@ const StatsCards: React.FC<StatsCardsProps> = ({ dark, stats }) => {
           iconColor="#FF1493"
           value={stats.timeSpent}
           label="Temps passé"
-          dark={dark}
-          gradientStart={dark ? "rgba(255,20,147,0.2)" : "rgba(255,20,147,0.1)"}
-          gradientEnd={dark ? "rgba(255,20,147,0.05)" : "rgba(255,20,147,0.02)"}
+          gradientStart="rgba(255,20,147,0.1)"
+          gradientEnd="rgba(255,20,147,0.02)"
         />
 
         <StatCard
@@ -142,9 +117,8 @@ const StatsCards: React.FC<StatsCardsProps> = ({ dark, stats }) => {
           iconColor="#FFA500"
           value={stats.xpEarned}
           label="XP gagnés"
-          dark={dark}
-          gradientStart={dark ? "rgba(255,165,0,0.2)" : "rgba(255,165,0,0.1)"}
-          gradientEnd={dark ? "rgba(255,165,0,0.05)" : "rgba(255,165,0,0.02)"}
+          gradientStart="rgba(255,165,0,0.1)"
+          gradientEnd="rgba(255,165,0,0.02)"
         />
 
         <StatCard
@@ -152,9 +126,8 @@ const StatsCards: React.FC<StatsCardsProps> = ({ dark, stats }) => {
           iconColor="#DAA520"
           value={stats.ranking}
           label="Classement"
-          dark={dark}
-          gradientStart={dark ? "rgba(218,165,32,0.2)" : "rgba(218,165,32,0.1)"}
-          gradientEnd={dark ? "rgba(218,165,32,0.05)" : "rgba(218,165,32,0.02)"}
+          gradientStart="rgba(218,165,32,0.1)"
+          gradientEnd="rgba(218,165,32,0.02)"
         />
       </View>
     </View>

@@ -7,33 +7,20 @@ import { COLORS } from "@/constants";
 import NotificationBell from "@/components/notifications/NotificationBell";
 
 interface ProfileHeaderProps {
-  dark: boolean;
   onBackPress: () => void;
 }
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ dark, onBackPress }) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ onBackPress }) => {
   return (
     <View style={styles.headerContainer}>
       <View style={styles.headerLeft}>
         <TouchableOpacity
-          style={[
-            styles.backButton,
-            { backgroundColor: dark ? COLORS.dark3 : "rgba(0,0,0,0.05)" },
-          ]}
+          style={[styles.backButton, { backgroundColor: "rgba(0,0,0,0.05)" }]}
           onPress={onBackPress}
         >
-          <Ionicons
-            name="chevron-back"
-            size={24}
-            color={dark ? COLORS.white : COLORS.black}
-          />
+          <Ionicons name="chevron-back" size={24} color={COLORS.black} />
         </TouchableOpacity>
-        <Text
-          style={[
-            styles.headerTitle,
-            { color: dark ? COLORS.white : COLORS.black },
-          ]}
-        >
+        <Text style={[styles.headerTitle, { color: COLORS.black }]}>
           Mon Profil
         </Text>
       </View>

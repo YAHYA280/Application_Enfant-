@@ -48,7 +48,7 @@ const categories = [
 
 const Learning: React.FC<LearningProps> = () => {
   const navigation = useNavigation<NavigationProp<any>>();
-  const { colors, dark } = useTheme();
+  const { colors } = useTheme();
   const [selectedCategories, setSelectedCategories] = useState<string[]>(["1"]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -131,7 +131,7 @@ const Learning: React.FC<LearningProps> = () => {
             styles.headerAnimatedContainer,
             {
               opacity: headerOpacity,
-              backgroundColor: dark ? COLORS.dark1 : COLORS.white,
+              backgroundColor: COLORS.white,
             },
           ]}
         >
@@ -140,14 +140,12 @@ const Learning: React.FC<LearningProps> = () => {
               searchQuery={searchQuery}
               onChangeText={handleSearchQueryChange}
               onCancel={cancelSearch}
-              dark={dark}
             />
           ) : (
             <LearningHeader
               title="J'apprends"
               onBackPress={() => navigation.goBack()}
               onSearchPress={() => setIsSearching(true)}
-              dark={dark}
             />
           )}
         </Animated.View>
@@ -157,7 +155,6 @@ const Learning: React.FC<LearningProps> = () => {
           categories={categories}
           selectedCategories={selectedCategories}
           onSelectCategory={handleCategorySelect}
-          dark={dark}
         />
 
         {/* Main Content */}
@@ -172,7 +169,7 @@ const Learning: React.FC<LearningProps> = () => {
         >
           <ConditionalComponent
             isValid={filteredLessons.length > 0}
-            defaultComponent={<LearningEmptyState dark={dark} />}
+            defaultComponent={<LearningEmptyState />}
           >
             <FlatList
               data={filteredLessons}

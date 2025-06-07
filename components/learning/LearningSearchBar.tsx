@@ -14,14 +14,12 @@ interface LearningSearchBarProps {
   searchQuery: string;
   onChangeText: (text: string) => void;
   onCancel: () => void;
-  dark: boolean;
 }
 
 const LearningSearchBar: React.FC<LearningSearchBarProps> = ({
   searchQuery,
   onChangeText,
   onCancel,
-  dark,
 }) => {
   return (
     <View style={styles.container}>
@@ -32,7 +30,7 @@ const LearningSearchBar: React.FC<LearningSearchBarProps> = ({
           style={[
             styles.backIcon,
             {
-              tintColor: dark ? COLORS.white : COLORS.greyscale900,
+              tintColor: COLORS.greyscale900,
             },
           ]}
         />
@@ -43,9 +41,9 @@ const LearningSearchBar: React.FC<LearningSearchBarProps> = ({
           style={[
             styles.searchBar,
             {
-              backgroundColor: dark ? COLORS.greyScale800 : COLORS.grayscale100,
-              borderColor: dark ? COLORS.dark3 : "transparent",
-              borderWidth: dark ? 1 : 0,
+              backgroundColor: COLORS.grayscale100,
+              borderColor: "transparent",
+              borderWidth: 0,
             },
           ]}
         >
@@ -54,7 +52,7 @@ const LearningSearchBar: React.FC<LearningSearchBarProps> = ({
             style={[
               styles.searchIcon,
               {
-                tintColor: dark ? COLORS.greyscale500 : COLORS.greyscale600,
+                tintColor: COLORS.greyscale600,
               },
             ]}
             resizeMode="contain"
@@ -64,15 +62,13 @@ const LearningSearchBar: React.FC<LearningSearchBarProps> = ({
             style={[
               styles.searchInput,
               {
-                color: dark ? COLORS.white : COLORS.greyscale900,
+                color: COLORS.greyscale900,
               },
             ]}
             value={searchQuery}
             onChangeText={onChangeText}
             placeholder="Rechercher des leçons..."
-            placeholderTextColor={
-              dark ? COLORS.greyscale500 : COLORS.greyscale600
-            }
+            placeholderTextColor={COLORS.greyscale600}
             autoFocus
           />
 
@@ -86,7 +82,7 @@ const LearningSearchBar: React.FC<LearningSearchBarProps> = ({
                 style={[
                   styles.clearIcon,
                   {
-                    tintColor: dark ? COLORS.greyscale500 : COLORS.greyscale600,
+                    tintColor: COLORS.greyscale600,
                   },
                 ]}
                 resizeMode="contain"

@@ -18,7 +18,6 @@ interface FillInBlankQuestionProps {
   answers: Array<any>;
   updateAnswer: (answer: any) => void;
   isAnswerCorrect: boolean | null;
-  dark: boolean;
 }
 
 const FillInBlankQuestion: React.FC<FillInBlankQuestionProps> = ({
@@ -27,19 +26,13 @@ const FillInBlankQuestion: React.FC<FillInBlankQuestionProps> = ({
   answers,
   updateAnswer,
   isAnswerCorrect,
-  dark,
 }) => {
   const [showExplanation, setShowExplanation] = useState(false);
 
   return (
     <View style={styles.questionContent}>
       <View style={styles.questionTextContainer}>
-        <Text
-          style={[
-            styles.questionText,
-            { color: dark ? COLORS.white : COLORS.greyscale900 },
-          ]}
-        >
+        <Text style={[styles.questionText, { color: COLORS.greyscale900 }]}>
           {question.text}
         </Text>
         <TouchableOpacity
@@ -67,24 +60,18 @@ const FillInBlankQuestion: React.FC<FillInBlankQuestionProps> = ({
           style={[
             styles.fillInBlankInput,
             {
-              backgroundColor: dark
-                ? "rgba(50, 50, 50, 0.5)"
-                : "rgba(240, 240, 240, 0.5)",
-              color: dark ? COLORS.white : COLORS.greyscale900,
+              backgroundColor: "rgba(240, 240, 240, 0.5)",
+              color: COLORS.greyscale900,
               borderColor:
                 isAnswerCorrect === true
                   ? "#4CAF50"
                   : isAnswerCorrect === false
                     ? "#F44336"
-                    : dark
-                      ? "rgba(255,255,255,0.2)"
-                      : "rgba(0,0,0,0.1)",
+                    : "rgba(0,0,0,0.1)",
             },
           ]}
           placeholder="Tapez votre réponse ici..."
-          placeholderTextColor={
-            dark ? COLORS.greyscale500 : COLORS.greyscale400
-          }
+          placeholderTextColor={COLORS.greyscale400}
           value={answers[currentQuestionIndex] || ""}
           onChangeText={(text) => updateAnswer(text)}
           editable={isAnswerCorrect === null}

@@ -72,7 +72,7 @@ const performanceData = [
 
 const ProfilePage = () => {
   const navigation = useNavigation();
-  const { dark, colors } = useTheme();
+  const { colors } = useTheme();
   const [userData, setUserData] = useState(mockData);
   const [image, setImage] = useState(userData.avatar);
 
@@ -95,14 +95,13 @@ const ProfilePage = () => {
   return (
     <SafeAreaView style={[styles.area, { backgroundColor: colors.background }]}>
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <ProfileHeader dark={dark} onBackPress={handleBackPress} />
+        <ProfileHeader onBackPress={handleBackPress} />
 
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContainer}
         >
           <ProfileInfo
-            dark={dark}
             image={image}
             identifiant={userData.id}
             name={userData.name}
@@ -112,7 +111,6 @@ const ProfilePage = () => {
           />
 
           <StatsCards
-            dark={dark}
             stats={{
               daysSpent: userData.daysSpent,
               timeSpent: userData.timeSpent,
@@ -122,16 +120,15 @@ const ProfilePage = () => {
           />
 
           <ProgressSection
-            dark={dark}
             totalProgress={userData.totalProgress}
             subjectProgress={userData.subjectProgress}
           />
 
-          <BadgesSection dark={dark} badges={badgesData} />
+          <BadgesSection badges={badgesData} />
 
-          <GradesSection dark={dark} grades={gradesData} />
+          <GradesSection grades={gradesData} />
 
-          <SuggestionsSection dark={dark} suggestions={performanceData} />
+          <SuggestionsSection suggestions={performanceData} />
         </ScrollView>
       </View>
     </SafeAreaView>

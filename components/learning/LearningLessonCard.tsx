@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 
 import { COLORS } from "../../constants";
@@ -53,10 +54,10 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
 
   const onPressIn = () => {
     Animated.spring(animatedScale, {
-      toValue: 0.98,
+      toValue: Platform.OS === "android" ? 0.97 : 0.98,
       useNativeDriver: true,
-      speed: 20,
-      bounciness: 4,
+      speed: Platform.OS === "android" ? 25 : 20,
+      bounciness: Platform.OS === "android" ? 2 : 4,
     }).start();
   };
 
@@ -64,8 +65,8 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
     Animated.spring(animatedScale, {
       toValue: 1,
       useNativeDriver: true,
-      speed: 20,
-      bounciness: 4,
+      speed: Platform.OS === "android" ? 25 : 20,
+      bounciness: Platform.OS === "android" ? 2 : 4,
     }).start();
   };
 
@@ -92,16 +93,20 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
         onPress={onPress}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
-        activeOpacity={0.9}
+        activeOpacity={Platform.OS === "android" ? 0.8 : 0.9}
         style={styles.container}
       >
-        {/* Effet de bordure premium avec gradient orange */}
-        <LinearGradient
-          colors={[COLORS.primary, "#FF7538"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradientBorder}
-        />
+        {/* Gradient border - enhanced for Android */}
+        {Platform.OS === "ios" ? (
+          <LinearGradient
+            colors={[COLORS.primary, "#FF7538"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradientBorder}
+          />
+        ) : (
+          <View style={styles.androidBorder} />
+        )}
 
         <View style={styles.cardContent}>
           {/* Partie gauche - Image */}
@@ -110,13 +115,21 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
 
             {/* Badge catégorie */}
             <View style={styles.categoryBadge}>
-              <Feather name="book-open" size={12} color={COLORS.white} />
+              <Feather
+                name="book-open"
+                size={Platform.OS === "android" ? 10 : 12}
+                color={COLORS.white}
+              />
               <Text style={styles.categoryName}>{category}</Text>
             </View>
 
             {/* Badge temps estimé */}
             <View style={styles.timeEstimateBadge}>
-              <Feather name="clock" size={10} color={COLORS.white} />
+              <Feather
+                name="clock"
+                size={Platform.OS === "android" ? 9 : 10}
+                color={COLORS.white}
+              />
               <Text style={styles.timeEstimateText}>{estimatedTime}</Text>
             </View>
           </View>
@@ -125,9 +138,15 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
           <View style={styles.contentContainer}>
             {/* En-tête avec titre et badge de difficulté */}
             <View style={styles.headerContainer}>
-              <Text style={styles.name} numberOfLines={2}>
-                {name}
-              </Text>
+              <View style={styles.titleContainer}>
+                <Text
+                  style={styles.name}
+                  numberOfLines={2}
+                  ellipsizeMode="tail"
+                >
+                  {name}
+                </Text>
+              </View>
 
               <View
                 style={[
@@ -172,14 +191,17 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
                   )}
 
                   {/* Icône bouton continuer */}
-                  <TouchableOpacity style={styles.continueIconButton}>
+                  <TouchableOpacity
+                    style={styles.continueIconButton}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
                     <LinearGradient
-                      colors={["#ff604", "#ff8e69"]}
+                      colors={["#ff6040", "#ff8e69"]}
                       style={styles.continueIconGradient}
                     >
                       <Feather
                         name="chevron-right"
-                        size={16}
+                        size={Platform.OS === "android" ? 14 : 16}
                         color={COLORS.white}
                       />
                     </LinearGradient>
@@ -197,41 +219,66 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
 const styles = StyleSheet.create({
   cardWrapper: {
     width: CARD_WIDTH,
-    marginVertical: 10,
+    marginVertical: Platform.OS === "android" ? 8 : 10,
     alignSelf: "center",
-    borderRadius: 12,
+    borderRadius: Platform.OS === "android" ? 16 : 12,
   },
   container: {
     width: "100%",
     overflow: "hidden",
-    borderRadius: 12,
+    borderRadius: Platform.OS === "android" ? 16 : 12,
     backgroundColor: COLORS.white,
-    shadowColor: COLORS.black,
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 10,
+    // Platform-specific shadows
+    ...Platform.select({
+      ios: {
+        shadowColor: COLORS.black,
+        shadowOffset: {
+          width: 0,
+          height: 6,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 8,
+        shadowColor: COLORS.black,
+        borderWidth: 0.5,
+        borderColor: "rgba(0,0,0,0.1)",
+      },
+    }),
   },
   gradientBorder: {
+    position: "absolute",
+    top: -2,
+    left: -2,
+    right: -2,
+    bottom: -2,
+    borderRadius: 14,
+    zIndex: -1,
+  },
+  androidBorder: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    borderRadius: 12,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
     zIndex: -1,
-    margin: -2,
   },
   cardContent: {
     flexDirection: "row",
-    height: 140, // Maintien de la hauteur spécifiée
+    height: Platform.OS === "android" ? 145 : 140,
+    backgroundColor: COLORS.white,
+    borderRadius: Platform.OS === "android" ? 16 : 12,
   },
   imageContainer: {
     position: "relative",
-    width: "45%",
+    width: "40%", // Reduced from 45% to 40%
+    borderTopLeftRadius: Platform.OS === "android" ? 16 : 12,
+    borderBottomLeftRadius: Platform.OS === "android" ? 16 : 12,
+    overflow: "hidden",
   },
   lessonImage: {
     width: "100%",
@@ -240,129 +287,172 @@ const styles = StyleSheet.create({
   },
   categoryBadge: {
     position: "absolute",
-    top: 8,
-    left: 8,
+    top: Platform.OS === "android" ? 10 : 8,
+    left: Platform.OS === "android" ? 10 : 8,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: COLORS.primary,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    gap: 4,
+    paddingHorizontal: Platform.OS === "android" ? 10 : 8,
+    paddingVertical: Platform.OS === "android" ? 5 : 4,
+    borderRadius: Platform.OS === "android" ? 14 : 12,
+    gap: Platform.OS === "android" ? 5 : 4,
+    // Android-specific styling
+    ...Platform.select({
+      android: {
+        elevation: 2,
+      },
+    }),
   },
   categoryName: {
     color: COLORS.white,
-    fontSize: 10,
-    fontFamily: "semiBold",
+    fontSize: Platform.OS === "android" ? 8 : 9, // Reduced from 9/10
+    fontFamily: Platform.OS === "android" ? "medium" : "semiBold",
+    fontWeight: Platform.OS === "android" ? "600" : undefined,
   },
   timeEstimateBadge: {
     position: "absolute",
-    bottom: 8,
-    left: 8,
+    bottom: Platform.OS === "android" ? 10 : 8,
+    left: Platform.OS === "android" ? 10 : 8,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.7)",
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 8,
-    gap: 3,
+    backgroundColor: "rgba(0,0,0,0.75)",
+    paddingHorizontal: Platform.OS === "android" ? 8 : 6,
+    paddingVertical: Platform.OS === "android" ? 4 : 3,
+    borderRadius: Platform.OS === "android" ? 10 : 8,
+    gap: Platform.OS === "android" ? 4 : 3,
   },
   timeEstimateText: {
     color: COLORS.white,
-    fontSize: 9,
+    fontSize: Platform.OS === "android" ? 7 : 8, // Reduced from 8/9
     fontFamily: "medium",
+    fontWeight: Platform.OS === "android" ? "500" : undefined,
   },
   contentContainer: {
     flex: 1,
-    padding: 12,
+    padding: Platform.OS === "android" ? 14 : 12,
     justifyContent: "space-between",
   },
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
+    marginBottom: Platform.OS === "android" ? 4 : 0,
+  },
+  titleContainer: {
+    flex: 1,
+    marginRight: 8,
   },
   name: {
-    flex: 1,
-    fontSize: 18,
+    fontSize: Platform.OS === "android" ? 15 : 16, // Reduced from 17/18
     fontFamily: "bold",
-    marginBottom: 8,
-    lineHeight: 20,
-    marginRight: 8,
+    marginBottom: Platform.OS === "android" ? 6 : 8,
+    lineHeight: Platform.OS === "android" ? 20 : 18,
     color: COLORS.greyscale900,
+    fontWeight: Platform.OS === "android" ? "700" : undefined,
   },
   difficultyBadge: {
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
+    borderRadius: Platform.OS === "android" ? 8 : 6,
+    paddingHorizontal: Platform.OS === "android" ? 8 : 6,
+    paddingVertical: Platform.OS === "android" ? 4 : 3,
     alignSelf: "flex-start",
+    // Android-specific styling
+    ...Platform.select({
+      android: {
+        elevation: 1,
+      },
+    }),
   },
   difficultyText: {
     color: COLORS.white,
-    fontSize: 9,
+    fontSize: Platform.OS === "android" ? 7 : 8, // Reduced from 8/9
     fontFamily: "bold",
+    fontWeight: Platform.OS === "android" ? "700" : undefined,
   },
   progressSection: {
-    marginTop: 4,
+    marginTop: Platform.OS === "android" ? 6 : 4,
   },
   progressHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 6,
+    marginBottom: Platform.OS === "android" ? 8 : 6,
   },
   lessonsText: {
-    fontSize: 12,
+    fontSize: Platform.OS === "android" ? 10 : 11, // Reduced from 11/12
     fontFamily: "medium",
     color: COLORS.greyscale900,
+    fontWeight: Platform.OS === "android" ? "500" : undefined,
   },
   statusContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 8,
+    marginTop: Platform.OS === "android" ? 10 : 8,
   },
   statusBadgeNew: {
     backgroundColor: "#2196F3",
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    borderRadius: Platform.OS === "android" ? 10 : 8,
+    paddingHorizontal: Platform.OS === "android" ? 10 : 8,
+    paddingVertical: Platform.OS === "android" ? 4 : 3,
+    ...Platform.select({
+      android: {
+        elevation: 1,
+      },
+    }),
   },
   statusTextNew: {
     color: COLORS.white,
-    fontSize: 10,
+    fontSize: Platform.OS === "android" ? 8 : 9, // Reduced from 9/10
     fontFamily: "medium",
+    fontWeight: Platform.OS === "android" ? "600" : undefined,
   },
   statusBadgeInProgress: {
     backgroundColor: "#FF9800",
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    borderRadius: Platform.OS === "android" ? 10 : 8,
+    paddingHorizontal: Platform.OS === "android" ? 10 : 8,
+    paddingVertical: Platform.OS === "android" ? 4 : 3,
+    ...Platform.select({
+      android: {
+        elevation: 1,
+      },
+    }),
   },
   statusTextInProgress: {
     color: COLORS.white,
-    fontSize: 10,
+    fontSize: Platform.OS === "android" ? 8 : 9, // Reduced from 9/10
     fontFamily: "medium",
+    fontWeight: Platform.OS === "android" ? "600" : undefined,
   },
   statusBadgeComplete: {
     backgroundColor: "#4CAF50",
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    borderRadius: Platform.OS === "android" ? 10 : 8,
+    paddingHorizontal: Platform.OS === "android" ? 10 : 8,
+    paddingVertical: Platform.OS === "android" ? 4 : 3,
+    ...Platform.select({
+      android: {
+        elevation: 1,
+      },
+    }),
   },
   statusTextComplete: {
     color: COLORS.white,
-    fontSize: 10,
+    fontSize: Platform.OS === "android" ? 8 : 9, // Reduced from 9/10
     fontFamily: "medium",
+    fontWeight: Platform.OS === "android" ? "600" : undefined,
   },
   continueIconButton: {
-    borderRadius: 15,
+    borderRadius: Platform.OS === "android" ? 18 : 15,
     overflow: "hidden",
+    ...Platform.select({
+      android: {
+        elevation: 3,
+      },
+    }),
   },
   continueIconGradient: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: Platform.OS === "android" ? 36 : 30,
+    height: Platform.OS === "android" ? 36 : 30,
+    borderRadius: Platform.OS === "android" ? 18 : 15,
     justifyContent: "center",
     alignItems: "center",
   },

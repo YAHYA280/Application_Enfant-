@@ -2,8 +2,6 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-import { useTheme } from "@/theme/ThemeProvider";
-
 /**
  * A decorative background component for the chat UI
  * Creates a fun, child-friendly background with shapes and an orange-white gradient
@@ -11,50 +9,17 @@ import { useTheme } from "@/theme/ThemeProvider";
 const ChatBackground: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { dark } = useTheme();
-
   return (
     <View style={styles.container}>
       {/* Gradient background */}
       <LinearGradient
-        colors={
-          dark
-            ? ["rgba(55, 40, 35, 0.95)", "rgba(35, 35, 40, 0.95)"]
-            : ["rgba(255, 240, 230, 0.6)", "rgba(255, 255, 255, 0.9)"]
-        }
+        colors={["rgba(255, 240, 230, 0.6)", "rgba(255, 255, 255, 0.9)"]}
         style={styles.gradient}
       >
         {/* Decorative shapes */}
-        <View
-          style={[
-            styles.circle1,
-            {
-              backgroundColor: dark
-                ? "rgba(255, 142, 105, 0.15)"
-                : "rgba(255, 142, 105, 0.2)",
-            },
-          ]}
-        />
-        <View
-          style={[
-            styles.circle2,
-            {
-              backgroundColor: dark
-                ? "rgba(255, 142, 105, 0.1)"
-                : "rgba(255, 142, 105, 0.15)",
-            },
-          ]}
-        />
-        <View
-          style={[
-            styles.square,
-            {
-              backgroundColor: dark
-                ? "rgba(255, 142, 105, 0.12)"
-                : "rgba(255, 142, 105, 0.1)",
-            },
-          ]}
-        />
+        <View style={styles.circle1} />
+        <View style={styles.circle2} />
+        <View style={styles.square} />
 
         {/* Content */}
         <View style={styles.content}>{children}</View>
@@ -81,6 +46,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     top: -50,
     right: -50,
+    backgroundColor: "rgba(255, 142, 105, 0.2)",
     opacity: 0.7,
   },
   circle2: {
@@ -90,6 +56,7 @@ const styles = StyleSheet.create({
     borderRadius: 75,
     bottom: 100,
     left: -50,
+    backgroundColor: "rgba(255, 142, 105, 0.15)",
     opacity: 0.5,
   },
   square: {
@@ -100,6 +67,7 @@ const styles = StyleSheet.create({
     transform: [{ rotate: "45deg" }],
     top: "30%",
     right: -30,
+    backgroundColor: "rgba(255, 142, 105, 0.1)",
     opacity: 0.6,
   },
   content: {

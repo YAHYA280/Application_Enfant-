@@ -2,10 +2,8 @@ import React, { useRef, useEffect } from "react";
 import { View, Text, Easing, Animated, StyleSheet } from "react-native";
 
 import { COLORS } from "@/constants";
-import { useTheme } from "@/theme/ThemeProvider";
 
 const ChatAiWelcomeRecherche = () => {
-  const { dark } = useTheme();
   const waveAnimation = useRef(new Animated.Value(0)).current;
   const bounceAnimation = useRef(new Animated.Value(0)).current;
   const fadeAnimation = useRef(new Animated.Value(0)).current;
@@ -71,7 +69,6 @@ const ChatAiWelcomeRecherche = () => {
         styles.container,
         {
           opacity: fadeAnimation,
-          backgroundColor: dark ? COLORS.dark2 : COLORS.greyscale100,
         },
       ]}
     >
@@ -99,12 +96,7 @@ const ChatAiWelcomeRecherche = () => {
         </Animated.View>
       </Animated.View>
 
-      <Text
-        style={[
-          styles.welcomeText,
-          { color: dark ? COLORS.white : COLORS.greyscale900 },
-        ]}
-      >
+      <Text style={styles.welcomeText}>
         Bonjour, c&apos;est quoi le sujet de recherche ?
       </Text>
     </Animated.View>
@@ -115,10 +107,16 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     marginVertical: 20,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 24,
     borderRadius: 16,
     marginHorizontal: 16,
+    backgroundColor: COLORS.greyscale100,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   avatarContainer: {
     position: "relative",
@@ -126,7 +124,7 @@ const styles = StyleSheet.create({
     height: 80,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 16,
   },
   avatar: {
     width: 70,
@@ -154,6 +152,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "medium",
     textAlign: "center",
+    color: COLORS.greyscale900,
+    lineHeight: 22,
   },
 });
 

@@ -338,8 +338,8 @@ export default function ChatAiAcceuil() {
       {/* Main Chat Area */}
       <KeyboardAvoidingView
         style={styles.keyboardView}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+        behavior={Platform.OS === "ios" ? "padding" : "height"} // Restored Android behavior
+        keyboardVerticalOffset={-insets.bottom}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.chatContainer}>
@@ -374,31 +374,24 @@ export default function ChatAiAcceuil() {
           </View>
         </TouchableWithoutFeedback>
 
-        {/* Chat Input Component with safe area for home indicator */}
-        <View
-          style={[
-            styles.inputWrapper,
-            { paddingBottom: Math.max(insets.bottom, 8) },
-          ]}
-        >
-          <ChatInput
-            inputText={inputText}
-            setInputText={setInputText}
-            handleSendMessage={handleSendMessage}
-            pickDocument={pickDocument}
-            pickImage={pickImage}
-            isRecording={isRecording}
-            startRecording={startRecording}
-            stopRecording={stopRecording}
-            imagePreviewUri={imagePreviewUri}
-            removeImagePreview={removeImagePreview}
-            documentPreview={documentPreview}
-            removeDocumentPreview={removeDocumentPreview}
-            audioPreviewUri={audioPreviewUri}
-            audioLength={audioLength}
-            removeAudioPreview={removeAudioPreview}
-          />
-        </View>
+        {/* Chat Input Component - No wrapper padding */}
+        <ChatInput
+          inputText={inputText}
+          setInputText={setInputText}
+          handleSendMessage={handleSendMessage}
+          pickDocument={pickDocument}
+          pickImage={pickImage}
+          isRecording={isRecording}
+          startRecording={startRecording}
+          stopRecording={stopRecording}
+          imagePreviewUri={imagePreviewUri}
+          removeImagePreview={removeImagePreview}
+          documentPreview={documentPreview}
+          removeDocumentPreview={removeDocumentPreview}
+          audioPreviewUri={audioPreviewUri}
+          audioLength={audioLength}
+          removeAudioPreview={removeAudioPreview}
+        />
       </KeyboardAvoidingView>
     </View>
   );
@@ -422,8 +415,5 @@ const styles = StyleSheet.create({
     padding: 10,
     flexGrow: 1,
     justifyContent: "flex-end",
-  },
-  inputWrapper: {
-    backgroundColor: COLORS.white,
   },
 });

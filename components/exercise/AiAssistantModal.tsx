@@ -23,7 +23,7 @@ import { COLORS } from "@/constants";
 import type { ShortAnswerQuestion as ShortAnswerQuestionType } from "./typeGuards";
 
 import { typeGuards } from "./typeGuards";
-import ChatInput from "../chat/ChatInput";
+import AiAssistantChatInput from "../chat/AiAssistantChatInput";
 import MessageBubble from "../MessageBubble";
 import ChatBackground from "../chat/ChatBackground";
 
@@ -415,9 +415,9 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
             </View>
           </TouchableWithoutFeedback>
 
-          {/* Chat Input Component - positioned at absolute bottom */}
+          {/* AI Assistant Chat Input Component - positioned at absolute bottom */}
           <View style={styles.inputContainer}>
-            <ChatInput
+            <AiAssistantChatInput
               inputText={inputText}
               setInputText={setInputText}
               handleSendMessage={handleSendMessage}

@@ -28,7 +28,11 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const MENU_ITEMS = [
   { name: "AI Devoir", icon: "home" as const, link: "chatAiAcceuil" },
   { name: "J'apprends", icon: "library-books" as const, link: "learning" },
-  { name: "Challenge", icon: "emoji-events" as const, link: "defi" },
+  {
+    name: "Challenge",
+    icon: "emoji-events" as const,
+    link: "ChallengeListScreen",
+  },
   { name: "AI Recherche", icon: "search" as const, link: "chatAiRecherche" },
 ];
 

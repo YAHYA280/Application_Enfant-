@@ -35,13 +35,18 @@ export default function RootLayout() {
             <Stack.Screen name="chatAiAcceuil" />
             <Stack.Screen name="chatAiRecherche" />
             <Stack.Screen name="+not-found" />
+
+            {/* Learning Section */}
+            <Stack.Screen name="learning" />
             <Stack.Screen name="lessondetailsmore" />
             <Stack.Screen name="exerciseview" />
             <Stack.Screen name="reviewlesson" />
-            <Stack.Screen name="challengedetailsmore" />
-            <Stack.Screen name="questionviewsreen" />
-            <Stack.Screen name="learning" />
-            <Stack.Screen name="defi" />
+
+            {/* Challenge Section - Updated Names */}
+            <Stack.Screen name="ChallengeListScreen" />
+            <Stack.Screen name="ChallengeDetailsScreen" />
+            <Stack.Screen name="ChallengeScreen" />
+            <Stack.Screen name="ChallengeResultScreen" />
           </Stack>
           <StatusBar style="auto" />
         </MenuProvider>

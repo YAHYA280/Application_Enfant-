@@ -25,19 +25,21 @@ import { useTheme } from "@/theme/ThemeProvider";
 import ChallengeHeader from "@/components/challenge/ChallengeHeader";
 
 type RootStackParamList = {
-  recompenseMessage: {
+  ChallengeResultScreen: {
     challenge: Challenge;
     score: number;
     totalPossibleScore: number;
   };
-  challengedetailsmore: {
+  ChallengeDetailsScreen: {
     challenge: Challenge;
   };
+  ChallengeListScreen: undefined;
 };
 
-const RecompenseMessage = () => {
+const ChallengeResultScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const route = useRoute<RouteProp<RootStackParamList, "recompenseMessage">>();
+  const route =
+    useRoute<RouteProp<RootStackParamList, "ChallengeResultScreen">>();
   const { challenge, score, totalPossibleScore } = route.params;
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -104,28 +106,45 @@ const RecompenseMessage = () => {
   const resultStyle = getResultStyle();
   const bottomPadding = Math.max(insets.bottom, 16);
 
-  // FIXED: Calculate header height to add proper top padding
+  // Calculate header height to add proper top padding
   const headerHeight =
     Platform.OS === "ios"
-      ? insets.top + 8 + 44 + 12 // safe area + padding + content height + bottom padding
+      ? insets.top + 8 + 44 + 12
       : Math.max(insets.top + 8, 32) + 44 + 12;
+
+  const handleBackToChallenge = () => {
+    // Reset navigation stack to avoid loops
+    navigation.reset({
+      index: 1,
+      routes: [
+        { name: "ChallengeListScreen" },
+        { name: "ChallengeDetailsScreen", params: { challenge } },
+      ],
+    });
+  };
+
+  const handleBackToHome = () => {
+    // Navigate to challenge list and reset stack
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "ChallengeListScreen" }],
+    });
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <ChallengeHeader
         title={challenge.nom}
-        onBackPress={() =>
-          navigation.navigate("challengedetailsmore", { challenge })
-        }
+        onBackPress={handleBackToChallenge}
       />
 
-      {/* FIXED: Added main container with proper top padding */}
+      {/* Main container with proper top padding */}
       <View
         style={[
           styles.mainContainer,
           {
-            paddingTop: headerHeight, // This ensures content starts below the header
+            paddingTop: headerHeight,
             paddingBottom: bottomPadding,
           },
         ]}
@@ -134,7 +153,7 @@ const RecompenseMessage = () => {
           style={styles.scrollView}
           contentContainerStyle={[
             styles.scrollContent,
-            { paddingBottom: 120 + bottomPadding }, // Extra space for button
+            { paddingBottom: 160 + bottomPadding }, // Extra space for buttons
           ]}
           showsVerticalScrollIndicator={false}
         >
@@ -320,13 +339,20 @@ const RecompenseMessage = () => {
           </Animated.View>
         </ScrollView>
 
-        {/* Continue button */}
+        {/* Action buttons */}
         <View style={[styles.buttonContainer, { bottom: bottomPadding }]}>
           <TouchableOpacity
-            style={styles.continueButton}
-            onPress={() =>
-              navigation.navigate("challengedetailsmore", { challenge })
-            }
+            style={[styles.actionButton, styles.secondaryButton]}
+            onPress={handleBackToHome}
+          >
+            <Text style={styles.secondaryButtonText}>
+              Voir plus de challenges
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.actionButton, styles.primaryButton]}
+            onPress={handleBackToChallenge}
           >
             <LinearGradient
               colors={["#ff6040", "#ff8e69"]}
@@ -334,7 +360,7 @@ const RecompenseMessage = () => {
               end={{ x: 1, y: 0 }}
               style={styles.buttonGradient}
             >
-              <Text style={styles.continueButtonText}>Retour au challenge</Text>
+              <Text style={styles.primaryButtonText}>Retour au challenge</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -347,7 +373,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  // FIXED: Added mainContainer style to handle proper spacing
   mainContainer: {
     flex: 1,
     paddingHorizontal: 16,
@@ -462,25 +487,40 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "transparent",
   },
-  continueButton: {
+  actionButton: {
     borderRadius: 16,
     overflow: "hidden",
+    marginBottom: 12,
+  },
+  primaryButton: {
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 4,
   },
+  secondaryButton: {
+    backgroundColor: COLORS.tertiaryWhite,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.1)",
+  },
   buttonGradient: {
     paddingVertical: 16,
     alignItems: "center",
     justifyContent: "center",
   },
-  continueButtonText: {
+  primaryButtonText: {
     fontSize: 18,
     fontFamily: "bold",
     color: COLORS.white,
   },
+  secondaryButtonText: {
+    fontSize: 16,
+    fontFamily: "semiBold",
+    color: COLORS.black,
+    paddingVertical: 16,
+    textAlign: "center",
+  },
 });
 
-export default RecompenseMessage;
+export default ChallengeResultScreen;

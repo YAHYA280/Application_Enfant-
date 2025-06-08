@@ -29,15 +29,15 @@ import {
 } from "@/components/challenge";
 
 type RootStackParamList = {
-  defi: undefined;
-  challengedetailsmore: { challenge: Challenge };
-  questionviewsreen: {
+  ChallengeListScreen: undefined;
+  ChallengeDetailsScreen: { challenge: Challenge };
+  ChallengeScreen: {
     challenge: Challenge;
     exercice: Exercice;
   };
 };
 
-const Challengedetailsmore = () => {
+const ChallengeDetailsScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<{ params: { challenge: Challenge } }>>();
   const { challenge } = route.params;
@@ -53,12 +53,12 @@ const Challengedetailsmore = () => {
   );
 
   const handleBackPress = () => {
-    navigation.navigate("defi");
+    navigation.navigate("ChallengeListScreen");
   };
 
   const handleExercisePress = (exercice: Exercice) => {
     if (exercice && challenge.accessible) {
-      navigation.navigate("questionviewsreen", {
+      navigation.navigate("ChallengeScreen", {
         challenge,
         exercice,
       });
@@ -125,7 +125,7 @@ const Challengedetailsmore = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: 120 + bottomPadding }, // Extra space for bottom button
+          { paddingBottom: 120 + bottomPadding },
         ]}
       >
         <View style={styles.contentContainer}>
@@ -320,6 +320,7 @@ const Challengedetailsmore = () => {
   );
 };
 
+// [Styles remain the same as original]
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
@@ -545,4 +546,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Challengedetailsmore;
+export default ChallengeDetailsScreen;

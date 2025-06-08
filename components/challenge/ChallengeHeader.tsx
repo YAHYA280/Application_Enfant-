@@ -1,10 +1,17 @@
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { icons, COLORS } from "@/constants";
-import { useTheme } from "@/theme/ThemeProvider";
 
 interface ChallengeHeaderProps {
   title: string;
@@ -23,25 +30,26 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
   showInfo = false,
   transparent = false,
 }) => {
-  const { dark } = useTheme();
+  const insets = useSafeAreaInsets();
 
   return (
     <View
       style={[
         styles.headerContainer,
-        transparent
-          ? styles.transparentHeader
-          : {
-              backgroundColor: dark ? COLORS.dark1 : COLORS.white,
-              borderBottomColor: dark ? COLORS.dark2 : COLORS.greyscale300,
-              borderBottomWidth: 1,
-            },
+        {
+          paddingTop:
+            Platform.OS === "ios"
+              ? insets.top + 8
+              : Math.max(insets.top + 8, 32),
+        },
+        transparent ? styles.transparentHeader : styles.solidHeader,
       ]}
     >
       <View style={styles.headerContent}>
         <TouchableOpacity
           onPress={onBackPress}
           style={[styles.backButton, transparent && styles.transparentButton]}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           {transparent ? (
             <LinearGradient
@@ -58,10 +66,7 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
             <Image
               source={icons.back}
               resizeMode="contain"
-              style={[
-                styles.backIcon,
-                { tintColor: dark ? COLORS.white : COLORS.greyscale900 },
-              ]}
+              style={[styles.backIcon, { tintColor: COLORS.greyscale900 }]}
             />
           )}
         </TouchableOpacity>
@@ -72,7 +77,7 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
               styles.headerTitle,
               transparent
                 ? styles.transparentTitle
-                : { color: dark ? COLORS.white : COLORS.greyscale900 },
+                : { color: COLORS.greyscale900 },
             ]}
             numberOfLines={1}
             ellipsizeMode="tail"
@@ -86,7 +91,7 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
                 styles.headerSubtitle,
                 transparent
                   ? styles.transparentSubtitle
-                  : { color: dark ? COLORS.greyscale500 : COLORS.greyscale600 },
+                  : { color: COLORS.greyscale600 },
               ]}
               numberOfLines={1}
             >
@@ -99,6 +104,7 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
           <TouchableOpacity
             onPress={onInfoPress}
             style={[styles.infoButton, transparent && styles.transparentButton]}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             {transparent ? (
               <LinearGradient
@@ -115,7 +121,7 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
               <Ionicons
                 name="information-circle"
                 size={24}
-                color={dark ? COLORS.white : COLORS.greyscale900}
+                color={COLORS.greyscale900}
               />
             )}
           </TouchableOpacity>
@@ -127,26 +133,41 @@ const ChallengeHeader: React.FC<ChallengeHeaderProps> = ({
 
 const styles = StyleSheet.create({
   headerContainer: {
-    paddingTop: 44,
-    paddingBottom: 12,
-    paddingHorizontal: 16,
-    zIndex: 10,
-  },
-  transparentHeader: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
+    paddingBottom: 12,
+    paddingHorizontal: 16,
+    zIndex: 1000,
+    // Ensure proper elevation on Android
+    elevation: Platform.OS === "android" ? 10 : 0,
+  },
+  solidHeader: {
+    backgroundColor: COLORS.white,
+    borderBottomColor: COLORS.greyscale300,
+    borderBottomWidth: 1,
+    // iOS shadow
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+  },
+  transparentHeader: {
     backgroundColor: "transparent",
-    zIndex: 100,
   },
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
+    minHeight: 44, // Ensure consistent height
   },
   backButton: {
     padding: 8,
     borderRadius: 20,
+    backgroundColor: "transparent",
   },
   transparentButton: {
     backgroundColor: "transparent",
@@ -165,10 +186,12 @@ const styles = StyleSheet.create({
   titleContainer: {
     flex: 1,
     marginHorizontal: 12,
+    justifyContent: "center",
   },
   headerTitle: {
     fontSize: 20,
     fontFamily: "bold",
+    lineHeight: 24,
   },
   transparentTitle: {
     color: COLORS.white,
@@ -180,6 +203,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "medium",
     marginTop: 2,
+    lineHeight: 16,
   },
   transparentSubtitle: {
     color: "rgba(255, 255, 255, 0.8)",
@@ -190,6 +214,7 @@ const styles = StyleSheet.create({
   infoButton: {
     padding: 8,
     borderRadius: 20,
+    backgroundColor: "transparent",
   },
 });
 

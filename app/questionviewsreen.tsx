@@ -15,6 +15,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   StatusBar,
+  Platform,
 } from "react-native";
 
 import type { Exercice, Challenge } from "@/services/mock";
@@ -147,14 +148,19 @@ const ExerciseView = () => {
   const correctAnswers = userAnswers.filter((a) => a.isCorrect).length;
   const incorrectAnswers = userAnswers.filter((a) => !a.isCorrect).length;
 
+  const bottomPadding = Math.max(insets.bottom, 16);
+
+  // Calculate header height to add proper top padding
+  const headerHeight =
+    Platform.OS === "ios"
+      ? insets.top + 8 + 44 + 12 // safe area + padding + content height + bottom padding
+      : Math.max(insets.top + 8, 32) + 44 + 12;
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
 
-      {/* Safe area for status bar only */}
-      <SafeAreaView style={styles.statusBarSafeArea} edges={["top"]} />
-
-      {/* Header */}
+      {/* Sticky Header */}
       <ChallengeHeader
         title={challenge.nom}
         subtitle="Question"
@@ -166,7 +172,10 @@ const ExerciseView = () => {
       <View
         style={[
           styles.mainContainer,
-          { paddingBottom: Math.max(insets.bottom, 16) },
+          {
+            paddingTop: headerHeight,
+            paddingBottom: bottomPadding,
+          },
         ]}
       >
         {showResults ? (
@@ -233,14 +242,20 @@ const ExerciseView = () => {
                   );
                 }}
                 keyExtractor={(item) => item.exerciceId.toString()}
-                contentContainerStyle={styles.resultsList}
+                contentContainerStyle={[
+                  styles.resultsList,
+                  { paddingBottom: 120 + bottomPadding }, // Extra space for button
+                ]}
                 showsVerticalScrollIndicator={false}
               />
 
-              <View style={styles.doneButtonContainer}>
+              <View
+                style={[styles.doneButtonContainer, { bottom: bottomPadding }]}
+              >
                 <TouchableOpacity
                   style={styles.doneButton}
                   onPress={navigateToRecompenseMessage}
+                  activeOpacity={0.8}
                 >
                   <LinearGradient
                     colors={["#ff6040", "#ff8e69"]}
@@ -256,15 +271,16 @@ const ExerciseView = () => {
           </Animated.View>
         ) : (
           <View style={styles.exerciseContainer}>
-            {/* Question Title */}
-            <Text style={styles.exerciseTitle}>{currentExercice.titre}</Text>
-
             {/* Progress Indicator */}
             <View style={styles.progressIndicator}>
-              <Text style={styles.progressText}>
-                Question {currentExerciceIndex + 1} /{" "}
-                {challengeExercices.length}
-              </Text>
+              <View style={styles.progressHeader}>
+                <Text style={styles.exerciseTitle}>
+                  {currentExercice.titre}
+                </Text>
+                <Text style={styles.progressText}>
+                  {currentExerciceIndex + 1}/{challengeExercices.length}
+                </Text>
+              </View>
               <View style={styles.progressBarContainer}>
                 <View
                   style={[
@@ -296,30 +312,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  statusBarSafeArea: {
-    backgroundColor: COLORS.white,
-  },
   mainContainer: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
   },
   exerciseContainer: {
     flex: 1,
   },
-  exerciseTitle: {
-    fontSize: 22,
-    fontFamily: "bold",
-    marginBottom: 16,
-    color: COLORS.greyscale900,
-  },
   progressIndicator: {
-    marginBottom: 24,
+    marginBottom: 16,
+  },
+  progressHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  exerciseTitle: {
+    fontSize: 20,
+    fontFamily: "bold",
+    color: COLORS.greyscale900,
+    flex: 1,
+    marginRight: 12,
   },
   progressText: {
     fontSize: 14,
     color: COLORS.primary,
     fontFamily: "semiBold",
-    marginBottom: 8,
+    backgroundColor: "rgba(255, 142, 105, 0.1)",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
   },
   progressBarContainer: {
     height: 6,
@@ -398,14 +421,14 @@ const styles = StyleSheet.create({
     color: COLORS.greyscale900,
   },
   resultsList: {
-    paddingBottom: 100,
+    flexGrow: 1,
   },
   doneButtonContainer: {
     position: "absolute",
-    bottom: 0,
     left: 0,
     right: 0,
     paddingVertical: 16,
+    paddingHorizontal: 16,
     backgroundColor: "transparent",
   },
   doneButton: {

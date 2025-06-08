@@ -2,7 +2,10 @@ import type { RouteProp, NavigationProp } from "@react-navigation/native";
 
 import React, { useRef, useEffect } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import {
   View,
@@ -36,6 +39,7 @@ const RecompenseMessage = () => {
   const route = useRoute<RouteProp<RootStackParamList, "recompenseMessage">>();
   const { challenge, score, totalPossibleScore } = route.params;
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const successThreshold = totalPossibleScore * 0.7;
   const isSuccess = score >= successThreshold;
@@ -97,6 +101,7 @@ const RecompenseMessage = () => {
   };
 
   const resultStyle = getResultStyle();
+  const bottomPadding = Math.max(insets.bottom, 16);
 
   return (
     <SafeAreaView
@@ -112,7 +117,10 @@ const RecompenseMessage = () => {
 
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: 120 + bottomPadding }, // Extra space for button
+        ]}
         showsVerticalScrollIndicator={false}
       >
         {/* Success confetti animation (conditional) */}
@@ -294,7 +302,7 @@ const RecompenseMessage = () => {
       </ScrollView>
 
       {/* Continue button */}
-      <View style={styles.buttonContainer}>
+      <View style={[styles.buttonContainer, { paddingBottom: bottomPadding }]}>
         <TouchableOpacity
           style={styles.continueButton}
           onPress={() =>
@@ -325,7 +333,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: 16,
-    paddingBottom: 100,
   },
   confettiContainer: {
     position: "absolute",

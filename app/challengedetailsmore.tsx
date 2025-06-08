@@ -13,6 +13,10 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import type { Exercice, Challenge } from "@/services/mock";
 
@@ -37,6 +41,7 @@ const Challengedetailsmore = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<{ params: { challenge: Challenge } }>>();
   const { challenge } = route.params;
+  const insets = useSafeAreaInsets();
 
   const { colors } = useTheme();
 
@@ -60,7 +65,7 @@ const Challengedetailsmore = () => {
     } else {
       Alert.alert(
         "Exercice non disponible",
-        `Cet exercice n'est pas disponible pour le moment.`
+        "Cet exercice n'est pas disponible pour le moment."
       );
     }
   };
@@ -79,11 +84,16 @@ const Challengedetailsmore = () => {
     }
   };
 
+  const bottomPadding = Math.max(insets.bottom, 16);
+
   return (
     <View
       style={[styles.mainContainer, { backgroundColor: colors.background }]}
     >
       <StatusBar style="dark" />
+
+      {/* Safe area for status bar only */}
+      <SafeAreaView style={styles.statusBarSafeArea} edges={["top"]} />
 
       {/* Hero section with image and linear gradient overlay */}
       <View style={styles.heroSection}>
@@ -113,7 +123,10 @@ const Challengedetailsmore = () => {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: 120 + bottomPadding }, // Extra space for bottom button
+        ]}
       >
         <View style={styles.contentContainer}>
           {/* Challenge header section */}
@@ -271,7 +284,9 @@ const Challengedetailsmore = () => {
       </ScrollView>
 
       {/* Start/Continue Challenge Button */}
-      <View style={styles.bottomActionContainer}>
+      <View
+        style={[styles.bottomActionContainer, { paddingBottom: bottomPadding }]}
+      >
         <TouchableOpacity
           style={styles.actionButton}
           onPress={() => {
@@ -308,6 +323,9 @@ const Challengedetailsmore = () => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+  },
+  statusBarSafeArea: {
+    backgroundColor: COLORS.white,
   },
   heroSection: {
     height: SIZES.width * 0.6,
@@ -349,7 +367,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 100,
+    flexGrow: 1,
   },
   contentContainer: {
     flex: 1,

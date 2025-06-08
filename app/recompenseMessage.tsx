@@ -15,6 +15,7 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 
 import type { Challenge } from "@/services/mock";
@@ -103,10 +104,14 @@ const RecompenseMessage = () => {
   const resultStyle = getResultStyle();
   const bottomPadding = Math.max(insets.bottom, 16);
 
+  // FIXED: Calculate header height to add proper top padding
+  const headerHeight =
+    Platform.OS === "ios"
+      ? insets.top + 8 + 44 + 12 // safe area + padding + content height + bottom padding
+      : Math.max(insets.top + 8, 32) + 44 + 12;
+
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: colors.background }]}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <ChallengeHeader
         title={challenge.nom}
@@ -115,211 +120,226 @@ const RecompenseMessage = () => {
         }
       />
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: 120 + bottomPadding }, // Extra space for button
+      {/* FIXED: Added main container with proper top padding */}
+      <View
+        style={[
+          styles.mainContainer,
+          {
+            paddingTop: headerHeight, // This ensures content starts below the header
+            paddingBottom: bottomPadding,
+          },
         ]}
-        showsVerticalScrollIndicator={false}
       >
-        {/* Success confetti animation (conditional) */}
-        {isSuccess && (
-          <View style={styles.confettiContainer}>
-            {[...Array(20)].map((_, i) => {
-              const randomLeft = Math.random() * 100;
-              const randomSize = Math.random() * 15 + 5;
-              const randomRotate = Math.random() * 360;
-              const randomDelay = Math.random() * 2;
-              const randomColor = [
-                "#FFC107",
-                "#FF5722",
-                "#8BC34A",
-                "#03A9F4",
-                "#E91E63",
-                "#9C27B0",
-                "#FFEB3B",
-                "#FF9800",
-              ][Math.floor(Math.random() * 8)];
-
-              return (
-                <Animated.View
-                  key={i}
-                  style={{
-                    position: "absolute",
-                    left: `${randomLeft}%`,
-                    top: 0,
-                    width: randomSize,
-                    height: randomSize,
-                    backgroundColor: randomColor,
-                    borderRadius: randomSize / 2,
-                    transform: [
-                      {
-                        translateY: confettiAnim.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [-50, 600 + randomDelay * 200],
-                        }),
-                      },
-                      { rotate: `${randomRotate}deg` },
-                    ],
-                    opacity: confettiAnim.interpolate({
-                      inputRange: [0, 0.6, 1],
-                      outputRange: [1, 1, 0],
-                    }),
-                  }}
-                />
-              );
-            })}
-          </View>
-        )}
-
-        {/* Main content */}
-        <Animated.View
-          style={[
-            styles.contentContainer,
-            {
-              opacity: fadeAnim,
-              transform: [{ scale: scaleAnim }],
-            },
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingBottom: 120 + bottomPadding }, // Extra space for button
           ]}
+          showsVerticalScrollIndicator={false}
         >
-          {/* Avatar/Emoji */}
-          <View
+          {/* Success confetti animation (conditional) */}
+          {isSuccess && (
+            <View style={styles.confettiContainer}>
+              {[...Array(20)].map((_, i) => {
+                const randomLeft = Math.random() * 100;
+                const randomSize = Math.random() * 15 + 5;
+                const randomRotate = Math.random() * 360;
+                const randomDelay = Math.random() * 2;
+                const randomColor = [
+                  "#FFC107",
+                  "#FF5722",
+                  "#8BC34A",
+                  "#03A9F4",
+                  "#E91E63",
+                  "#9C27B0",
+                  "#FFEB3B",
+                  "#FF9800",
+                ][Math.floor(Math.random() * 8)];
+
+                return (
+                  <Animated.View
+                    key={i}
+                    style={{
+                      position: "absolute",
+                      left: `${randomLeft}%`,
+                      top: 0,
+                      width: randomSize,
+                      height: randomSize,
+                      backgroundColor: randomColor,
+                      borderRadius: randomSize / 2,
+                      transform: [
+                        {
+                          translateY: confettiAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [-50, 600 + randomDelay * 200],
+                          }),
+                        },
+                        { rotate: `${randomRotate}deg` },
+                      ],
+                      opacity: confettiAnim.interpolate({
+                        inputRange: [0, 0.6, 1],
+                        outputRange: [1, 1, 0],
+                      }),
+                    }}
+                  />
+                );
+              })}
+            </View>
+          )}
+
+          {/* Main content */}
+          <Animated.View
             style={[
-              styles.emojiContainer,
+              styles.contentContainer,
               {
-                backgroundColor: isSuccess
-                  ? "rgba(76, 175, 80, 0.1)"
-                  : "rgba(255, 152, 0, 0.1)",
+                opacity: fadeAnim,
+                transform: [{ scale: scaleAnim }],
               },
             ]}
           >
-            <Text style={styles.emojiText}>{isSuccess ? "🎉" : "💪"}</Text>
-          </View>
-
-          {/* Score display */}
-          <View style={styles.scoreContainer}>
-            <LinearGradient
-              colors={[resultStyle.color, "#FFF"]}
-              start={{ x: 0.5, y: 0 }}
-              end={{ x: 0.5, y: 1 }}
-              style={styles.scoreGradient}
+            {/* Avatar/Emoji */}
+            <View
+              style={[
+                styles.emojiContainer,
+                {
+                  backgroundColor: isSuccess
+                    ? "rgba(76, 175, 80, 0.1)"
+                    : "rgba(255, 152, 0, 0.1)",
+                },
+              ]}
             >
-              <Text style={styles.scoreTitle}>{resultStyle.text}</Text>
-              <Text style={styles.scoreValue}>
-                {score} / {totalPossibleScore}
-              </Text>
-              <Text style={styles.scorePercentage}>{scorePercentage}%</Text>
-            </LinearGradient>
-          </View>
-
-          {/* Message */}
-          <View style={styles.messageContainer}>
-            <Text style={[styles.messageText, { color: COLORS.greyscale900 }]}>
-              {message}
-            </Text>
-          </View>
-
-          {/* Performance tips */}
-          <View style={styles.tipsContainer}>
-            <Text style={[styles.tipsTitle, { color: COLORS.greyscale900 }]}>
-              {isSuccess ? "Continuez comme ça!" : "Conseils pour s'améliorer"}
-            </Text>
-
-            <View style={styles.tipsList}>
-              {isSuccess ? (
-                <>
-                  <View style={styles.tipItem}>
-                    <Text
-                      style={[
-                        styles.tipText,
-                        {
-                          color: COLORS.greyscale600,
-                        },
-                      ]}
-                    >
-                      • Essayez d&apos;autres challenges pour continuer à
-                      progresser
-                    </Text>
-                  </View>
-                  <View style={styles.tipItem}>
-                    <Text
-                      style={[
-                        styles.tipText,
-                        {
-                          color: COLORS.greyscale600,
-                        },
-                      ]}
-                    >
-                      • Partagez vos connaissances avec vos amis
-                    </Text>
-                  </View>
-                </>
-              ) : (
-                <>
-                  <View style={styles.tipItem}>
-                    <Text
-                      style={[
-                        styles.tipText,
-                        {
-                          color: COLORS.greyscale600,
-                        },
-                      ]}
-                    >
-                      • Révisez les questions que vous avez manquées
-                    </Text>
-                  </View>
-                  <View style={styles.tipItem}>
-                    <Text
-                      style={[
-                        styles.tipText,
-                        {
-                          color: COLORS.greyscale600,
-                        },
-                      ]}
-                    >
-                      • Prenez votre temps pour bien lire les questions
-                    </Text>
-                  </View>
-                  <View style={styles.tipItem}>
-                    <Text
-                      style={[
-                        styles.tipText,
-                        {
-                          color: COLORS.greyscale600,
-                        },
-                      ]}
-                    >
-                      • N&apos;hésitez pas à réessayer pour améliorer votre
-                      score
-                    </Text>
-                  </View>
-                </>
-              )}
+              <Text style={styles.emojiText}>{isSuccess ? "🎉" : "💪"}</Text>
             </View>
-          </View>
-        </Animated.View>
-      </ScrollView>
 
-      {/* Continue button */}
-      <View style={[styles.buttonContainer, { paddingBottom: bottomPadding }]}>
-        <TouchableOpacity
-          style={styles.continueButton}
-          onPress={() =>
-            navigation.navigate("challengedetailsmore", { challenge })
-          }
-        >
-          <LinearGradient
-            colors={["#ff6040", "#ff8e69"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.buttonGradient}
+            {/* Score display */}
+            <View style={styles.scoreContainer}>
+              <LinearGradient
+                colors={[resultStyle.color, "#FFF"]}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 1 }}
+                style={styles.scoreGradient}
+              >
+                <Text style={styles.scoreTitle}>{resultStyle.text}</Text>
+                <Text style={styles.scoreValue}>
+                  {score} / {totalPossibleScore}
+                </Text>
+                <Text style={styles.scorePercentage}>{scorePercentage}%</Text>
+              </LinearGradient>
+            </View>
+
+            {/* Message */}
+            <View style={styles.messageContainer}>
+              <Text
+                style={[styles.messageText, { color: COLORS.greyscale900 }]}
+              >
+                {message}
+              </Text>
+            </View>
+
+            {/* Performance tips */}
+            <View style={styles.tipsContainer}>
+              <Text style={[styles.tipsTitle, { color: COLORS.greyscale900 }]}>
+                {isSuccess
+                  ? "Continuez comme ça!"
+                  : "Conseils pour s'améliorer"}
+              </Text>
+
+              <View style={styles.tipsList}>
+                {isSuccess ? (
+                  <>
+                    <View style={styles.tipItem}>
+                      <Text
+                        style={[
+                          styles.tipText,
+                          {
+                            color: COLORS.greyscale600,
+                          },
+                        ]}
+                      >
+                        • Essayez d&apos;autres challenges pour continuer à
+                        progresser
+                      </Text>
+                    </View>
+                    <View style={styles.tipItem}>
+                      <Text
+                        style={[
+                          styles.tipText,
+                          {
+                            color: COLORS.greyscale600,
+                          },
+                        ]}
+                      >
+                        • Partagez vos connaissances avec vos amis
+                      </Text>
+                    </View>
+                  </>
+                ) : (
+                  <>
+                    <View style={styles.tipItem}>
+                      <Text
+                        style={[
+                          styles.tipText,
+                          {
+                            color: COLORS.greyscale600,
+                          },
+                        ]}
+                      >
+                        • Révisez les questions que vous avez manquées
+                      </Text>
+                    </View>
+                    <View style={styles.tipItem}>
+                      <Text
+                        style={[
+                          styles.tipText,
+                          {
+                            color: COLORS.greyscale600,
+                          },
+                        ]}
+                      >
+                        • Prenez votre temps pour bien lire les questions
+                      </Text>
+                    </View>
+                    <View style={styles.tipItem}>
+                      <Text
+                        style={[
+                          styles.tipText,
+                          {
+                            color: COLORS.greyscale600,
+                          },
+                        ]}
+                      >
+                        • N&apos;hésitez pas à réessayer pour améliorer votre
+                        score
+                      </Text>
+                    </View>
+                  </>
+                )}
+              </View>
+            </View>
+          </Animated.View>
+        </ScrollView>
+
+        {/* Continue button */}
+        <View style={[styles.buttonContainer, { bottom: bottomPadding }]}>
+          <TouchableOpacity
+            style={styles.continueButton}
+            onPress={() =>
+              navigation.navigate("challengedetailsmore", { challenge })
+            }
           >
-            <Text style={styles.continueButtonText}>Retour au challenge</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+            <LinearGradient
+              colors={["#ff6040", "#ff8e69"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.buttonGradient}
+            >
+              <Text style={styles.continueButtonText}>Retour au challenge</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -327,12 +347,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  // FIXED: Added mainContainer style to handle proper spacing
+  mainContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 16,
   },
   confettiContainer: {
     position: "absolute",

@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
-    minHeight: 44, // Ensure consistent height
+    minHeight: 44,
   },
   backButton: {
     padding: 8,

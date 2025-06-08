@@ -2,10 +2,7 @@ import type { RouteProp, NavigationProp } from "@react-navigation/native";
 
 import React, { useRef, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import {
   View,
@@ -160,7 +157,7 @@ const ExerciseView = () => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
 
-      {/* Sticky Header */}
+      {/* Header */}
       <ChallengeHeader
         title={challenge.nom}
         subtitle="Question"
@@ -169,11 +166,12 @@ const ExerciseView = () => {
         }
       />
 
+      {/* FIXED: Main container with proper top padding */}
       <View
         style={[
           styles.mainContainer,
           {
-            paddingTop: headerHeight,
+            paddingTop: headerHeight, // This ensures content starts below the header
             paddingBottom: bottomPadding,
           },
         ]}
@@ -311,6 +309,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white,
+    paddingTop: 20,
   },
   mainContainer: {
     flex: 1,

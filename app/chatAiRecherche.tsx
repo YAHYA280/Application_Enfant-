@@ -14,6 +14,7 @@ import {
   StatusBar,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
+  Text,
 } from "react-native";
 import {
   SafeAreaView,
@@ -335,11 +336,11 @@ export default function ChatAiRecherche() {
         icons={icons}
       />
 
-      {/* Main Chat Area */}
+      {/* Main Chat Area - using identical setup as ChatAiAcceuil */}
       <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+        keyboardVerticalOffset={-insets.bottom}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.chatContainer}>
@@ -347,7 +348,9 @@ export default function ChatAiRecherche() {
             <ChatBackground>
               {/* Custom Welcome component for first load */}
               {isFirstLoad && messages.length === 0 && (
-                <ChatAiWelcomeRecherche />
+                <View>
+                  <ChatAiWelcomeRecherche />
+                </View>
               )}
 
               {/* Messages List */}
@@ -376,33 +379,25 @@ export default function ChatAiRecherche() {
           </View>
         </TouchableWithoutFeedback>
 
-        {/* Chat Input Component with custom placeholder and safe area for home indicator */}
-        <View
-          style={[
-            styles.inputWrapper,
-            { paddingBottom: Math.max(insets.bottom, 8) },
-          ]}
-        >
-          <ChatInput
-            inputText={inputText}
-            setInputText={setInputText}
-            handleSendMessage={handleSendMessage}
-            pickDocument={pickDocument}
-            pickImage={pickImage}
-            isRecording={isRecording}
-            startRecording={startRecording}
-            stopRecording={stopRecording}
-            imagePreviewUri={imagePreviewUri}
-            removeImagePreview={removeImagePreview}
-            documentPreview={documentPreview}
-            removeDocumentPreview={removeDocumentPreview}
-            audioPreviewUri={audioPreviewUri}
-            audioLength={audioLength}
-            removeAudioPreview={removeAudioPreview}
-            // Custom placeholder text for AI Recherche
-            customPlaceholder="Tapez votre sujet ici ..!"
-          />
-        </View>
+        {/* Chat Input Component */}
+        <ChatInput
+          inputText={inputText}
+          setInputText={setInputText}
+          handleSendMessage={handleSendMessage}
+          pickDocument={pickDocument}
+          pickImage={pickImage}
+          isRecording={isRecording}
+          startRecording={startRecording}
+          stopRecording={stopRecording}
+          imagePreviewUri={imagePreviewUri}
+          removeImagePreview={removeImagePreview}
+          documentPreview={documentPreview}
+          removeDocumentPreview={removeDocumentPreview}
+          audioPreviewUri={audioPreviewUri}
+          audioLength={audioLength}
+          removeAudioPreview={removeAudioPreview}
+          customPlaceholder="Tapez votre sujet ici ..!"
+        />
       </KeyboardAvoidingView>
     </View>
   );
@@ -426,8 +421,5 @@ const styles = StyleSheet.create({
     padding: 10,
     flexGrow: 1,
     justifyContent: "flex-end",
-  },
-  inputWrapper: {
-    backgroundColor: COLORS.white,
   },
 });

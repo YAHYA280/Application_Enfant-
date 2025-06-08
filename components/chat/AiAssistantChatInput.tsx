@@ -11,12 +11,11 @@ import {
   Dimensions,
   Text,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { COLORS } from "@/constants";
 import ConditionalComponent from "@/components/ConditionalComponent";
 
-interface ChatInputProps {
+interface AiAssistantChatInputProps {
   inputText: string;
   setInputText: (text: string) => void;
   handleSendMessage: () => void;
@@ -40,9 +39,9 @@ interface ChatInputProps {
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const PREVIEW_SIZE = Math.min(80, SCREEN_WIDTH * 0.2);
+const PREVIEW_SIZE = Math.min(70, SCREEN_WIDTH * 0.18);
 
-const ChatInput: React.FC<ChatInputProps> = ({
+const AiAssistantChatInput: React.FC<AiAssistantChatInputProps> = ({
   inputText,
   setInputText,
   handleSendMessage,
@@ -60,32 +59,17 @@ const ChatInput: React.FC<ChatInputProps> = ({
   removeAudioPreview,
   customPlaceholder,
 }) => {
-  const insets = useSafeAreaInsets();
-
   const onSend = () => {
     Keyboard.dismiss();
     handleSendMessage();
   };
 
-  const placeholderText = customPlaceholder || "Pose ta question ici...";
+  const placeholderText = customPlaceholder || "Posez votre question...";
   const hasContent =
     inputText.trim() || imagePreviewUri || documentPreview || audioPreviewUri;
 
-  // Calculate proper bottom padding for both platforms
-  const bottomPadding = Math.max(
-    insets.bottom,
-    Platform.OS === "android" ? 16 : 0
-  );
-
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          paddingBottom: bottomPadding,
-        },
-      ]}
-    >
+    <View style={styles.container}>
       {/* Image Preview Section */}
       <ConditionalComponent isValid={!!imagePreviewUri}>
         <View style={styles.imagePreviewContainer}>
@@ -107,7 +91,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
               style={styles.removeButton}
               hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
             >
-              <Ionicons name="close" size={14} color="white" />
+              <Ionicons name="close" size={12} color="white" />
             </TouchableOpacity>
           </View>
         </View>
@@ -127,7 +111,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                         ? "musical-notes"
                         : "file-tray-full"
                   }
-                  size={20}
+                  size={18}
                   color={COLORS.primary}
                 />
                 <Text style={styles.previewText} numberOfLines={1}>
@@ -139,7 +123,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                 style={styles.removeButton}
                 hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
               >
-                <Ionicons name="close" size={14} color="white" />
+                <Ionicons name="close" size={12} color="white" />
               </TouchableOpacity>
             </View>
           </View>
@@ -151,7 +135,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         <View style={styles.previewContainer}>
           <View style={styles.previewWrapper}>
             <View style={styles.previewContent}>
-              <Ionicons name="musical-notes" size={20} color={COLORS.primary} />
+              <Ionicons name="musical-notes" size={18} color={COLORS.primary} />
               <Text style={styles.previewText}>Audio ({audioLength} sec)</Text>
             </View>
             <TouchableOpacity
@@ -159,7 +143,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
               style={styles.removeButton}
               hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
             >
-              <Ionicons name="close" size={14} color="white" />
+              <Ionicons name="close" size={12} color="white" />
             </TouchableOpacity>
           </View>
         </View>
@@ -170,9 +154,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
         <TouchableOpacity
           onPress={pickDocument}
           style={styles.attachButton}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="attach" size={22} color={COLORS.primary} />
+          <Ionicons name="attach" size={20} color={COLORS.primary} />
         </TouchableOpacity>
 
         {/* Text input in the middle */}
@@ -192,19 +176,19 @@ const ChatInput: React.FC<ChatInputProps> = ({
           <TouchableOpacity
             onPress={pickImage}
             style={styles.mediaButton}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Ionicons name="image" size={20} color={COLORS.primary} />
+            <Ionicons name="image" size={18} color={COLORS.primary} />
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={isRecording ? stopRecording : startRecording}
             style={[styles.mediaButton, isRecording && styles.recordingButton]}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             <Ionicons
               name={isRecording ? "stop" : "mic"}
-              size={20}
+              size={18}
               color={isRecording ? COLORS.error : COLORS.primary}
             />
           </TouchableOpacity>
@@ -216,9 +200,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
             ]}
             onPress={onSend}
             disabled={!hasContent}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Ionicons name="send" size={18} color="white" />
+            <Ionicons name="send" size={16} color="white" />
           </TouchableOpacity>
         </View>
       </View>
@@ -228,44 +212,44 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.greyscale100,
+    backgroundColor: COLORS.white,
     borderTopWidth: 1,
     borderTopColor: COLORS.greyscale300,
-    // paddingBottom is now handled dynamically with proper safe area calculation
+    paddingBottom: Platform.OS === "ios" ? 8 : 6,
   },
   inputContainer: {
     flexDirection: "row",
-    paddingHorizontal: 12,
-    paddingVertical: Platform.OS === "ios" ? 8 : 8, // Consistent padding
+    paddingHorizontal: 10,
+    paddingVertical: Platform.OS === "ios" ? 10 : 8,
     alignItems: "flex-end",
-    minHeight: Platform.OS === "ios" ? 50 : 52, // Slightly taller on Android
+    minHeight: Platform.OS === "ios" ? 56 : 52,
   },
   input: {
     flex: 1,
-    backgroundColor: COLORS.white,
-    borderRadius: 24,
-    paddingHorizontal: 16,
-    paddingVertical: Platform.OS === "ios" ? 12 : 12,
-    minHeight: 44,
-    maxHeight: 120,
+    backgroundColor: COLORS.greyscale100,
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: Platform.OS === "ios" ? 10 : 8,
+    minHeight: 40,
+    maxHeight: 100,
     borderWidth: 1,
     borderColor: COLORS.greyscale300,
     color: COLORS.greyscale900,
-    fontSize: 15,
-    lineHeight: 20,
-    marginHorizontal: 8,
+    fontSize: 14,
+    lineHeight: 18,
+    marginHorizontal: 6,
   },
   rightButtonsContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 4,
   },
   mediaButton: {
-    padding: 10,
-    borderRadius: 22,
+    padding: 8,
+    borderRadius: 18,
     backgroundColor: "rgba(255, 142, 105, 0.1)",
-    width: 40,
-    height: 40,
+    width: 36,
+    height: 36,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -274,9 +258,9 @@ const styles = StyleSheet.create({
   },
   sendButton: {
     backgroundColor: COLORS.primary,
-    borderRadius: 20,
-    width: 40,
-    height: 40,
+    borderRadius: 18,
+    width: 36,
+    height: 36,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -285,49 +269,47 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   attachButton: {
-    padding: 10,
-    borderRadius: 22,
+    padding: 8,
+    borderRadius: 18,
     backgroundColor: "rgba(255, 142, 105, 0.1)",
-    width: 40,
-    height: 40,
+    width: 36,
+    height: 36,
     alignItems: "center",
     justifyContent: "center",
   },
-  // Preview styling
+  // Preview styling - more compact for modal
   imagePreviewContainer: {
-    paddingHorizontal: 12,
-    paddingTop: 10,
-    paddingBottom: 0,
+    paddingHorizontal: 10,
+    paddingTop: 8,
   },
   imagePreviewWrapper: {
     position: "relative",
-    borderRadius: 10,
+    borderRadius: 8,
   },
   imagePreview: {
-    borderRadius: 10,
+    borderRadius: 8,
   },
   removeButton: {
     position: "absolute",
-    top: -6,
-    right: -6,
+    top: -5,
+    right: -5,
     backgroundColor: "rgba(0,0,0,0.7)",
-    borderRadius: 10,
-    width: 20,
-    height: 20,
+    borderRadius: 8,
+    width: 16,
+    height: 16,
     justifyContent: "center",
     alignItems: "center",
   },
   previewContainer: {
-    paddingHorizontal: 12,
-    paddingTop: 10,
-    paddingBottom: 0,
+    paddingHorizontal: 10,
+    paddingTop: 8,
   },
   previewWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.white,
-    borderRadius: 12,
-    padding: 12,
+    backgroundColor: COLORS.greyscale100,
+    borderRadius: 10,
+    padding: 10,
     borderWidth: 1,
     borderColor: COLORS.greyscale300,
   },
@@ -337,11 +319,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   previewText: {
-    marginLeft: 10,
+    marginLeft: 8,
     flex: 1,
-    fontSize: 14,
+    fontSize: 13,
     color: COLORS.greyscale900,
   },
 });
 
-export default ChatInput;
+export default AiAssistantChatInput;

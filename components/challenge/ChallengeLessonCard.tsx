@@ -24,7 +24,6 @@ const ChallengeLessonCard: React.FC<ChallengeLessonCardProps> = ({
   challenge,
   onPress,
 }) => {
-  const { dark } = useTheme();
   const animatedScale = new Animated.Value(1);
 
   const totalExercices = challengeExerciceMap[challenge.id]?.length || 0;
@@ -85,7 +84,7 @@ const ChallengeLessonCard: React.FC<ChallengeLessonCardProps> = ({
         style={[
           styles.container,
           {
-            backgroundColor: dark ? COLORS.dark2 : COLORS.white,
+            backgroundColor: COLORS.white,
             opacity: challenge.accessible ? 1 : 0.8,
           },
         ]}
@@ -130,7 +129,7 @@ const ChallengeLessonCard: React.FC<ChallengeLessonCardProps> = ({
                 style={[
                   styles.name,
                   {
-                    color: dark ? COLORS.white : COLORS.greyscale900,
+                    color: COLORS.greyscale900,
                   },
                 ]}
                 numberOfLines={1}

@@ -8,10 +8,12 @@ import {
   Dimensions,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Platform,
 } from "react-native";
 
 import { COLORS } from "@/constants";
 import { useTheme } from "@/theme/ThemeProvider";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface Notification {
   id: string;
@@ -30,9 +32,9 @@ interface NotificationItemMenuProps {
   onClose: () => void;
 }
 
-const MENU_WIDTH = 200;
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+const MENU_WIDTH = 220;
 const SCREEN_MARGIN = 16;
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const NotificationItemMenu: React.FC<NotificationItemMenuProps> = ({
   notification,
@@ -40,15 +42,9 @@ const NotificationItemMenu: React.FC<NotificationItemMenuProps> = ({
   onClose,
 }) => {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   if (!notification) return null;
-
-  // Calculate menu position while ensuring it stays on screen
-  const rawLeft = position.x - MENU_WIDTH / 2;
-  const clampedLeft = Math.min(
-    Math.max(rawLeft, SCREEN_MARGIN),
-    SCREEN_WIDTH - MENU_WIDTH - SCREEN_MARGIN
-  );
 
   const handleToggleRead = () => {
     // Logic to toggle read status
@@ -74,8 +70,44 @@ const NotificationItemMenu: React.FC<NotificationItemMenuProps> = ({
     onClose();
   };
 
+  // Enhanced position calculation for better screen adaptation
+  const calculateMenuPosition = () => {
+    let left = position.x - MENU_WIDTH / 2;
+    let top = position.y;
+
+    // Horizontal positioning
+    if (left < SCREEN_MARGIN) {
+      left = SCREEN_MARGIN;
+    } else if (left + MENU_WIDTH > SCREEN_WIDTH - SCREEN_MARGIN) {
+      left = SCREEN_WIDTH - MENU_WIDTH - SCREEN_MARGIN;
+    }
+
+    // Vertical positioning - account for menu height and screen bounds
+    const menuHeight = 200; // Approximate menu height
+    const safeTop = insets.top + 60; // Account for header
+    const safeBottom = SCREEN_HEIGHT - insets.bottom - 20;
+
+    if (top + menuHeight > safeBottom) {
+      top = Math.max(safeTop, safeBottom - menuHeight);
+    }
+
+    if (top < safeTop) {
+      top = safeTop;
+    }
+
+    return { left, top };
+  };
+
+  const menuPosition = calculateMenuPosition();
+
   return (
-    <Modal transparent visible animationType="fade" onRequestClose={onClose}>
+    <Modal
+      transparent
+      visible
+      animationType="fade"
+      onRequestClose={onClose}
+      statusBarTranslucent={Platform.OS === "android"}
+    >
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.modalOverlay} />
       </TouchableWithoutFeedback>
@@ -86,12 +118,20 @@ const NotificationItemMenu: React.FC<NotificationItemMenuProps> = ({
           {
             backgroundColor: colors.background,
             borderColor: COLORS.greyscale300,
-            top: position.y,
-            left: clampedLeft,
+            top: menuPosition.top,
+            left: menuPosition.left,
+            width: MENU_WIDTH,
           },
         ]}
       >
-        <TouchableOpacity onPress={handleToggleRead} style={styles.menuItem}>
+        <TouchableOpacity
+          onPress={handleToggleRead}
+          style={styles.menuItem}
+          accessibilityLabel={
+            notification.read ? "Marquer non lu" : "Marquer lu"
+          }
+          accessibilityRole="button"
+        >
           <Feather
             name={notification.read ? "eye-off" : "eye"}
             size={18}
@@ -106,19 +146,30 @@ const NotificationItemMenu: React.FC<NotificationItemMenuProps> = ({
         <TouchableOpacity
           onPress={handleToggleFavorite}
           style={styles.menuItem}
+          accessibilityLabel={
+            notification.favorite ? "Retirer favori" : "Ajouter favori"
+          }
+          accessibilityRole="button"
         >
           <Feather
-            name={notification.favorite ? "star" : "star"}
+            name="star"
             size={18}
             style={styles.menuIcon}
-            color={notification.favorite ? COLORS.greyscale500 : COLORS.primary}
+            color={notification.favorite ? COLORS.warning : COLORS.primary}
           />
           <Text style={[styles.menuText, { color: COLORS.greyscale900 }]}>
             {notification.favorite ? "Retirer favori" : "Ajouter favori"}
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleToggleArchive} style={styles.menuItem}>
+        <TouchableOpacity
+          onPress={handleToggleArchive}
+          style={styles.menuItem}
+          accessibilityLabel={
+            notification.archived ? "Désarchiver" : "Archiver"
+          }
+          accessibilityRole="button"
+        >
           <Feather
             name={notification.archived ? "unlock" : "archive"}
             size={18}
@@ -134,7 +185,12 @@ const NotificationItemMenu: React.FC<NotificationItemMenuProps> = ({
           style={[styles.divider, { backgroundColor: COLORS.greyscale300 }]}
         />
 
-        <TouchableOpacity onPress={handleDelete} style={styles.menuItem}>
+        <TouchableOpacity
+          onPress={handleDelete}
+          style={styles.menuItem}
+          accessibilityLabel="Supprimer"
+          accessibilityRole="button"
+        >
           <Feather
             name="trash-2"
             size={18}
@@ -157,28 +213,30 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     position: "absolute",
-    width: MENU_WIDTH,
     borderRadius: 12,
     borderWidth: 1,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
-    elevation: 5,
+    elevation: 8, // Increased for Android
     overflow: "hidden",
   },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: Platform.OS === "android" ? 16 : 12,
     paddingHorizontal: 16,
+    minHeight: 48, // Ensure minimum touch target for accessibility
   },
   menuIcon: {
     marginRight: 12,
+    width: 18, // Fixed width for consistent alignment
   },
   menuText: {
-    fontSize: 14,
+    fontSize: Platform.OS === "android" ? 15 : 14,
     fontFamily: "medium",
+    flex: 1,
   },
   divider: {
     height: 1,

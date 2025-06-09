@@ -7,10 +7,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Platform,
+  Dimensions,
 } from "react-native";
 
 import { COLORS } from "@/constants";
 import { useTheme } from "@/theme/ThemeProvider";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface NotificationHeaderMenuProps {
   visible: boolean;
@@ -18,12 +21,15 @@ interface NotificationHeaderMenuProps {
   onClose: () => void;
 }
 
+const { width: screenWidth } = Dimensions.get("window");
+
 const NotificationHeaderMenu: React.FC<NotificationHeaderMenuProps> = ({
   visible,
   onToggle,
   onClose,
 }) => {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const handleMarkAllAsRead = () => {
     // Logic to mark all as read
@@ -37,9 +43,20 @@ const NotificationHeaderMenu: React.FC<NotificationHeaderMenuProps> = ({
     onClose();
   };
 
+  // Calculate menu position for different screen sizes
+  const menuWidth = Math.min(250, screenWidth - 32);
+  const menuRight = 16;
+  const menuTop = Platform.OS === "android" ? 60 : 55;
+
   return (
     <>
-      <TouchableOpacity onPress={onToggle} style={styles.menuButton}>
+      <TouchableOpacity
+        onPress={onToggle}
+        style={styles.menuButton}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        accessibilityLabel="Menu des options"
+        accessibilityRole="button"
+      >
         <FontAwesome name="ellipsis-v" size={20} color={COLORS.black} />
       </TouchableOpacity>
 
@@ -48,6 +65,7 @@ const NotificationHeaderMenu: React.FC<NotificationHeaderMenuProps> = ({
         visible={visible}
         animationType="fade"
         onRequestClose={onClose}
+        statusBarTranslucent={Platform.OS === "android"}
       >
         <TouchableWithoutFeedback onPress={onClose}>
           <View style={styles.modalOverlay} />
@@ -59,12 +77,17 @@ const NotificationHeaderMenu: React.FC<NotificationHeaderMenuProps> = ({
             {
               backgroundColor: colors.background,
               borderColor: COLORS.greyscale300,
+              width: menuWidth,
+              top: menuTop + insets.top,
+              right: menuRight,
             },
           ]}
         >
           <TouchableOpacity
             onPress={handleMarkAllAsRead}
             style={styles.menuItem}
+            accessibilityLabel="Tout marquer comme lu"
+            accessibilityRole="button"
           >
             <Feather
               name="check"
@@ -81,7 +104,12 @@ const NotificationHeaderMenu: React.FC<NotificationHeaderMenuProps> = ({
             style={[styles.divider, { backgroundColor: COLORS.greyscale300 }]}
           />
 
-          <TouchableOpacity onPress={handleDeleteAll} style={styles.menuItem}>
+          <TouchableOpacity
+            onPress={handleDeleteAll}
+            style={styles.menuItem}
+            accessibilityLabel="Tout supprimer"
+            accessibilityRole="button"
+          >
             <Feather
               name="trash-2"
               size={18}
@@ -100,7 +128,9 @@ const NotificationHeaderMenu: React.FC<NotificationHeaderMenuProps> = ({
 
 const styles = StyleSheet.create({
   menuButton: {
-    padding: 10,
+    padding: Platform.OS === "android" ? 12 : 10,
+    alignItems: "center",
+    justifyContent: "center",
   },
   modalOverlay: {
     flex: 1,
@@ -108,30 +138,30 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     position: "absolute",
-    top: 60,
-    right: 16,
-    width: 230,
     borderRadius: 12,
     borderWidth: 1,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 8,
-    elevation: 5,
+    elevation: 8, // Increased for Android
     overflow: "hidden",
   },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 14,
+    paddingVertical: Platform.OS === "android" ? 16 : 14,
     paddingHorizontal: 16,
+    minHeight: 48, // Ensure minimum touch target
   },
   menuIcon: {
     marginRight: 12,
+    width: 18, // Fixed width for alignment
   },
   menuText: {
-    fontSize: 15,
+    fontSize: Platform.OS === "android" ? 16 : 15,
     fontFamily: "medium",
+    flex: 1,
   },
   divider: {
     height: 1,

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 
 import { COLORS } from "@/constants";
@@ -39,8 +40,9 @@ const NotificationTabs: React.FC<NotificationTabsProps> = ({
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.tabsContainer}
+        style={styles.scrollView}
       >
-        {tabs.map((tab) => {
+        {tabs.map((tab, index) => {
           const isActive = activeTab === tab.key;
           const count = counts[tab.key];
 
@@ -62,6 +64,8 @@ const NotificationTabs: React.FC<NotificationTabsProps> = ({
                         borderColor: COLORS.greyscale300,
                       },
                     ],
+                // Add margin for spacing instead of gap (better compatibility)
+                index > 0 && styles.tabMargin,
               ]}
             >
               <Text
@@ -75,18 +79,22 @@ const NotificationTabs: React.FC<NotificationTabsProps> = ({
                 {tab.label}
               </Text>
 
-              <View
-                style={[
-                  styles.countBadge,
-                  {
-                    backgroundColor: isActive
-                      ? "rgba(255,255,255,0.3)"
-                      : COLORS.gray,
-                  },
-                ]}
-              >
-                <Text style={styles.countText}>{count}</Text>
-              </View>
+              {count > 0 && (
+                <View
+                  style={[
+                    styles.countBadge,
+                    {
+                      backgroundColor: isActive
+                        ? "rgba(255,255,255,0.3)"
+                        : COLORS.gray,
+                    },
+                  ]}
+                >
+                  <Text style={styles.countText}>
+                    {count > 99 ? "99+" : count}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
           );
         })}
@@ -94,52 +102,65 @@ const NotificationTabs: React.FC<NotificationTabsProps> = ({
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
-    height: 34,
-    marginTop: 0,
-    marginBottom: 0,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.greyscale300,
+  },
+  scrollView: {
+    flexGrow: 0,
   },
   tabsContainer: {
     flexDirection: "row",
     paddingHorizontal: 16,
-    gap: 8,
-    paddingVertical: 0,
-    marginBottom: 0,
+    alignItems: "center",
   },
   tabButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    borderRadius: 16,
+    paddingVertical: Platform.OS === "android" ? 8 : 6,
+    paddingHorizontal: 16,
+    borderRadius: 20,
     borderWidth: 1,
-    height: 30,
+    minHeight: 36, // Ensure minimum touch target
+    minWidth: 60, // Minimum width for better layout
+  },
+  tabMargin: {
+    marginLeft: 8, // Replace gap with margin for better compatibility
   },
   activeTabButton: {
     borderColor: COLORS.primary,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3, // Android shadow
   },
   inactiveTabButton: {
     borderColor: COLORS.greyscale300,
   },
   tabLabel: {
-    fontSize: 12,
+    fontSize: Platform.OS === "android" ? 13 : 12,
     fontFamily: "medium",
-    marginRight: 4,
+    marginRight: 6,
+    textAlign: "center",
   },
   countBadge: {
-    minWidth: 18,
-    height: 18,
-    borderRadius: 9,
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 4,
+    paddingHorizontal: 6,
   },
   countText: {
-    fontSize: 10,
+    fontSize: Platform.OS === "android" ? 11 : 10,
     fontFamily: "medium",
     color: COLORS.white,
+    textAlign: "center",
   },
 });
 

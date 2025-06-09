@@ -1,9 +1,18 @@
 // app/profil.tsx
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Platform,
+  StatusBar,
+  Dimensions,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-virtualized-view";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { images } from "@/constants";
 import { useTheme } from "@/theme/ThemeProvider";
@@ -16,6 +25,8 @@ import BadgesSection from "@/components/profile/BadgesSection";
 import GradesSection from "@/components/profile/GradesSection";
 import ProgressSection from "@/components/profile/ProgressSection";
 import SuggestionsSection from "@/components/profile/SuggestionsSection";
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 // Mock data
 const mockData = {
@@ -73,6 +84,7 @@ const performanceData = [
 const ProfilePage = () => {
   const navigation = useNavigation();
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const [userData, setUserData] = useState(mockData);
   const [image, setImage] = useState(userData.avatar);
 
@@ -92,59 +104,115 @@ const ProfilePage = () => {
     }
   };
 
+  // Calculate responsive padding
+  const getResponsivePadding = () => {
+    if (screenWidth < 350) return 12; // Small screens
+    if (screenWidth < 400) return 16; // Medium screens
+    return 20; // Large screens
+  };
+
+  const horizontalPadding = getResponsivePadding();
+
+  // Calculate status bar height for Android
+  const statusBarHeight =
+    Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
+
   return (
-    <SafeAreaView style={[styles.area, { backgroundColor: colors.background }]}>
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <ProfileHeader onBackPress={handleBackPress} />
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Status Bar Background for Android */}
+      {Platform.OS === "android" && (
+        <View
+          style={[
+            styles.statusBarBackground,
+            {
+              height: statusBarHeight,
+              backgroundColor: colors.background,
+            },
+          ]}
+        />
+      )}
 
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContainer}
+      <SafeAreaView
+        style={[styles.safeArea, { backgroundColor: colors.background }]}
+        edges={
+          Platform.OS === "ios"
+            ? ["top", "left", "right", "bottom"]
+            : ["left", "right", "bottom"]
+        }
+      >
+        <View
+          style={[
+            styles.innerContainer,
+            { backgroundColor: colors.background },
+          ]}
         >
-          <ProfileInfo
-            image={image}
-            identifiant={userData.id}
-            name={userData.name}
-            email={userData.email}
-            classe={userData.grade}
-            onPickImage={pickImage}
-          />
+          <ProfileHeader onBackPress={handleBackPress} />
 
-          <StatsCards
-            stats={{
-              daysSpent: userData.daysSpent,
-              timeSpent: userData.timeSpent,
-              xpEarned: userData.xpEarned,
-              ranking: userData.ranking,
-            }}
-          />
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={[
+              styles.scrollContainer,
+              {
+                paddingHorizontal: horizontalPadding,
+                paddingBottom: Math.max(insets.bottom, 24),
+              },
+            ]}
+            style={styles.scrollView}
+          >
+            <ProfileInfo
+              image={image}
+              identifiant={userData.id}
+              name={userData.name}
+              email={userData.email}
+              classe={userData.grade}
+              onPickImage={pickImage}
+            />
 
-          <ProgressSection
-            totalProgress={userData.totalProgress}
-            subjectProgress={userData.subjectProgress}
-          />
+            <StatsCards
+              stats={{
+                daysSpent: userData.daysSpent,
+                timeSpent: userData.timeSpent,
+                xpEarned: userData.xpEarned,
+                ranking: userData.ranking,
+              }}
+            />
 
-          <BadgesSection badges={badgesData} />
+            <ProgressSection
+              totalProgress={userData.totalProgress}
+              subjectProgress={userData.subjectProgress}
+            />
 
-          <GradesSection grades={gradesData} />
+            <BadgesSection badges={badgesData} />
 
-          <SuggestionsSection suggestions={performanceData} />
-        </ScrollView>
-      </View>
-    </SafeAreaView>
+            <GradesSection grades={gradesData} />
+
+            <SuggestionsSection suggestions={performanceData} />
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  area: {
-    flex: 1,
-  },
   container: {
     flex: 1,
   },
+  statusBarBackground: {
+    width: "100%",
+  },
+  safeArea: {
+    flex: 1,
+  },
+  innerContainer: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
   scrollContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 24,
+    flexGrow: 1,
+    paddingTop: Platform.OS === "android" ? 8 : 0,
   },
 });
 

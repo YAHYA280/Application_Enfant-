@@ -13,7 +13,7 @@ import {
 
 import { COLORS, images } from "@/constants";
 import { useTheme } from "@/theme/ThemeProvider";
-import CurvedMenu from "@/components/CurvedMenu";
+import KidFriendlyMenu from "@/components/KidFriendlyMenu";
 import AnimatedAvatar from "@/components/AnimatedAvatar";
 import NotificationBell from "@/components/notifications/NotificationBell";
 
@@ -91,10 +91,13 @@ export default function Home() {
         {renderHeader()}
         {renderGreeting()}
 
-        {/* New Curved Menu */}
-        <View style={styles.menuWrapper}>
-          <CurvedMenu onNavigate={handleNavigation} />
+        {/* Content area - now has more space since menu is at bottom */}
+        <View style={styles.contentArea}>
+          {/* You can add additional content here */}
         </View>
+
+        {/* New Kid-Friendly Bottom Menu */}
+        <KidFriendlyMenu onNavigate={handleNavigation} />
       </View>
     </SafeAreaView>
   );
@@ -178,8 +181,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 10,
   },
-  menuWrapper: {
+  contentArea: {
     flex: 1,
-    marginTop: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingBottom: 120, // Give space for the bottom menu
   },
 });

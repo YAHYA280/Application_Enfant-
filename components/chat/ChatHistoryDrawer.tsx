@@ -122,28 +122,27 @@ const ChatHistoryDrawer: React.FC<ChatHistoryDrawerProps> = ({
                 </TouchableOpacity>
               ))}
             </ScrollView>
+          </View>
 
-            {/* Bottom section with proper safe area */}
-            <View
-              style={[
-                styles.bottomSection,
-                {
-                  paddingBottom:
-                    Platform.OS === "ios" ? Math.max(insets.bottom, 16) : 20, // Fixed padding for Android
-                },
-              ]}
+          {/* Fixed button at the very bottom */}
+          <View
+            style={[
+              styles.bottomSection,
+              {
+                bottom: 0,
+                paddingBottom:
+                  Platform.OS === "ios" ? Math.max(insets.bottom, 16) : 16,
+              },
+            ]}
+          >
+            <TouchableOpacity
+              style={styles.newChatButton}
+              onPress={startNewChat}
+              activeOpacity={0.8}
             >
-              <TouchableOpacity
-                style={styles.newChatButton}
-                onPress={startNewChat}
-                activeOpacity={0.8}
-              >
-                <Ionicons name="add" size={24} color={COLORS.white} />
-                <Text style={styles.newChatButtonText}>
-                  Nouvelle Discussion
-                </Text>
-              </TouchableOpacity>
-            </View>
+              <Ionicons name="add" size={24} color={COLORS.white} />
+              <Text style={styles.newChatButtonText}>Nouvelle Discussion</Text>
+            </TouchableOpacity>
           </View>
         </TouchableOpacity>
       </TouchableOpacity>
@@ -204,10 +203,9 @@ const styles = StyleSheet.create({
   },
   historyList: {
     flex: 1,
-    maxHeight: SCREEN_HEIGHT * 0.6, // Ensure it doesn't take too much space
   },
   historyListContent: {
-    paddingBottom: 16,
+    paddingBottom: 100, // Space for the fixed button at bottom
     flexGrow: 1,
   },
   chatHistoryItem: {
@@ -247,7 +245,11 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
   bottomSection: {
-    paddingTop: 20,
+    position: "absolute",
+    left: 0,
+    right: 0,
+    paddingTop: 16,
+    paddingHorizontal: 16,
     borderTopWidth: 1,
     borderTopColor: COLORS.greyscale300,
     backgroundColor: COLORS.white,

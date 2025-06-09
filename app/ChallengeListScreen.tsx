@@ -25,15 +25,14 @@ const CATEGORIES = [
   { id: "DIFFICILE", name: "Difficile" },
 ];
 
-interface DefiProps {
-  navigation: {
-    goBack: () => void;
-    navigate: (screen: string, params?: any) => void;
-  };
-}
+type RootStackParamList = {
+  home: undefined;
+  ChallengeListScreen: undefined;
+  ChallengeDetailsScreen: { challenge: Challenge };
+};
 
-const Defi: React.FC<DefiProps> = () => {
-  const navigation = useNavigation<NavigationProp<any>>();
+const ChallengeListScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { colors } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const scrollY = React.useRef(new Animated.Value(0)).current;
@@ -50,6 +49,7 @@ const Defi: React.FC<DefiProps> = () => {
   const handleBackPress = () => {
     navigation.navigate("home");
   };
+
   useEffect(() => {
     const filtered = mockChallenges.filter(
       (challenge) =>
@@ -60,6 +60,10 @@ const Defi: React.FC<DefiProps> = () => {
 
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);
+  };
+
+  const handleChallengePress = (challenge: Challenge) => {
+    navigation.navigate("ChallengeDetailsScreen", { challenge });
   };
 
   const renderHeader = () => {
@@ -98,7 +102,7 @@ const Defi: React.FC<DefiProps> = () => {
                   },
                 ]}
               >
-                Challenge
+                Challenges
               </Text>
             </View>
 
@@ -133,7 +137,7 @@ const Defi: React.FC<DefiProps> = () => {
                 },
               ]}
             >
-              Challenge
+              Challenges
             </Text>
           </View>
 
@@ -194,9 +198,7 @@ const Defi: React.FC<DefiProps> = () => {
                 <ChallengeLessonCard
                   key={challenge.id}
                   challenge={challenge}
-                  onPress={() =>
-                    navigation.navigate("challengedetailsmore", { challenge })
-                  }
+                  onPress={() => handleChallengePress(challenge)}
                 />
               ))}
             </View>
@@ -308,7 +310,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   trophyEmoji: {
-    fontSize: 64, // adjust size to taste
+    fontSize: 64,
     marginLeft: 8,
   },
   challengesContainer: {
@@ -318,4 +320,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Defi;
+export default ChallengeListScreen;

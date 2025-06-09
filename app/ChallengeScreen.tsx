@@ -1,4 +1,5 @@
-import type { RouteProp, NavigationProp } from "@react-navigation/native";
+import type { RouteProp } from "@react-navigation/native";
+import type { StackNavigationProp } from "@react-navigation/stack";
 
 import React, { useRef, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
@@ -23,19 +24,24 @@ import { mockExercices, challengeExerciceMap } from "@/services/mock";
 import { ChallengeHeader, ChallengeResultItem } from "@/components/challenge";
 
 type RootStackParamList = {
-  exerciseview: {
+  ChallengeScreen: {
     challenge: Challenge;
     exercice: Exercice;
   };
-  challengedetailsmore: {
+  ChallengeDetailsScreen: {
     challenge: Challenge;
   };
-  recompenseMessage: {
+  ChallengeResultScreen: {
     challenge: Challenge;
     score: number;
     totalPossibleScore: number;
   };
 };
+
+type ChallengeScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "ChallengeScreen"
+>;
 
 interface ExerciseAnswer {
   exerciceId: number;
@@ -43,9 +49,9 @@ interface ExerciseAnswer {
   isCorrect: boolean;
 }
 
-const ExerciseView = () => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const route = useRoute<RouteProp<RootStackParamList, "exerciseview">>();
+const ChallengeScreen = () => {
+  const navigation = useNavigation<ChallengeScreenNavigationProp>();
+  const route = useRoute<RouteProp<RootStackParamList, "ChallengeScreen">>();
   const insets = useSafeAreaInsets();
   const { challenge, exercice: initialExercice } = route.params;
 
@@ -82,6 +88,10 @@ const ExerciseView = () => {
   const totalPossibleScore = challengeExercices.reduce((total, exercice) => {
     return total + exercice.pointQuestion;
   }, 0);
+
+  const handleBackPress = () => {
+    navigation.navigate("ChallengeDetailsScreen", { challenge });
+  };
 
   const handleExerciseSubmit = (
     exerciceId: number,
@@ -134,8 +144,9 @@ const ExerciseView = () => {
     }
   };
 
-  const navigateToRecompenseMessage = () => {
-    navigation.navigate("recompenseMessage", {
+  const navigateToResultScreen = () => {
+    // Use replace to prevent navigation loops
+    navigation.replace("ChallengeResultScreen", {
       challenge,
       score: totalScore,
       totalPossibleScore,
@@ -161,17 +172,15 @@ const ExerciseView = () => {
       <ChallengeHeader
         title={challenge.nom}
         subtitle="Question"
-        onBackPress={() =>
-          navigation.navigate("challengedetailsmore", { challenge })
-        }
+        onBackPress={handleBackPress}
       />
 
-      {/* FIXED: Main container with proper top padding */}
+      {/* Main container with proper top padding */}
       <View
         style={[
           styles.mainContainer,
           {
-            paddingTop: headerHeight, // This ensures content starts below the header
+            paddingTop: headerHeight,
             paddingBottom: bottomPadding,
           },
         ]}
@@ -242,7 +251,7 @@ const ExerciseView = () => {
                 keyExtractor={(item) => item.exerciceId.toString()}
                 contentContainerStyle={[
                   styles.resultsList,
-                  { paddingBottom: 120 + bottomPadding }, // Extra space for button
+                  { paddingBottom: 120 + bottomPadding },
                 ]}
                 showsVerticalScrollIndicator={false}
               />
@@ -252,7 +261,7 @@ const ExerciseView = () => {
               >
                 <TouchableOpacity
                   style={styles.doneButton}
-                  onPress={navigateToRecompenseMessage}
+                  onPress={navigateToResultScreen}
                   activeOpacity={0.8}
                 >
                   <LinearGradient
@@ -451,4 +460,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ExerciseView;
+export default ChallengeScreen;

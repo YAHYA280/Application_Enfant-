@@ -7,15 +7,14 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Animated, {
+  runOnJS,
+  withDelay,
+  withSpring,
+  withTiming,
+  withRepeat,
+  withSequence,
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
-  withSequence,
-  withTiming,
-  interpolate,
-  runOnJS,
-  withRepeat,
-  withDelay,
 } from "react-native-reanimated";
 import { MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";

@@ -99,7 +99,7 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
         {/* Gradient border - enhanced for Android */}
         {Platform.OS === "ios" ? (
           <LinearGradient
-            colors={[COLORS.primary, "#FF7538"]}
+            colors={[COLORS.primary, "#FF7538"] as const}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.gradientBorder}
@@ -195,16 +195,13 @@ const LearningLessonCard: React.FC<LessonCardProps> = ({
                     style={styles.continueIconButton}
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                   >
-                    <LinearGradient
-                      colors={["#ff6040", "#ff8e69"]}
-                      style={styles.continueIconGradient}
-                    >
+                    <View style={styles.continueIconGradient}>
                       <Feather
                         name="chevron-right"
                         size={Platform.OS === "android" ? 14 : 16}
-                        color={COLORS.white}
+                        color="#FF8A50"
                       />
-                    </LinearGradient>
+                    </View>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -227,7 +224,7 @@ const styles = StyleSheet.create({
     width: "100%",
     overflow: "hidden",
     borderRadius: Platform.OS === "android" ? 16 : 12,
-    backgroundColor: COLORS.white,
+    backgroundColor: "#FF8A50", // Changed from COLORS.white to orange
     // Platform-specific shadows
     ...Platform.select({
       ios: {
@@ -270,7 +267,7 @@ const styles = StyleSheet.create({
   cardContent: {
     flexDirection: "row",
     height: Platform.OS === "android" ? 145 : 140,
-    backgroundColor: COLORS.white,
+    backgroundColor: "#FF8A50", // Changed from COLORS.white to orange
     borderRadius: Platform.OS === "android" ? 16 : 12,
   },
   imageContainer: {
@@ -347,7 +344,7 @@ const styles = StyleSheet.create({
     fontFamily: "bold",
     marginBottom: Platform.OS === "android" ? 6 : 8,
     lineHeight: Platform.OS === "android" ? 20 : 18,
-    color: COLORS.greyscale900,
+    color: COLORS.white, // Changed to white for better contrast on orange background
     fontWeight: Platform.OS === "android" ? "700" : undefined,
   },
   difficultyBadge: {
@@ -380,7 +377,7 @@ const styles = StyleSheet.create({
   lessonsText: {
     fontSize: Platform.OS === "android" ? 10 : 11, // Reduced from 11/12
     fontFamily: "medium",
-    color: COLORS.greyscale900,
+    color: COLORS.white, // Changed to white for better contrast on orange background
     fontWeight: Platform.OS === "android" ? "500" : undefined,
   },
   statusContainer: {
@@ -453,8 +450,14 @@ const styles = StyleSheet.create({
     width: Platform.OS === "android" ? 36 : 30,
     height: Platform.OS === "android" ? 36 : 30,
     borderRadius: Platform.OS === "android" ? 18 : 15,
+    backgroundColor: COLORS.white, // White background instead of gradient
     justifyContent: "center",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
 });
 

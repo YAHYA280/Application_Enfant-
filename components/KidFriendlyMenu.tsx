@@ -1,4 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
+import { MaterialIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   View,
   Text,
@@ -7,20 +10,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Animated, {
+  withDelay,
+  withSpring,
+  withTiming,
+  withRepeat,
+  withSequence,
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
-  withSequence,
-  withTiming,
-  interpolate,
-  runOnJS,
-  withRepeat,
-  withDelay,
 } from "react-native-reanimated";
-import { MaterialIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+const { width: screenWidth } = Dimensions.get("window");
 
 // Menu configuration with orange gradient colors
 const MENU_ITEMS = [
@@ -78,6 +77,12 @@ const KidMenuItem: React.FC<MenuItemProps> = ({ item, index, onPress }) => {
   const opacity = useSharedValue(0);
 
   useEffect(() => {
+    // Reset initial values to ensure proper animation on remount
+    opacity.value = 0;
+    translateY.value = 50;
+    scale.value = 1;
+    rotate.value = 0;
+
     // Staggered entrance animation
     const entranceDelay = index * 150;
 
@@ -112,13 +117,9 @@ const KidMenuItem: React.FC<MenuItemProps> = ({ item, index, onPress }) => {
     // Cleanup function
     return () => {
       clearTimeout(timeoutId);
-      // Reset animations on cleanup
-      opacity.value = 1;
-      translateY.value = 0;
-      scale.value = 1;
-      rotate.value = 0;
     };
-  }, [index, opacity, rotate, translateY, scale]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -222,12 +223,9 @@ const FloatingOrb: React.FC<{ delay: number }> = ({ delay }) => {
     // Cleanup function
     return () => {
       clearTimeout(timeoutId);
-      // Reset values on cleanup
-      translateY.value = 0;
-      scale.value = 1;
-      opacity.value = 0.6;
     };
-  }, [delay, scale, translateY, opacity]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delay]); // Removed animated values from dependency array
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }, { scale: scale.value }],
@@ -249,17 +247,14 @@ const KidFriendlyMenu: React.FC<KidFriendlyMenuProps> = ({ onNavigate }) => {
   const containerOpacity = useSharedValue(0);
 
   useEffect(() => {
+    // Reset initial values
+    containerOpacity.value = 0;
+    containerScale.value = 0;
+
     // Initial entrance animation
     containerOpacity.value = withTiming(1, { duration: 500 });
     containerScale.value = withSpring(1, { damping: 15, stiffness: 150 });
-
-    // Cleanup function
-    return () => {
-      // Reset values on cleanup
-      containerScale.value = 1;
-      containerOpacity.value = 1;
-    };
-  }, [containerOpacity, containerScale]);
+  }, []); // Empty dependency array since we want this to run only on mount
 
   const handleNavigation = (link: string) => {
     if (onNavigate) {
@@ -276,8 +271,6 @@ const KidFriendlyMenu: React.FC<KidFriendlyMenuProps> = ({ onNavigate }) => {
     <View style={styles.container}>
       {/* Floating background orbs */}
       <FloatingOrb delay={0} />
-      <FloatingOrb delay={500} />
-      <FloatingOrb delay={1000} />
 
       <Animated.View style={[styles.menuContainer, containerStyle]}>
         {/* Background with subtle gradient */}
@@ -312,7 +305,6 @@ const KidFriendlyMenu: React.FC<KidFriendlyMenuProps> = ({ onNavigate }) => {
       {/* Fun emoji decorations */}
       <Text style={[styles.emoji, styles.emoji1]}>🌟</Text>
       <Text style={[styles.emoji, styles.emoji2]}>🚀</Text>
-      <Text style={[styles.emoji, styles.emoji3]}>⭐</Text>
     </View>
   );
 };

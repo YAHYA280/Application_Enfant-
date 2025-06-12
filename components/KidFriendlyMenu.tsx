@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -10,12 +10,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Animated, {
-  withDelay,
+  runOnUI,
   withSpring,
   withTiming,
   withRepeat,
   withSequence,
   useSharedValue,
+  cancelAnimation,
   useAnimatedStyle,
 } from "react-native-reanimated";
 
@@ -66,60 +67,73 @@ interface MenuItemProps {
   item: (typeof MENU_ITEMS)[0];
   index: number;
   onPress: () => void;
+  isReady: boolean;
 }
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
-const KidMenuItem: React.FC<MenuItemProps> = ({ item, index, onPress }) => {
+const KidMenuItem: React.FC<MenuItemProps> = ({
+  item,
+  index,
+  onPress,
+  isReady,
+}) => {
   const scale = useSharedValue(1);
   const rotate = useSharedValue(0);
-  const translateY = useSharedValue(50);
-  const opacity = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const opacity = useSharedValue(1);
+
+  const [isPressed, setIsPressed] = useState(false);
 
   useEffect(() => {
-    // Reset initial values to ensure proper animation on remount
-    opacity.value = 0;
-    translateY.value = 50;
-    scale.value = 1;
-    rotate.value = 0;
+    if (!isReady) return;
 
-    // Staggered entrance animation
-    const entranceDelay = index * 150;
+    runOnUI(() => {
+      "worklet";
 
-    opacity.value = withDelay(
-      entranceDelay,
-      withSpring(1, { damping: 15, stiffness: 150 })
-    );
+      opacity.value = 1;
+      translateY.value = 0;
+      scale.value = 1;
+      rotate.value = 0;
+    })();
 
-    translateY.value = withDelay(
-      entranceDelay,
-      withSpring(0, { damping: 15, stiffness: 150 })
-    );
+    const entranceDelay = index * 100;
 
-    // Fun idle animation with cleanup
-    const startIdleAnimation = () => {
+    translateY.value = -10;
+    opacity.value = 0.7;
+
+    setTimeout(() => {
+      opacity.value = withSpring(1, { damping: 12, stiffness: 200 });
+      translateY.value = withSpring(0, { damping: 12, stiffness: 200 });
+    }, entranceDelay);
+
+    const idleTimeout = setTimeout(() => {
       rotate.value = withRepeat(
         withSequence(
-          withTiming(2, { duration: 2000 }),
-          withTiming(-2, { duration: 2000 }),
-          withTiming(0, { duration: 2000 })
+          withTiming(1, { duration: 3000 }),
+          withTiming(-1, { duration: 3000 }),
+          withTiming(0, { duration: 3000 })
         ),
         -1,
         true
       );
-    };
+    }, entranceDelay + 800);
 
-    const timeoutId = setTimeout(
-      () => startIdleAnimation(),
-      entranceDelay + 1000
-    );
-
-    // Cleanup function
+    // eslint-disable-next-line consistent-return
     return () => {
-      clearTimeout(timeoutId);
+      clearTimeout(idleTimeout);
+      cancelAnimation(rotate);
+
+      runOnUI(() => {
+        "worklet";
+
+        opacity.value = 1;
+        translateY.value = 0;
+        scale.value = 1;
+        rotate.value = 0;
+      })();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index]);
+  }, [isReady, index]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -133,33 +147,38 @@ const KidMenuItem: React.FC<MenuItemProps> = ({ item, index, onPress }) => {
   });
 
   const handlePressIn = () => {
-    scale.value = withSpring(0.85, { damping: 15, stiffness: 400 });
-    rotate.value = withSpring(5, { damping: 10, stiffness: 300 });
+    setIsPressed(true);
+    scale.value = withSpring(0.9, { damping: 20, stiffness: 300 });
   };
 
   const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
-    rotate.value = withSpring(0, { damping: 15, stiffness: 300 });
+    setIsPressed(false);
+    scale.value = withSpring(1, { damping: 20, stiffness: 300 });
   };
 
   const handlePress = () => {
-    // Quick press animation that doesn't interfere with visibility
+    // Quick feedback animation
     scale.value = withSequence(
-      withSpring(0.9, { damping: 15, stiffness: 400 }),
-      withSpring(1, { damping: 15, stiffness: 300 })
+      withSpring(0.85, { damping: 20, stiffness: 400 }),
+      withSpring(1, { damping: 20, stiffness: 300 })
     );
 
-    // Immediate navigation without delay
     onPress();
+  };
+
+  // Fallback: render without animation if something goes wrong
+  const fallbackStyle = {
+    transform: [{ scale: 1 }, { rotate: "0deg" }, { translateY: 0 }],
+    opacity: 1,
   };
 
   return (
     <AnimatedTouchable
-      style={[styles.menuItem, animatedStyle]}
+      style={[styles.menuItem, isReady ? animatedStyle : fallbackStyle]}
       onPress={handlePress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      activeOpacity={0.9}
+      activeOpacity={0.8}
     >
       <View style={styles.itemContainer}>
         <LinearGradient
@@ -169,7 +188,7 @@ const KidMenuItem: React.FC<MenuItemProps> = ({ item, index, onPress }) => {
           end={{ x: 1, y: 1 }}
         />
 
-        {/* Sparkle effect overlay */}
+        {/* Sparkle effects */}
         <View style={styles.sparkleOverlay}>
           <View style={[styles.sparkle, styles.sparkle1]} />
           <View style={[styles.sparkle, styles.sparkle2]} />
@@ -194,15 +213,15 @@ const KidMenuItem: React.FC<MenuItemProps> = ({ item, index, onPress }) => {
 
 const FloatingOrb: React.FC<{ delay: number }> = ({ delay }) => {
   const translateY = useSharedValue(0);
-  const opacity = useSharedValue(0.6);
+  const opacity = useSharedValue(0.4);
   const scale = useSharedValue(1);
 
   useEffect(() => {
-    const animate = () => {
+    const timeout = setTimeout(() => {
       translateY.value = withRepeat(
         withSequence(
-          withTiming(-20, { duration: 2000 }),
-          withTiming(0, { duration: 2000 })
+          withTiming(-15, { duration: 2500 }),
+          withTiming(0, { duration: 2500 })
         ),
         -1,
         true
@@ -210,22 +229,20 @@ const FloatingOrb: React.FC<{ delay: number }> = ({ delay }) => {
 
       scale.value = withRepeat(
         withSequence(
-          withTiming(1.2, { duration: 1500 }),
-          withTiming(0.8, { duration: 1500 })
+          withTiming(1.1, { duration: 2000 }),
+          withTiming(0.9, { duration: 2000 })
         ),
         -1,
         true
       );
-    };
+    }, delay);
 
-    const timeoutId = setTimeout(animate, delay);
-
-    // Cleanup function
     return () => {
-      clearTimeout(timeoutId);
+      clearTimeout(timeout);
+      cancelAnimation(translateY);
+      cancelAnimation(scale);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [delay]); // Removed animated values from dependency array
+  }, [delay]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }, { scale: scale.value }],
@@ -235,7 +252,7 @@ const FloatingOrb: React.FC<{ delay: number }> = ({ delay }) => {
   return (
     <Animated.View style={[styles.floatingOrb, animatedStyle]}>
       <LinearGradient
-        colors={["rgba(255, 138, 80, 0.3)", "rgba(255, 107, 53, 0.3)"]}
+        colors={["rgba(255, 138, 80, 0.2)", "rgba(255, 107, 53, 0.2)"]}
         style={styles.orbGradient}
       />
     </Animated.View>
@@ -243,18 +260,31 @@ const FloatingOrb: React.FC<{ delay: number }> = ({ delay }) => {
 };
 
 const KidFriendlyMenu: React.FC<KidFriendlyMenuProps> = ({ onNavigate }) => {
-  const containerScale = useSharedValue(0);
-  const containerOpacity = useSharedValue(0);
+  const [isComponentReady, setIsComponentReady] = useState(false);
+  const containerScale = useSharedValue(1); // Start visible
+  const containerOpacity = useSharedValue(1); // Start visible
 
   useEffect(() => {
-    // Reset initial values
-    containerOpacity.value = 0;
-    containerScale.value = 0;
+    // Ensure component is ready immediately
+    setIsComponentReady(true);
 
-    // Initial entrance animation
-    containerOpacity.value = withTiming(1, { duration: 500 });
-    containerScale.value = withSpring(1, { damping: 15, stiffness: 150 });
-  }, []); // Empty dependency array since we want this to run only on mount
+    // Optional entrance animation for the container
+    containerScale.value = 0.95;
+    containerOpacity.value = 0.8;
+
+    containerScale.value = withSpring(1, { damping: 15, stiffness: 200 });
+    containerOpacity.value = withSpring(1, { damping: 15, stiffness: 200 });
+
+    return () => {
+      // Ensure visibility on cleanup
+      runOnUI(() => {
+        "worklet";
+
+        containerScale.value = 1;
+        containerOpacity.value = 1;
+      })();
+    };
+  }, []);
 
   const handleNavigation = (link: string) => {
     if (onNavigate) {
@@ -267,31 +297,43 @@ const KidFriendlyMenu: React.FC<KidFriendlyMenuProps> = ({ onNavigate }) => {
     opacity: containerOpacity.value,
   }));
 
+  // Fallback container style
+  const fallbackContainerStyle = {
+    transform: [{ scale: 1 }],
+    opacity: 1,
+  };
+
   return (
     <View style={styles.container}>
-      {/* Floating background orbs */}
-      <FloatingOrb delay={0} />
+      {/* Floating orbs */}
+      <FloatingOrb delay={500} />
 
-      <Animated.View style={[styles.menuContainer, containerStyle]}>
-        {/* Background with subtle gradient */}
+      <Animated.View
+        style={[
+          styles.menuContainer,
+          isComponentReady ? containerStyle : fallbackContainerStyle,
+        ]}
+      >
+        {/* Background */}
         <LinearGradient
           colors={["rgba(255, 255, 255, 0.95)", "rgba(248, 248, 248, 0.95)"]}
           style={styles.menuBackground}
         />
 
-        {/* Menu items */}
+        {/* Menu items - always render, animations are optional */}
         <View style={styles.itemsContainer}>
           {MENU_ITEMS.map((item, index) => (
             <KidMenuItem
-              key={item.link}
+              key={`menu-${item.link}-${index}`}
               item={item}
               index={index}
               onPress={() => handleNavigation(item.link)}
+              isReady={isComponentReady}
             />
           ))}
         </View>
 
-        {/* Fun bottom indicator */}
+        {/* Bottom indicator */}
         <View style={styles.bottomIndicator}>
           <LinearGradient
             colors={["#FF8A50", "#FF6B35", "#FFB74D", "#FF9800"]}
@@ -302,7 +344,7 @@ const KidFriendlyMenu: React.FC<KidFriendlyMenuProps> = ({ onNavigate }) => {
         </View>
       </Animated.View>
 
-      {/* Fun emoji decorations */}
+      {/* Emoji decorations */}
       <Text style={[styles.emoji, styles.emoji1]}>🌟</Text>
       <Text style={[styles.emoji, styles.emoji2]}>🚀</Text>
     </View>
@@ -336,6 +378,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 15,
     elevation: 12,
+    // Fallback styles to ensure visibility
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
   },
   menuBackground: {
     position: "absolute",
@@ -432,30 +476,27 @@ const styles = StyleSheet.create({
   },
   floatingOrb: {
     position: "absolute",
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    bottom: MENU_HEIGHT + 30,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    bottom: MENU_HEIGHT + 25,
+    left: "20%",
   },
   orbGradient: {
     flex: 1,
-    borderRadius: 20,
+    borderRadius: 15,
   },
   emoji: {
     position: "absolute",
-    fontSize: 20,
+    fontSize: 18,
   },
   emoji1: {
-    top: -40,
+    top: -35,
     left: 30,
   },
   emoji2: {
-    top: -35,
+    top: -30,
     right: 40,
-  },
-  emoji3: {
-    top: -25,
-    left: screenWidth / 2,
   },
 });
 

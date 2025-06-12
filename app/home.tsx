@@ -89,12 +89,9 @@ export default function Home() {
     <SafeAreaView style={[styles.area, { backgroundColor: colors.background }]}>
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         {renderHeader()}
-        {renderGreeting()}
 
-        {/* Content area - now has more space since menu is at bottom */}
-        <View style={styles.contentArea}>
-          {/* You can add additional content here */}
-        </View>
+        {/* Main content area with centered greeting */}
+        <View style={styles.contentArea}>{renderGreeting()}</View>
 
         {/* New Kid-Friendly Bottom Menu */}
         <KidFriendlyMenu onNavigate={handleNavigation} />
@@ -164,11 +161,15 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: COLORS.black,
   },
+  contentArea: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingBottom: 120,
+  },
   greetingContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 30,
-    marginBottom: 20,
   },
   greetingText: {
     fontSize: 24,
@@ -180,11 +181,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: "center",
     marginTop: 10,
-  },
-  contentArea: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingBottom: 120, // Give space for the bottom menu
   },
 });

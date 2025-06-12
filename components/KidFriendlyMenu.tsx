@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
-import { MaterialIcons } from "@expo/vector-icons";
+import React, { useState, useEffect } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import {
   View,
@@ -20,42 +19,46 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 
+import HomeIcon from "./icons/HomeIcon";
+import BookIcon from "./icons/BookIcon";
+import SearchIcon from "./icons/SearchIcon";
+import TrophyIcon from "./icons/TrophyIcon";
+
 const { width: screenWidth } = Dimensions.get("window");
 
-// Menu configuration with orange gradient colors
 const MENU_ITEMS = [
   {
     name: "AI Devoir",
-    icon: "home" as const,
+    IconComponent: HomeIcon,
     link: "chatAiAcceuil",
     colors: ["#FF8A50", "#FF6B35"] as const,
     activeColors: ["#FF7043", "#FF5722"] as const,
   },
   {
     name: "J'apprends",
-    icon: "library-books" as const,
+    IconComponent: BookIcon,
     link: "learning",
     colors: ["#FFB74D", "#FF9800"] as const,
     activeColors: ["#FF9800", "#F57C00"] as const,
   },
   {
     name: "Challenge",
-    icon: "emoji-events" as const,
+    IconComponent: TrophyIcon,
     link: "ChallengeListScreen",
     colors: ["#FFCC02", "#FF9500"] as const,
     activeColors: ["#FF9500", "#E65100"] as const,
   },
   {
     name: "AI Recherche",
-    icon: "search" as const,
+    IconComponent: SearchIcon,
     link: "chatAiRecherche",
     colors: ["#FF7043", "#D84315"] as const,
     activeColors: ["#D84315", "#BF360C"] as const,
   },
 ];
 
-// Responsive calculations
-const ITEM_WIDTH = Math.min(screenWidth / 5, 80);
+// Responsive calculations with 2px gap
+const ITEM_WIDTH = Math.min(screenWidth / 5, 80) - 2;
 const ITEM_HEIGHT = ITEM_WIDTH + 20;
 const MENU_HEIGHT = ITEM_HEIGHT + 40;
 
@@ -68,6 +71,8 @@ interface MenuItemProps {
   index: number;
   onPress: () => void;
   isReady: boolean;
+  isSelected: boolean;
+  selectedIndex: number | null;
 }
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -77,61 +82,61 @@ const KidMenuItem: React.FC<MenuItemProps> = ({
   index,
   onPress,
   isReady,
+  isSelected,
+  selectedIndex,
 }) => {
   const scale = useSharedValue(1);
   const rotate = useSharedValue(0);
   const translateY = useSharedValue(0);
-  const opacity = useSharedValue(1);
 
   const [isPressed, setIsPressed] = useState(false);
 
   useEffect(() => {
-    if (!isReady) return;
+    if (!isReady) {
+      return () => {}; // Always return cleanup function
+    }
 
+    // Reset transforms
     runOnUI(() => {
       "worklet";
 
-      opacity.value = 1;
-      translateY.value = 0;
-      scale.value = 1;
+      translateY.value = 15;
+      scale.value = 0.8;
       rotate.value = 0;
-    })();
+    });
 
-    const entranceDelay = index * 100;
+    const entranceDelay = index * 150;
 
-    translateY.value = -10;
-    opacity.value = 0.7;
-
-    setTimeout(() => {
-      opacity.value = withSpring(1, { damping: 12, stiffness: 200 });
-      translateY.value = withSpring(0, { damping: 12, stiffness: 200 });
+    const entranceTimeout = setTimeout(() => {
+      translateY.value = withSpring(0, {
+        damping: 15,
+        stiffness: 250,
+        mass: 0.8,
+      });
+      scale.value = withSpring(1, {
+        damping: 15,
+        stiffness: 250,
+        mass: 0.8,
+      });
     }, entranceDelay);
 
+    // Subtle idle animation
     const idleTimeout = setTimeout(() => {
       rotate.value = withRepeat(
         withSequence(
-          withTiming(1, { duration: 3000 }),
-          withTiming(-1, { duration: 3000 }),
-          withTiming(0, { duration: 3000 })
+          withTiming(0.5, { duration: 4000 }),
+          withTiming(-0.5, { duration: 4000 }),
+          withTiming(0, { duration: 4000 })
         ),
         -1,
         true
       );
-    }, entranceDelay + 800);
+    }, entranceDelay + 1000);
 
-    // eslint-disable-next-line consistent-return
     return () => {
+      clearTimeout(entranceTimeout);
       clearTimeout(idleTimeout);
       cancelAnimation(rotate);
-
-      runOnUI(() => {
-        "worklet";
-
-        opacity.value = 1;
-        translateY.value = 0;
-        scale.value = 1;
-        rotate.value = 0;
-      })();
     };
   }, [isReady, index]);
 
@@ -142,35 +147,44 @@ const KidMenuItem: React.FC<MenuItemProps> = ({
         { rotate: `${rotate.value}deg` },
         { translateY: translateY.value },
       ],
-      opacity: opacity.value,
     };
   });
 
   const handlePressIn = () => {
     setIsPressed(true);
-    scale.value = withSpring(0.9, { damping: 20, stiffness: 300 });
+    scale.value = withSpring(0.92, {
+      damping: 25,
+      stiffness: 400,
+      mass: 0.8,
+    });
   };
 
   const handlePressOut = () => {
     setIsPressed(false);
-    scale.value = withSpring(1, { damping: 20, stiffness: 300 });
+    scale.value = withSpring(1, {
+      damping: 25,
+      stiffness: 400,
+      mass: 0.8,
+    });
   };
 
   const handlePress = () => {
-    // Quick feedback animation
+    // Enhanced feedback animation
     scale.value = withSequence(
-      withSpring(0.85, { damping: 20, stiffness: 400 }),
-      withSpring(1, { damping: 20, stiffness: 300 })
+      withSpring(0.88, { damping: 25, stiffness: 500, mass: 0.8 }),
+      withSpring(1.05, { damping: 20, stiffness: 350, mass: 0.8 }),
+      withSpring(1, { damping: 25, stiffness: 400, mass: 0.8 })
     );
 
     onPress();
   };
 
-  // Fallback: render without animation if something goes wrong
+  // Fallback style for initial state (only used during initial 100ms)
   const fallbackStyle = {
     transform: [{ scale: 1 }, { rotate: "0deg" }, { translateY: 0 }],
-    opacity: 1,
   };
+
+  const IconComponent = item.IconComponent;
 
   return (
     <AnimatedTouchable
@@ -178,29 +192,30 @@ const KidMenuItem: React.FC<MenuItemProps> = ({
       onPress={handlePress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      activeOpacity={0.8}
+      activeOpacity={1}
     >
       <View style={styles.itemContainer}>
         <LinearGradient
-          colors={item.colors}
+          colors={isSelected ? item.activeColors : item.colors}
           style={styles.itemBackground}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         />
 
-        {/* Sparkle effects */}
+        {/* Sparkle effects for selected item */}
         <View style={styles.sparkleOverlay}>
-          <View style={[styles.sparkle, styles.sparkle1]} />
-          <View style={[styles.sparkle, styles.sparkle2]} />
-          <View style={[styles.sparkle, styles.sparkle3]} />
+          {isSelected && (
+            <>
+              <View style={[styles.sparkle, styles.sparkle1]} />
+              <View style={[styles.sparkle, styles.sparkle2]} />
+              <View style={[styles.sparkle, styles.sparkle3]} />
+              <View style={[styles.sparkle, styles.sparkle4]} />
+            </>
+          )}
         </View>
 
         <View style={styles.iconContainer}>
-          <MaterialIcons
-            name={item.icon}
-            size={ITEM_WIDTH * 0.45}
-            color="white"
-          />
+          <IconComponent size={ITEM_WIDTH * 0.45} color="white" />
         </View>
 
         <Text style={styles.itemLabel} numberOfLines={1}>
@@ -211,17 +226,71 @@ const KidMenuItem: React.FC<MenuItemProps> = ({
   );
 };
 
+const SelectionIndicator: React.FC<{
+  selectedIndex: number | null;
+  itemWidth: number;
+}> = ({ selectedIndex, itemWidth }) => {
+  const translateX = useSharedValue(0);
+  const opacity = useSharedValue(0);
+  const scale = useSharedValue(0.5);
+
+  useEffect(() => {
+    if (selectedIndex === null) {
+      opacity.value = withTiming(0, { duration: 200 });
+      scale.value = withTiming(0.8, { duration: 200 });
+    } else {
+      const containerWidth = Math.min(
+        screenWidth - 40,
+        MENU_ITEMS.length * (ITEM_WIDTH + 15) + 30
+      );
+      const totalItemSpace = containerWidth - 30;
+      const itemSpacing = totalItemSpace / MENU_ITEMS.length;
+      const indicatorWidth = itemWidth * 0.8;
+
+      const targetX =
+        selectedIndex * itemSpacing + (itemSpacing - indicatorWidth) / 2;
+
+      translateX.value = withSpring(targetX, {
+        damping: 20,
+        stiffness: 300,
+        mass: 0.8,
+      });
+      opacity.value = withTiming(1, { duration: 200 });
+      scale.value = withTiming(1, { duration: 200 });
+    }
+  }, [selectedIndex, itemWidth]);
+
+  // FIXED: Corrected the animatedStyle that had incorrect variable references
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }, { scale: scale.value }],
+      opacity: opacity.value,
+    };
+  });
+
+  return (
+    <Animated.View style={[styles.selectionIndicator, animatedStyle]}>
+      <LinearGradient
+        colors={["#FF8A50", "#FF6B35", "#FFB74D", "#FF9800"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.indicatorGradient}
+      />
+    </Animated.View>
+  );
+};
+
 const FloatingOrb: React.FC<{ delay: number }> = ({ delay }) => {
   const translateY = useSharedValue(0);
-  const opacity = useSharedValue(0.4);
+  const opacity = useSharedValue(0.3);
   const scale = useSharedValue(1);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       translateY.value = withRepeat(
         withSequence(
-          withTiming(-15, { duration: 2500 }),
-          withTiming(0, { duration: 2500 })
+          withTiming(-20, { duration: 3000 }),
+          withTiming(0, { duration: 3000 })
         ),
         -1,
         true
@@ -229,8 +298,8 @@ const FloatingOrb: React.FC<{ delay: number }> = ({ delay }) => {
 
       scale.value = withRepeat(
         withSequence(
-          withTiming(1.1, { duration: 2000 }),
-          withTiming(0.9, { duration: 2000 })
+          withTiming(1.2, { duration: 2500 }),
+          withTiming(0.8, { duration: 2500 })
         ),
         -1,
         true
@@ -252,7 +321,7 @@ const FloatingOrb: React.FC<{ delay: number }> = ({ delay }) => {
   return (
     <Animated.View style={[styles.floatingOrb, animatedStyle]}>
       <LinearGradient
-        colors={["rgba(255, 138, 80, 0.2)", "rgba(255, 107, 53, 0.2)"]}
+        colors={["rgba(255, 138, 80, 0.3)", "rgba(255, 107, 53, 0.3)"]}
         style={styles.orbGradient}
       />
     </Animated.View>
@@ -261,32 +330,33 @@ const FloatingOrb: React.FC<{ delay: number }> = ({ delay }) => {
 
 const KidFriendlyMenu: React.FC<KidFriendlyMenuProps> = ({ onNavigate }) => {
   const [isComponentReady, setIsComponentReady] = useState(false);
-  const containerScale = useSharedValue(1); // Start visible
-  const containerOpacity = useSharedValue(1); // Start visible
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const containerScale = useSharedValue(0.9);
+  const containerOpacity = useSharedValue(0.7);
 
   useEffect(() => {
-    // Ensure component is ready immediately
-    setIsComponentReady(true);
+    const timer = setTimeout(() => {
+      setIsComponentReady(true);
+    }, 100); // Reduced delay for faster initialization
 
-    // Optional entrance animation for the container
-    containerScale.value = 0.95;
-    containerOpacity.value = 0.8;
+    containerScale.value = withSpring(1, {
+      damping: 20,
+      stiffness: 300,
+      mass: 0.8,
+    });
+    containerOpacity.value = withSpring(1, {
+      damping: 20,
+      stiffness: 300,
+      mass: 0.8,
+    });
 
-    containerScale.value = withSpring(1, { damping: 15, stiffness: 200 });
-    containerOpacity.value = withSpring(1, { damping: 15, stiffness: 200 });
-
-    return () => {
-      // Ensure visibility on cleanup
-      runOnUI(() => {
-        "worklet";
-
-        containerScale.value = 1;
-        containerOpacity.value = 1;
-      })();
-    };
+    return () => clearTimeout(timer);
   }, []);
 
-  const handleNavigation = (link: string) => {
+  const handleNavigation = (link: string, index: number) => {
+    setSelectedIndex(index);
+
     if (onNavigate) {
       onNavigate(link);
     }
@@ -297,56 +367,35 @@ const KidFriendlyMenu: React.FC<KidFriendlyMenuProps> = ({ onNavigate }) => {
     opacity: containerOpacity.value,
   }));
 
-  // Fallback container style
-  const fallbackContainerStyle = {
-    transform: [{ scale: 1 }],
-    opacity: 1,
-  };
-
   return (
     <View style={styles.container}>
-      {/* Floating orbs */}
-      <FloatingOrb delay={500} />
-
-      <Animated.View
-        style={[
-          styles.menuContainer,
-          isComponentReady ? containerStyle : fallbackContainerStyle,
-        ]}
-      >
-        {/* Background */}
+      <Animated.View style={[styles.menuContainer, containerStyle]}>
         <LinearGradient
-          colors={["rgba(255, 255, 255, 0.95)", "rgba(248, 248, 248, 0.95)"]}
+          colors={["rgba(255, 255, 255, 0.98)", "rgba(248, 248, 248, 0.95)"]}
           style={styles.menuBackground}
         />
 
-        {/* Menu items - always render, animations are optional */}
         <View style={styles.itemsContainer}>
           {MENU_ITEMS.map((item, index) => (
             <KidMenuItem
               key={`menu-${item.link}-${index}`}
               item={item}
               index={index}
-              onPress={() => handleNavigation(item.link)}
+              onPress={() => handleNavigation(item.link, index)}
               isReady={isComponentReady}
+              isSelected={selectedIndex === index}
+              selectedIndex={selectedIndex}
             />
           ))}
         </View>
 
-        {/* Bottom indicator */}
-        <View style={styles.bottomIndicator}>
-          <LinearGradient
-            colors={["#FF8A50", "#FF6B35", "#FFB74D", "#FF9800"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.indicatorGradient}
+        <View style={styles.indicatorContainer}>
+          <SelectionIndicator
+            selectedIndex={selectedIndex}
+            itemWidth={ITEM_WIDTH}
           />
         </View>
       </Animated.View>
-
-      {/* Emoji decorations */}
-      <Text style={[styles.emoji, styles.emoji1]}>🌟</Text>
-      <Text style={[styles.emoji, styles.emoji2]}>🚀</Text>
     </View>
   );
 };
@@ -373,12 +422,11 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 8,
+      height: 10,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 15,
-    elevation: 12,
-    // Fallback styles to ensure visibility
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 15,
     backgroundColor: "rgba(255, 255, 255, 0.95)",
   },
   menuBackground: {
@@ -396,26 +444,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 15,
     paddingTop: 10,
+    paddingBottom: 15,
   },
   menuItem: {
     width: ITEM_WIDTH,
-    height: ITEM_HEIGHT - 10,
-    marginHorizontal: 2,
+    height: ITEM_HEIGHT - 15,
+    marginHorizontal: 3,
   },
   itemContainer: {
     flex: 1,
-    borderRadius: 20,
+    borderRadius: 22,
     overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 6,
     },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 10,
   },
   itemBackground: {
     position: "absolute",
@@ -423,7 +472,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    borderRadius: 20,
+    borderRadius: 22,
   },
   sparkleOverlay: {
     position: "absolute",
@@ -434,41 +483,51 @@ const styles = StyleSheet.create({
   },
   sparkle: {
     position: "absolute",
-    width: 4,
-    height: 4,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
-    borderRadius: 2,
+    width: 5,
+    height: 5,
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: 2.5,
   },
   sparkle1: {
-    top: 8,
+    top: 6,
     right: 8,
   },
   sparkle2: {
-    top: 15,
-    left: 10,
+    top: 18,
+    left: 6,
   },
   sparkle3: {
-    bottom: 10,
-    right: 12,
+    bottom: 12,
+    right: 10,
+  },
+  sparkle4: {
+    bottom: 6,
+    left: 12,
   },
   iconContainer: {
-    marginBottom: 4,
+    marginBottom: 6,
   },
   itemLabel: {
     color: "white",
     fontSize: Math.max(9, ITEM_WIDTH * 0.15),
     fontWeight: "700",
     textAlign: "center",
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowColor: "rgba(0, 0, 0, 0.6)",
     textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
+    textShadowRadius: 4,
   },
-  bottomIndicator: {
+  indicatorContainer: {
+    position: "absolute",
+    bottom: 8,
+    left: 15,
+    right: 15,
     height: 4,
-    marginHorizontal: 20,
-    marginBottom: 8,
+  },
+  selectionIndicator: {
+    position: "absolute",
+    width: ITEM_WIDTH * 0.8,
+    height: 4,
     borderRadius: 2,
-    overflow: "hidden",
   },
   indicatorGradient: {
     flex: 1,
@@ -476,27 +535,15 @@ const styles = StyleSheet.create({
   },
   floatingOrb: {
     position: "absolute",
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    bottom: MENU_HEIGHT + 25,
-    left: "20%",
+    width: 25,
+    height: 25,
+    borderRadius: 12.5,
+    bottom: MENU_HEIGHT + 30,
+    left: "15%",
   },
   orbGradient: {
     flex: 1,
-    borderRadius: 15,
-  },
-  emoji: {
-    position: "absolute",
-    fontSize: 18,
-  },
-  emoji1: {
-    top: -35,
-    left: 30,
-  },
-  emoji2: {
-    top: -30,
-    right: 40,
+    borderRadius: 12.5,
   },
 });
 
